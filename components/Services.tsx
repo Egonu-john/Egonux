@@ -19,7 +19,7 @@ export default function Services() {
         <div className="wrap">
           <div className={styles.sectionHead}>
             <span className="eyebrow">Services</span>
-            <h2>What we build, for those who'd rather delegate it.</h2>
+            <h2>What we build, for those who&apos;d rather delegate it.</h2>
           </div>
           <div className={styles.servicesList}>
             {services.map((service, idx) => (

@@ -13,7 +13,7 @@ export default function About() {
         <div className={styles.aboutGrid}>
           <div className={styles.aboutQuote}>
             <p>
-              We didn't set out to build a website. We set out to build the
+              We didn&apos;t set out to build a website. We set out to build the
               infrastructure a person needs to go from learning to earning —
               without ever leaving the room.
             </p>
@@ -23,7 +23,7 @@ export default function About() {
             <div className={styles.aboutListItem}>
               <h3>Our Story</h3>
               <p>
-                EGONUX began as a single builder's answer to a fragmented
+                EGONUX began as a single builder&apos;s answer to a fragmented
                 industry — one platform instead of five disconnected tools for
                 learning, selling, earning, and saving.
               </p>
@@ -47,7 +47,7 @@ export default function About() {
               <h3>Core Values</h3>
               <p>
                 Ownership, discipline, transparency, and craft — in the product
-                and in the people it's built for.
+                and in the people it&apos;s built for.
               </p>
             </div>
           </div>
