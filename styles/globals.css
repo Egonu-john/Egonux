@@ -1,0 +1,102 @@
+:root {
+  --obsidian: #0a0a0a;
+  --charcoal: #1c1c1c;
+  --charcoal-soft: #151414;
+  --gold: #d4af37;
+  --champagne: #e9ce83;
+  --bronze: #7a5c29;
+  --bone: #edeae3;
+  --white: #ffffff;
+  --hairline: rgba(212, 175, 55, 0.22);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--obsidian);
+  color: var(--bone);
+  font-family: 'Manrope', sans-serif;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--obsidian);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 1.5px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.hairline {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hairline) 20%,
+    var(--hairline) 80%,
+    transparent
+  );
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
