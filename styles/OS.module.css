@@ -68,32 +68,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 82px;
-  padding: 0 24px;
+  min-height: 88px;
+  padding: 0 20px;
   border-bottom: 1px solid var(--os-line);
 }
 
 .brand {
-  display: inline-flex;
-  align-items: baseline;
-  color: var(--os-text);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.42rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  width: 178px;
+  display: block;
+  line-height: 0;
 }
 
-.brand > span {
-  color: var(--os-gold);
-}
-
-.brand small {
-  margin-left: 10px;
-  color: var(--os-muted);
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.brandLogo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .mobileClose,
@@ -269,6 +258,10 @@
   border-bottom: 1px solid var(--os-line);
   background: rgba(8, 9, 8, 0.88);
   backdrop-filter: blur(18px);
+}
+
+.mobileTopbarBrand {
+  display: none;
 }
 
 .topbarTitle > div {
@@ -3969,6 +3962,25 @@
     align-items: center;
   }
 
+  .brand {
+    width: 190px;
+  }
+
+  .mobileTopbarBrand {
+    position: absolute;
+    left: 50%;
+    width: 132px;
+    display: block;
+    line-height: 0;
+    transform: translateX(-50%);
+  }
+
+  .mobileTopbarLogo {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
   .main {
     padding-bottom: 100px;
   }
@@ -4034,8 +4046,8 @@
     display: none;
   }
 
-  .topbarTitle strong {
-    font-size: 0.72rem;
+  .topbarTitle > div {
+    display: none;
   }
 
   .main {
@@ -4252,6 +4264,10 @@
 }
 
 @media (max-width: 460px) {
+  .mobileTopbarBrand {
+    width: 108px;
+  }
+
   .iconButton:first-of-type {
     display: none;
   }
