@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
@@ -68,9 +69,16 @@ export default function AppShell({
 
       <aside className={`${styles.sidebar} ${isMenuOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.brandRow}>
-          <Link aria-label="EGONUX home" className={styles.brand} href="/">
-            EGONU<span>X</span>
-            <small>OS v3.0</small>
+          <Link className={styles.brand} href="/">
+            <Image
+              alt="EGONUX Wealth Central Hub"
+              className={styles.brandLogo}
+              height={784}
+              priority
+              sizes="(max-width: 900px) 190px, 178px"
+              src="/brand/egonux-primary-logo.png"
+              width={2007}
+            />
           </Link>
           <button
             aria-label="Close menu"
@@ -125,6 +133,18 @@ export default function AppShell({
               <strong>{currentTitle}</strong>
             </div>
           </div>
+
+          <Link aria-label="EGONUX home" className={styles.mobileTopbarBrand} href="/">
+            <Image
+              alt=""
+              className={styles.mobileTopbarLogo}
+              height={784}
+              priority
+              sizes="(max-width: 460px) 108px, 132px"
+              src="/brand/egonux-primary-logo.png"
+              width={2007}
+            />
+          </Link>
 
           <div className={styles.topbarActions}>
             <div className={styles.searchWrap}>
