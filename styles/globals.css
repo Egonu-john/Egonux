@@ -23,7 +23,7 @@ html {
 body {
   background: var(--obsidian);
   color: var(--bone);
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Manrope', 'Inter', 'Segoe UI', sans-serif;
   overflow-x: hidden;
 }
 
@@ -31,7 +31,7 @@ h1,
 h2,
 h3,
 .serif {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', 'Iowan Old Style', 'Baskerville', Georgia, serif;
 }
 
 a {

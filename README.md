@@ -1,22 +1,32 @@
-# EGONUX — Empowering the Next Generation of Digital Wealth
+# EGONUX OS v3.0 — Enterprise MVP
 
-A modern, luxury-focused landing page for EGONUX, a comprehensive wealth education and digital entrepreneurship platform. Built with **Next.js**, **React**, and **TypeScript**.
+The first interactive operating-system MVP for the EGONUX digital-wealth ecosystem. It combines a universal identity, sandbox wallet, marketplace, learning, community, affiliate, AI, security, developer and founder-command experiences on one shared platform foundation.
+
+> One Identity. One Wallet. One Marketplace. One Learning Platform. One Community. One Intelligence.
+
+Open `/os` to launch the Enterprise MVP. The existing public website remains available at `/`.
 
 ## Features
 
-- ✨ **Premium Design** — Sophisticated color palette (gold, charcoal, bone) with elegant typography
-- 🎨 **Component-Based Architecture** — Reusable React components for maintainability
-- 📱 **Fully Responsive** — Mobile-first design with optimized breakpoints
-- ♿ **Accessible** — WCAG-compliant with focus management and reduced-motion support
-- 🚀 **Performance** — Optimized canvas animation respecting user preferences
-- 🎯 **SEO Ready** — Next.js optimizations with proper meta tags
-- 🎭 **Interactive Elements** — Scroll-triggered navigation, hover effects, animated hero
+- **Universal identity** — EGONUX ID, KYC journey, trust, devices and recovery
+- **Sandbox wallet** — Multi-currency presentation, deposits, transfers, withdrawals, QR and savings vaults
+- **Digital marketplace** — Verified listings, filters, vendor entrypoint and cart actions
+- **EGONUX Learn** — Courses, progress, paths and credential concepts
+- **Community and affiliate** — Groups, events, transparent single-tier pilot rewards and campaign assets
+- **Permission-aware AI** — Demonstration assistant with consent context and safety disclosures
+- **Founder Command Center** — Users, revenue, activity, fraud signals, AI insights and service health
+- **Enterprise foundation** — Security center, API catalog, webhooks, SDKs and health endpoint
+- **Responsive design** — Desktop workspace, tablet navigation and mobile command bar
+- **Quality gate** — GitHub Actions runs lint, TypeScript and production build checks
+
+This release intentionally uses demonstration data. It does not move, hold or exchange real money and does not process real identity documents.
 
 ## Project Structure
 
 ```
 egonux/
 ├── components/          # Reusable React components
+│   ├── os/              # EGONUX OS shell, modules and interactions
 │   ├── Header.tsx       # Navigation
 │   ├── Hero.tsx         # Hero section with canvas
 │   ├── About.tsx        # About section
@@ -31,7 +41,12 @@ egonux/
 ├── pages/               # Next.js pages
 │   ├── _app.tsx         # App wrapper
 │   ├── _document.tsx    # HTML document
-│   └── index.tsx        # Home page
+│   ├── api/health.ts    # MVP health contract
+│   ├── index.tsx        # Public website
+│   └── os.tsx           # Enterprise MVP
+├── lib/                 # Typed demonstration data
+├── types/               # Shared product types
+├── docs/                # Architecture and production boundaries
 ├── styles/              # CSS modules
 │   ├── globals.css      # Global styles
 │   └── Home.module.css  # Component styles
@@ -42,7 +57,7 @@ egonux/
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js 20+
 - npm or yarn
 
 ### Installation
@@ -68,15 +83,24 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the site.
 
+Open [http://localhost:3000/os](http://localhost:3000/os) to use EGONUX OS.
+
 ### Build
 
 ```bash
 npm run build
 npm start
+npm run typecheck
 # or
 yarn build
 yarn start
 ```
+
+## Architecture and scope
+
+Read [`docs/ENTERPRISE_MVP.md`](docs/ENTERPRISE_MVP.md) for the target Google Cloud architecture, production implementation phases, security and regulatory guardrails, and acceptance criteria.
+
+Copy `.env.example` to `.env.local` only when connecting approved Firebase and Google Cloud environments. Never commit credentials.
 
 ## Customization
 

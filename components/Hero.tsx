@@ -10,29 +10,30 @@ export default function Hero() {
       <canvas ref={canvasRef} className={styles.lattice} />
       <div className={styles.heroInner}>
         <div className={styles.heroContent}>
-          <span className="eyebrow">EGONUX Wealth Central Hub</span>
+          <span className="eyebrow">EGONUX OS v3.0 · Enterprise MVP</span>
           <h1 className={styles.heroHeading}>
-            Empowering the <em>Next Generation</em> of Digital Wealth
+            One Operating System for <em>Digital Wealth</em>
           </h1>
           <p className={styles.heroSub}>
-            Learn. Build. Grow. Lead. One ecosystem for education, enterprise,
-            and earning — built for people who intend to own their future, not
-            rent it.
+            One identity. One wallet. One marketplace. One learning platform.
+            One community. One intelligence layer — built to grow into a global
+            digital-wealth ecosystem.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="#community" className={styles.btnPrimary}>
-              Join Community
+            <Link href="/os" className={styles.btnPrimary}>
+              Launch Enterprise MVP
             </Link>
-            <Link href="#academy" className={styles.btnSecondary}>
-              Explore Platform
+            <Link href="#about" className={styles.btnSecondary}>
+              Explore the Vision
             </Link>
           </div>
           <div className={styles.heroVerticals}>
-            <span>Academy</span>
+            <span>Identity</span>
+            <span>Wallet</span>
             <span>Marketplace</span>
-            <span>Affiliate Network</span>
-            <span>Watch &amp; Earn</span>
-            <span>Wealth Wallet</span>
+            <span>Learn</span>
+            <span>Community</span>
+            <span>AI</span>
           </div>
         </div>
       </div>

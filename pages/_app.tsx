@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Component {...pageProps} />
-      <SpeedInsights />
+      {process.env.NEXT_PUBLIC_ENABLE_SPEED_INSIGHTS === 'true' ? <SpeedInsights /> : null}
     </>
   );
 }
