@@ -17,6 +17,7 @@ export default function Footer() {
           </div>
           <div className={styles.footerCol}>
             <h4>Platform</h4>
+            <Link href="/os">EGONUX OS v3.0 MVP</Link>
             <Link href="#about">About</Link>
             <Link href="#academy">Academy</Link>
             <Link href="#services">Services</Link>

@@ -12,6 +12,9 @@ export default function Header() {
       </Link>
       <ul className={styles.navLinks}>
         <li>
+          <Link href="/os">OS v3.0</Link>
+        </li>
+        <li>
           <Link href="#about">About</Link>
         </li>
         <li>
@@ -30,8 +33,8 @@ export default function Header() {
           <Link href="#contact">Contact</Link>
         </li>
       </ul>
-      <Link href="#community" className={styles.navCta}>
-        Join Community
+      <Link href="/os" className={styles.navCta}>
+        Launch MVP
       </Link>
     </nav>
   );
