@@ -1,10 +1,14 @@
-# EGONUX OS v3.0 — Enterprise MVP
+# EGONUX OS v3.0.1 — Enterprise MVP
 
 The first interactive operating-system MVP for the EGONUX digital-wealth ecosystem. It combines a universal identity, sandbox wallet, marketplace, learning, community, affiliate, AI, security, developer and founder-command experiences on one shared platform foundation.
 
 > One Identity. One Wallet. One Marketplace. One Learning Platform. One Community. One Intelligence.
 
 Open `/os` to launch the Enterprise MVP. The existing public website remains available at `/`.
+
+## Release status
+
+Version 3.0.1 is the post-logo foundation-maintenance release. It upgrades the web runtime to Next.js 16 and React 19, completes official logo use across the public website, adds security headers and branded metadata, and introduces a production-route smoke test. Product data and interactions remain intentionally sandboxed.
 
 ## Features
 
@@ -17,7 +21,7 @@ Open `/os` to launch the Enterprise MVP. The existing public website remains ava
 - **Founder Command Center** — Users, revenue, activity, fraud signals, AI insights and service health
 - **Enterprise foundation** — Security center, API catalog, webhooks, SDKs and health endpoint
 - **Responsive design** — Desktop workspace, tablet navigation and mobile command bar
-- **Quality gate** — GitHub Actions runs lint, TypeScript and production build checks
+- **Quality gate** — GitHub Actions runs lint, TypeScript, production build and route smoke checks
 
 This release intentionally uses demonstration data. It does not move, hold or exchange real money and does not process real identity documents.
 
@@ -47,17 +51,20 @@ egonux/
 ├── lib/                 # Typed demonstration data
 ├── types/               # Shared product types
 ├── docs/                # Architecture and production boundaries
+├── scripts/             # Production smoke-test runner
 ├── styles/              # CSS modules
 │   ├── globals.css      # Global styles
 │   └── Home.module.css  # Component styles
-└── public/              # Static assets
+├── public/              # Brand, manifest, robots and sitemap assets
+├── SECURITY.md          # Private vulnerability-reporting policy
+└── .github/             # CI, CodeQL, ownership and dependency automation
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 20.9 or newer (CI and Vercel use Node.js 24)
 - npm or yarn
 
 ### Installation
@@ -67,10 +74,8 @@ egonux/
 git clone https://github.com/egonu-john/egonux.git
 cd egonux
 
-# Install dependencies
-npm install
-# or
-yarn install
+# Install the locked dependencies
+npm ci
 ```
 
 ### Development
@@ -91,9 +96,12 @@ Open [http://localhost:3000/os](http://localhost:3000/os) to use EGONUX OS.
 npm run build
 npm start
 npm run typecheck
-# or
-yarn build
-yarn start
+```
+
+Run the complete local quality gate after installing dependencies:
+
+```bash
+npm run check
 ```
 
 ## Architecture and scope
@@ -137,12 +145,22 @@ Adjust animation parameters in `hooks/useCanvasAnimation.ts`:
 - Optimized image delivery via Next.js Image component
 - CSS modules for scoped styling
 - Automatic code splitting
+- Turbopack-based development and production builds
+
+## Security and maintenance
+
+- Security headers are applied to every route, including a restrictive baseline Content Security Policy.
+- `/api/health` accepts `GET` only, is never cached, and identifies the product as a sandbox.
+- CodeQL and the EGONUX quality gate run on pull requests and pushes to `main`.
+- Dependabot groups monthly npm and GitHub Actions patch/minor updates for review.
+- Vulnerabilities should be reported privately through [`SECURITY.md`](SECURITY.md).
 
 ## Browser Support
 
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
+- Chrome 111+
+- Edge 111+
+- Firefox 111+
+- Safari 16.4+
 - Mobile browsers
 
 ## License

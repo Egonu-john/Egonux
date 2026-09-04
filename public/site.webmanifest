@@ -1,0 +1,17 @@
+{
+  "name": "EGONUX",
+  "short_name": "EGONUX",
+  "description": "The wealth central hub for education, enterprise, and earning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/brand/egonux-primary-logo.png",
+      "sizes": "2007x784",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

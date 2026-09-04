@@ -14,7 +14,7 @@ const MAX_DIST = 150;
 export const useCanvasAnimation = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nodesRef = useRef<Node[]>([]);
-  const animationIdRef = useRef<number>();
+  const animationIdRef = useRef<number>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -10,7 +10,7 @@ export default function Hero() {
       <canvas ref={canvasRef} className={styles.lattice} />
       <div className={styles.heroInner}>
         <div className={styles.heroContent}>
-          <span className="eyebrow">EGONUX OS v3.0 · Enterprise MVP</span>
+          <span className="eyebrow">EGONUX OS v3.0.1 · Enterprise MVP</span>
           <h1 className={styles.heroHeading}>
             One Operating System for <em>Digital Wealth</em>
           </h1>

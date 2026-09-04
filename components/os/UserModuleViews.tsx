@@ -265,7 +265,7 @@ export function CommunityView({ onToast }: CommunityViewProps) {
   return (
     <div className={styles.view}>
       <ViewHeader description="Trusted groups, channels, announcements and events connected to your universal identity." eyebrow="Core layer 05" title="EGONUX Community" action={<button className={styles.primaryButtonSmall} type="button"><Icon name="plus" size={16} /> Create a group</button>} />
-      <section className={styles.communityBanner}><div><span className={styles.eyebrow}>Founder announcement</span><h2>Execution is the bridge between vision and impact.</h2><p>Join this week&apos;s EGONUX OS v3.0 builder briefing and product walkthrough.</p><button onClick={() => onToast('Builder briefing added to your sandbox calendar.')} type="button">Reserve my place <Icon name="chevron-right" size={16} /></button></div><div><strong>16</strong><span>AUG</span><small>18:00 EAT · Live</small></div></section>
+      <section className={styles.communityBanner}><div><span className={styles.eyebrow}>Founder announcement</span><h2>Execution is the bridge between vision and impact.</h2><p>Register interest in the next EGONUX OS v3.0.1 builder briefing and product walkthrough.</p><button onClick={() => onToast('Interest recorded in sandbox mode.')} type="button">Register interest <Icon name="chevron-right" size={16} /></button></div><div><strong>TBA</strong><span>DATE</span><small>Schedule pending · Live</small></div></section>
       <section className={styles.twoColumnGrid}>
         <article className={styles.panel}>
           <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Discover</span><h2>Channels for your goals</h2></div></div>
@@ -301,7 +301,7 @@ export function AffiliateView({ onToast }: AffiliateViewProps) {
       <ViewHeader description="A transparent growth engine for approved single-tier campaigns, verified rewards and reusable marketing assets." eyebrow="Core layer 06 · Compliance pilot" title="EGONUX Affiliate" action={<span className={styles.statusPill}>Account active</span>} />
       <p className={styles.legalBanner}><Icon name="security" size={17} /> MVP rewards are single-tier and campaign-based. Multi-level rewards remain disabled unless specifically approved under applicable law.</p>
       <section className={styles.affiliateStats}>
-        <article className={styles.affiliateEarnings}><span>Available earnings</span><strong>UGX 178,500</strong><small>Next eligible payout · 31 Aug 2026</small><button onClick={() => onToast('Payout request created in sandbox mode.')} type="button">Request payout <Icon name="chevron-right" size={16} /></button></article>
+        <article className={styles.affiliateEarnings}><span>Available sandbox earnings</span><strong>UGX 178,500</strong><small>Next demo cycle · Schedule pending</small><button onClick={() => onToast('Payout request created in sandbox mode.')} type="button">Request sandbox payout <Icon name="chevron-right" size={16} /></button></article>
         <div><span>Verified referrals</span><strong>24</strong><small>+6 this month</small></div><div><span>Conversion rate</span><strong>18.4%</strong><small>Top 12% of pilot</small></div><div><span>Link visits</span><strong>1,482</strong><small>+22.8% this month</small></div>
       </section>
       <section className={styles.twoColumnGrid}>
@@ -342,8 +342,10 @@ export function AIView() {
   const [prompt, setPrompt] = useState('');
   const sendPrompt = (text: string) => {
     const clean = text.trim(); if (!clean) return;
-    const timestamp = Date.now();
-    setMessages((current) => [...current, { id: `user-${timestamp}`, role: 'user', text: clean }, { id: `assistant-${timestamp}`, role: 'assistant', text: createAssistantReply(clean) }]);
+    setMessages((current) => {
+      const messagePair = current.length;
+      return [...current, { id: `user-${messagePair}`, role: 'user', text: clean }, { id: `assistant-${messagePair}`, role: 'assistant', text: createAssistantReply(clean) }];
+    });
     setPrompt('');
   };
   const submit = (event: FormEvent) => { event.preventDefault(); sendPrompt(prompt); };

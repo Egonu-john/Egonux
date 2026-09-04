@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useScrollNav } from '@/hooks/useScrollNav';
 import styles from '@/styles/Home.module.css';
@@ -7,12 +8,20 @@ export default function Header() {
 
   return (
     <nav className={`${styles.nav} ${isScrolled ? styles.scrolled : ''}`}>
-      <Link href="#" className={styles.logo}>
-        EGONU<span>X</span>
+      <Link aria-label="EGONUX home" href="/" className={styles.logo}>
+        <Image
+          alt="EGONUX Wealth Central Hub"
+          className={styles.brandLogo}
+          height={784}
+          priority
+          sizes="(max-width: 600px) 132px, 154px"
+          src="/brand/egonux-primary-logo.png"
+          width={2007}
+        />
       </Link>
       <ul className={styles.navLinks}>
         <li>
-          <Link href="/os">OS v3.0</Link>
+          <Link href="/os">OS v3.0.1</Link>
         </li>
         <li>
           <Link href="#about">About</Link>

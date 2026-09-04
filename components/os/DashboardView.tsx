@@ -29,7 +29,7 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
     <div className={styles.view}>
       <section className={styles.welcomeRow}>
         <div>
-          <span className={styles.eyebrow}>Thursday · 13 August 2026</span>
+          <span className={styles.eyebrow}>Sandbox snapshot · August 2026</span>
           <h1>Good morning, Egonu.</h1>
           <p>One identity. One ecosystem. Everything you need to learn, build, grow and lead.</p>
         </div>

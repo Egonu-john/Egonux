@@ -20,15 +20,16 @@
 }
 
 .logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.55rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--white);
+  display: block;
+  width: 154px;
+  flex: 0 0 auto;
+  line-height: 0;
 }
 
-.logo span {
-  color: var(--gold);
+.brandLogo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .navLinks {
@@ -497,6 +498,7 @@
 }
 
 .footerBrand .logo {
+  width: 190px;
   margin-bottom: 16px;
 }
 
@@ -586,6 +588,14 @@
 }
 
 @media (max-width: 600px) {
+  .logo {
+    width: 132px;
+  }
+
+  .navCta {
+    padding: 9px 14px;
+  }
+
   .academyGrid {
     grid-template-columns: 1fr;
   }

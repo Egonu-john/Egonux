@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /os
+Disallow: /api/
+
+Sitemap: https://www.egonux.com/sitemap.xml
