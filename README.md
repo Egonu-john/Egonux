@@ -64,7 +64,7 @@ egonux/
 
 ### Prerequisites
 
-- Node.js 20.9 or newer (CI and Vercel use Node.js 24)
+- Node.js 24.x (aligned across local development, CI, and Vercel)
 - npm or yarn
 
 ### Installation
