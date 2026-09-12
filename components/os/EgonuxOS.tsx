@@ -22,16 +22,17 @@ const moduleIds = new Set<ModuleId>([
 
 export default function EgonuxOS() {
   const router = useRouter();
-  const [activeModule, setActiveModule] = useState<ModuleId>('home');
   const [activeAction, setActiveAction] = useState<ActionRequest['type'] | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [toast, setToast] = useState('');
 
-  useEffect(() => {
-    if (!router.isReady) return;
-    const requestedModule = Array.isArray(router.query.module) ? router.query.module[0] : router.query.module;
-    setActiveModule(requestedModule && moduleIds.has(requestedModule as ModuleId) ? requestedModule as ModuleId : 'home');
-  }, [router.isReady, router.query.module]);
+  const requestedModule = Array.isArray(router.query.module)
+    ? router.query.module[0]
+    : router.query.module;
+  const activeModule =
+    router.isReady && requestedModule && moduleIds.has(requestedModule as ModuleId)
+      ? (requestedModule as ModuleId)
+      : 'home';
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -42,7 +43,6 @@ export default function EgonuxOS() {
   const showToast = useCallback((message: string) => setToast(message), []);
 
   const selectModule = useCallback((module: ModuleId) => {
-    setActiveModule(module);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const query = module === 'home' ? {} : { module };
     void router.replace({ pathname: '/os', query }, undefined, { shallow: true, scroll: false });

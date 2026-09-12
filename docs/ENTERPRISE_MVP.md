@@ -1,4 +1,4 @@
-# EGONUX OS v3.0 — Enterprise MVP
+# EGONUX OS v3.0.1 — Enterprise MVP
 
 ## Product purpose
 
@@ -7,6 +7,12 @@ EGONUX OS is the shared digital operating system for every future EGONUX institu
 > One Identity. One Wallet. One Marketplace. One Learning Platform. One Community. One Intelligence.
 
 This release is an interactive enterprise sandbox. It proves the information architecture, shared experience and core workflows before regulated financial integrations or production customer data are introduced.
+
+## Current implementation status
+
+The v3.0.1 foundation release provides a production-built Next.js 16 and React 19 interface, the approved EGONUX logo across public and OS navigation, a method-restricted health contract, baseline browser-security headers, CodeQL, dependency maintenance, and automated route smoke tests.
+
+Authentication, MFA, server-enforced roles, persistent profiles, consent records, audit events, payment integrations, and production AI are not implemented yet. The visible identity, wallet, marketplace, learning, community, affiliate, AI, security, and command-center experiences still use local demonstration data.
 
 ## What this MVP delivers
 
@@ -43,7 +49,7 @@ Every domain service must reuse the same identity, authorization, audit, analyti
 
 ## Target technology stack
 
-- Web: Next.js and TypeScript
+- Web: Next.js 16, React 19 and TypeScript
 - Mobile: Flutter for Android and iOS
 - Identity: Firebase Authentication with MFA and custom claims
 - Operational data: Firestore
@@ -92,12 +98,13 @@ Every domain service must reuse the same identity, authorization, audit, analyti
 
 Add Bank, Investments, Exchange, Insurance, University, Innovation Lab, Healthcare, Data Centers, Global Operations, Research Institute and Foundation as governed modules on the same shared foundation.
 
-## Acceptance criteria for this branch
+## Acceptance criteria for this release
 
 - `/os` renders a responsive dashboard across desktop and mobile layouts.
 - Every core and enterprise module is navigable without a page reload.
 - Wallet actions validate inputs and remain visibly sandboxed.
 - Marketplace, Learn, Community, Affiliate and AI have demonstrable interactions.
 - Founder Command Center contains the requested core metrics and risk/health signals.
-- `/api/health` returns the MVP version, status and capability list.
-- Lint, TypeScript and production build checks pass in CI.
+- `/api/health` accepts `GET` only and returns the sandbox version, status and capability list without caching.
+- The public website exposes canonical, social, manifest, robots and sitemap metadata using the approved brand asset.
+- Lint, TypeScript, production build and production-route smoke checks pass in CI.

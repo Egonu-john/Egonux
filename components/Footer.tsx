@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import styles from '@/styles/Home.module.css';
 
@@ -7,8 +8,15 @@ export default function Footer() {
       <div className="wrap">
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
-            <Link href="#" className={styles.logo}>
-              EGONU<span>X</span>
+            <Link aria-label="EGONUX home" href="/" className={styles.logo}>
+              <Image
+                alt="EGONUX Wealth Central Hub"
+                className={styles.brandLogo}
+                height={784}
+                sizes="190px"
+                src="/brand/egonux-primary-logo.png"
+                width={2007}
+              />
             </Link>
             <p>
               The wealth central hub for the next generation of builders,
@@ -17,7 +25,7 @@ export default function Footer() {
           </div>
           <div className={styles.footerCol}>
             <h4>Platform</h4>
-            <Link href="/os">EGONUX OS v3.0 MVP</Link>
+            <Link href="/os">EGONUX OS v3.0.1 MVP</Link>
             <Link href="#about">About</Link>
             <Link href="#academy">Academy</Link>
             <Link href="#services">Services</Link>
