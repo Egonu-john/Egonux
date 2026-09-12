@@ -27,6 +27,12 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Set up Java for Firebase emulators
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - name: Install locked dependencies
         run: npm ci
 
@@ -35,6 +41,9 @@ jobs:
 
       - name: Type-check
         run: npm run typecheck
+
+      - name: Test Firestore authorization rules
+        run: npm run test:rules
 
       - name: Build production bundle
         run: npm run build
