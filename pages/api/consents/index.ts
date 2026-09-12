@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { AuthenticationError, requirePrincipal } from '@/lib/auth/session';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { appendAuditEvent } from '@/lib/server/audit';
+import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
 import type { ConsentPurpose } from '@/types/backend';
 
 const purposes = new Set<ConsentPurpose>([
@@ -32,6 +33,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
       return;
     }
 
+    requireSameOrigin(request);
+
     const purpose = request.body?.purpose as ConsentPurpose;
     const version = typeof request.body?.version === 'string' ? request.body.version.trim() : '';
     const granted = request.body?.granted;
@@ -57,6 +60,10 @@ export default async function handler(request: NextApiRequest, response: NextApi
   } catch (error) {
     if (error instanceof AuthenticationError) {
       response.status(401).json({ error: error.message });
+      return;
+    }
+    if (error instanceof InvalidOriginError) {
+      response.status(403).json({ error: error.message });
       return;
     }
     response.status(500).json({ error: 'Unable to process the consent record.' });
