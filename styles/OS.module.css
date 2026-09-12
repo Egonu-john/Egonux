@@ -230,9 +230,15 @@
 .backToSite {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 9px;
   padding: 7px 11px;
+  border: 0;
   color: #6f756e;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   font-size: 0.68rem;
   transition: color 0.2s ease;
 }
