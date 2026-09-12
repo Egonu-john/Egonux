@@ -1,5 +1,8 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
+import { hasAnyRole } from '@/lib/auth/roles';
+import { enterpriseNavigation } from '@/lib/os-data';
+import type { AuthenticatedPrincipal, EgonuxRole } from '@/types/backend';
 import type { ActionRequest, ModuleId } from '@/types/egonux';
 import ActionModal from './ActionModal';
 import AppShell from './AppShell';
@@ -20,7 +23,17 @@ const moduleIds = new Set<ModuleId>([
   'affiliate', 'ai', 'security', 'developer', 'admin',
 ]);
 
-export default function EgonuxOS() {
+interface EgonuxOSProps {
+  principal: AuthenticatedPrincipal | null;
+}
+
+const enterpriseAccess: Partial<Record<ModuleId, readonly EgonuxRole[]>> = {
+  security: ['support', 'compliance', 'admin', 'founder'],
+  developer: ['admin', 'founder'],
+  admin: ['admin', 'founder'],
+};
+
+export default function EgonuxOS({ principal }: EgonuxOSProps) {
   const router = useRouter();
   const [activeAction, setActiveAction] = useState<ActionRequest['type'] | null>(null);
   const [cartCount, setCartCount] = useState(0);
@@ -29,8 +42,21 @@ export default function EgonuxOS() {
   const requestedModule = Array.isArray(router.query.module)
     ? router.query.module[0]
     : router.query.module;
+  const visibleEnterpriseNavigation = principal
+    ? enterpriseNavigation.filter((item) => {
+        const required = enterpriseAccess[item.id] ?? [];
+        return required.length === 0 || hasAnyRole(principal.roles, required);
+      })
+    : enterpriseNavigation;
+  const visibleModuleIds = new Set<ModuleId>([
+    ...moduleIds,
+    ...visibleEnterpriseNavigation.map((item) => item.id),
+  ]);
+  for (const moduleId of Object.keys(enterpriseAccess) as ModuleId[]) {
+    if (!visibleEnterpriseNavigation.some((item) => item.id === moduleId)) visibleModuleIds.delete(moduleId);
+  }
   const activeModule =
-    router.isReady && requestedModule && moduleIds.has(requestedModule as ModuleId)
+    router.isReady && requestedModule && visibleModuleIds.has(requestedModule as ModuleId)
       ? (requestedModule as ModuleId)
       : 'home';
 
@@ -58,6 +84,12 @@ export default function EgonuxOS() {
     showToast(`${title} added to your sandbox cart.`);
   };
 
+  const signOut = async () => {
+    const { signOutOfEgonux } = await import('@/lib/auth/client');
+    await signOutOfEgonux();
+    await router.push('/login');
+  };
+
   const renderActiveView = () => {
     switch (activeModule) {
       case 'identity': return <IdentityView />;
@@ -80,7 +112,10 @@ export default function EgonuxOS() {
       cartCount={cartCount}
       onDismissToast={() => setToast('')}
       onSelect={selectModule}
+      onSignOut={principal ? signOut : undefined}
+      principal={principal}
       toast={toast}
+      visibleEnterpriseNavigation={visibleEnterpriseNavigation}
     >
       {renderActiveView()}
       <ActionModal action={activeAction} onClose={() => setActiveAction(null)} onSubmit={submitAction} />

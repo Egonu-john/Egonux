@@ -3,7 +3,8 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { enterpriseNavigation, notifications, primaryNavigation } from '@/lib/os-data';
-import type { ModuleId } from '@/types/egonux';
+import type { AuthenticatedPrincipal } from '@/types/backend';
+import type { ModuleId, NavigationItem } from '@/types/egonux';
 import Icon from './Icon';
 import styles from '@/styles/OS.module.css';
 
@@ -13,10 +14,11 @@ interface AppShellProps {
   children: ReactNode;
   onSelect: (module: ModuleId) => void;
   onDismissToast: () => void;
+  onSignOut?: () => Promise<void>;
+  principal: AuthenticatedPrincipal | null;
   toast: string;
+  visibleEnterpriseNavigation: typeof enterpriseNavigation;
 }
-
-const allNavigation = [...primaryNavigation, ...enterpriseNavigation];
 
 export default function AppShell({
   activeModule,
@@ -24,18 +26,25 @@ export default function AppShell({
   children,
   onSelect,
   onDismissToast,
+  onSignOut,
+  principal,
   toast,
+  visibleEnterpriseNavigation,
 }: AppShellProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [query, setQuery] = useState('');
 
-  const currentTitle = allNavigation.find((item) => item.id === activeModule)?.label ?? 'Command Home';
+  const visibleNavigation = useMemo(
+    () => [...primaryNavigation, ...visibleEnterpriseNavigation],
+    [visibleEnterpriseNavigation],
+  );
+  const currentTitle = visibleNavigation.find((item) => item.id === activeModule)?.label ?? 'Command Home';
   const searchResults = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (normalized.length < 2) return [];
-    return allNavigation.filter((item) => item.label.toLowerCase().includes(normalized)).slice(0, 5);
-  }, [query]);
+    return visibleNavigation.filter((item) => item.label.toLowerCase().includes(normalized)).slice(0, 5);
+  }, [query, visibleNavigation]);
 
   const selectModule = (module: ModuleId) => {
     onSelect(module);
@@ -43,7 +52,7 @@ export default function AppShell({
     setQuery('');
   };
 
-  const renderNavigation = (items: typeof allNavigation) =>
+  const renderNavigation = (items: NavigationItem[]) =>
     items.map((item) => (
       <button
         aria-current={activeModule === item.id ? 'page' : undefined}
@@ -99,21 +108,28 @@ export default function AppShell({
           <span className={styles.navLabel}>Ecosystem</span>
           {renderNavigation(primaryNavigation)}
           <span className={styles.navLabel}>Enterprise</span>
-          {renderNavigation(enterpriseNavigation)}
+          {renderNavigation(visibleEnterpriseNavigation)}
         </nav>
 
         <div className={styles.sidebarFooter}>
           <div className={styles.securityMini}>
             <Icon name="security" size={18} />
             <div>
-              <strong>Security score 92%</strong>
-              <span>All critical controls active</span>
+              <strong>Security posture preview</strong>
+              <span>Sandbox controls only</span>
             </div>
           </div>
-          <Link className={styles.backToSite} href="/">
-            <Icon name="logout" size={17} />
-            Back to egonux.com
-          </Link>
+          {onSignOut ? (
+            <button className={styles.backToSite} onClick={() => void onSignOut()} type="button">
+              <Icon name="logout" size={17} />
+              Sign out securely
+            </button>
+          ) : (
+            <Link className={styles.backToSite} href="/">
+              <Icon name="logout" size={17} />
+              Back to egonux.com
+            </Link>
+          )}
         </div>
       </aside>
 
@@ -223,10 +239,10 @@ export default function AppShell({
             </div>
 
             <button className={styles.profileButton} onClick={() => selectModule('identity')} type="button">
-              <span className={styles.avatar}>EJ</span>
+              <span className={styles.avatar}>{principal?.email?.slice(0, 2).toUpperCase() ?? 'DX'}</span>
               <span className={styles.profileCopy}>
-                <strong>Egonu John</strong>
-                <small>Founder access</small>
+                <strong>{principal?.email ?? 'Demonstration user'}</strong>
+                <small>{principal ? `${principal.roles.join(', ')} access` : 'Sandbox preview'}</small>
               </span>
               <Icon name="chevron-right" size={15} />
             </button>

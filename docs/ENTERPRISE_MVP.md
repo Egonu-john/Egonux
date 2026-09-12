@@ -88,6 +88,11 @@ append-only audit events, deny-by-default Firestore rules, and emulator-backed r
 tests. These capabilities remain sandbox-only until approved Firebase and Google
 Cloud environments are configured and operational security review is complete.
 
+Set `EGONUX_AUTH_REQUIRED=true` only after the approved Firebase project and
+server credentials are configured. When enabled, `/os` requires a verified
+HTTP-only session and enterprise navigation is filtered using server-verified
+role claims. The default remains an explicitly labelled sandbox preview.
+
 ### Phase 2 — Transaction-safe core
 
 - Double-entry sandbox ledger with idempotency and reconciliation

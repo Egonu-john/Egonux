@@ -1,5 +1,6 @@
 import type { DecodedIdToken } from 'firebase-admin/auth';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
+import type { IncomingHttpHeaders } from 'node:http';
 import { getAdminAuth } from '@/lib/firebase/admin';
 import { parseRoles } from '@/lib/auth/roles';
 import type { AuthenticatedPrincipal, EgonuxRole } from '@/types/backend';
@@ -22,7 +23,11 @@ export function sessionDurationMs() {
   return days * 24 * 60 * 60 * 1000;
 }
 
-export function readCookie(request: NextApiRequest, name: string) {
+interface RequestWithHeaders {
+  headers: IncomingHttpHeaders;
+}
+
+export function readCookie(request: RequestWithHeaders, name: string) {
   return request.headers.cookie
     ?.split(';')
     .map((part) => part.trim().split('='))
@@ -54,7 +59,7 @@ function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
 }
 
 export async function requirePrincipal(
-  request: NextApiRequest,
+  request: RequestWithHeaders,
   requiredRoles: readonly EgonuxRole[] = [],
 ) {
   const cookie = readCookie(request, sessionCookieName());

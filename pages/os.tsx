@@ -1,7 +1,14 @@
 import Head from 'next/head';
+import type { GetServerSideProps } from 'next';
 import EgonuxOS from '@/components/os/EgonuxOS';
+import { requirePrincipal } from '@/lib/auth/session';
+import type { AuthenticatedPrincipal } from '@/types/backend';
 
-export default function OperatingSystemPage() {
+interface OperatingSystemPageProps {
+  principal: AuthenticatedPrincipal | null;
+}
+
+export default function OperatingSystemPage({ principal }: OperatingSystemPageProps) {
   const title = 'EGONUX OS v3.0.1 — Enterprise MVP Sandbox';
   const description =
     'Explore the EGONUX OS Enterprise MVP sandbox: one identity, wallet, marketplace, learning platform, community, intelligence, and command center.';
@@ -30,7 +37,20 @@ export default function OperatingSystemPage() {
         />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
-      <EgonuxOS />
+      <EgonuxOS principal={principal} />
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<OperatingSystemPageProps> = async (context) => {
+  if (process.env.EGONUX_AUTH_REQUIRED !== 'true') {
+    return { props: { principal: null } };
+  }
+
+  try {
+    return { props: { principal: await requirePrincipal(context.req) } };
+  } catch {
+    const destination = `/login?next=${encodeURIComponent(context.resolvedUrl)}`;
+    return { redirect: { destination, permanent: false } };
+  }
+};
