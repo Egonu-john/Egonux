@@ -80,6 +80,14 @@ Every domain service must reuse the same identity, authorization, audit, analyti
 - Shared design system, accessibility baseline and API contracts
 - CI quality gates, secrets management and environment separation
 
+### Backend foundation status
+
+The first v3.0.1 backend branch establishes Firebase client/server configuration,
+secure server-issued session cookies, server-enforced role claims, consent records,
+append-only audit events, deny-by-default Firestore rules, and emulator-backed rule
+tests. These capabilities remain sandbox-only until approved Firebase and Google
+Cloud environments are configured and operational security review is complete.
+
 ### Phase 2 — Transaction-safe core
 
 - Double-entry sandbox ledger with idempotency and reconciliation

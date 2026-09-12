@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function hasRole(role) {
+      return signedIn()
+        && request.auth.token.roles is list
+        && role in request.auth.token.roles;
+    }
+
+    function isOperator() {
+      return hasRole('support')
+        || hasRole('compliance')
+        || hasRole('admin')
+        || hasRole('founder');
+    }
+
+    match /users/{uid} {
+      allow read: if owns(uid) || isOperator();
+      allow create: if owns(uid)
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'email', 'phoneNumber', 'photoURL',
+          'onboardingStatus', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.onboardingStatus == 'started';
+      allow update: if owns(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'phoneNumber', 'photoURL',
+          'onboardingStatus', 'updatedAt'
+        ]);
+      allow delete: if false;
+
+      match /consents/{consentId} {
+        allow read: if owns(uid) || hasRole('compliance') || hasRole('founder');
+        allow write: if false;
+      }
+    }
+
+    match /auditEvents/{eventId} {
+      allow read: if hasRole('compliance') || hasRole('founder');
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
