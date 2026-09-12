@@ -6,6 +6,7 @@ import {
   setSessionCookie,
 } from '@/lib/auth/session';
 import { appendAuditEvent } from '@/lib/server/audit';
+import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
 
 const RECENT_SIGN_IN_SECONDS = 5 * 60;
 
@@ -13,6 +14,13 @@ export default async function handler(request: NextApiRequest, response: NextApi
   response.setHeader('Cache-Control', 'no-store');
 
   if (request.method === 'POST') {
+    try {
+      requireSameOrigin(request);
+    } catch (error) {
+      const message = error instanceof InvalidOriginError ? error.message : 'Request rejected.';
+      response.status(403).json({ error: message });
+      return;
+    }
     const idToken = typeof request.body?.idToken === 'string' ? request.body.idToken : '';
     if (!idToken) {
       response.status(400).json({ error: 'A Firebase ID token is required.' });
@@ -42,6 +50,13 @@ export default async function handler(request: NextApiRequest, response: NextApi
   }
 
   if (request.method === 'DELETE') {
+    try {
+      requireSameOrigin(request);
+    } catch (error) {
+      const message = error instanceof InvalidOriginError ? error.message : 'Request rejected.';
+      response.status(403).json({ error: message });
+      return;
+    }
     try {
       const principal = await requirePrincipal(request);
       await appendAuditEvent(request, {

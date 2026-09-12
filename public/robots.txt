@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /os
+Disallow: /login
 Disallow: /api/
 
 Sitemap: https://www.egonux.com/sitemap.xml

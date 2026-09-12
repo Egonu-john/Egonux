@@ -1,0 +1,41 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(212, 175, 55, 0.13), transparent 34%),
+    #080908;
+}
+
+.panel {
+  width: min(100%, 470px);
+  padding: 40px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  background: rgba(16, 17, 16, 0.96);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+}
+
+.logo { width: 185px; height: auto; margin: 0 auto 28px; }
+.eyebrow { color: var(--gold); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-align: center; }
+.panel h1 { margin-top: 12px; color: var(--white); font-size: clamp(2rem, 7vw, 2.8rem); text-align: center; }
+.intro, .boundary { margin-top: 10px; color: #aaa79f; line-height: 1.55; text-align: center; }
+.boundary { font-size: 0.78rem; }
+
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 28px 0 20px; padding: 5px; border-radius: 12px; background: #0b0c0b; }
+.tabs button { padding: 11px; border: 0; border-radius: 8px; color: #aaa79f; background: transparent; cursor: pointer; }
+.tabs button[data-active='true'] { color: #111; background: var(--gold); font-weight: 800; }
+.notice, .error { padding: 12px 14px; border-radius: 10px; font-size: 0.86rem; line-height: 1.45; }
+.notice { margin-bottom: 18px; color: var(--champagne); border: 1px solid rgba(212, 175, 55, 0.25); background: rgba(212, 175, 55, 0.07); }
+.error { color: #ffd1d1; border: 1px solid rgba(229, 104, 104, 0.35); background: rgba(229, 104, 104, 0.1); }
+.form { display: grid; gap: 17px; }
+.form label { display: grid; gap: 8px; color: #d8d4ca; font-size: 0.84rem; font-weight: 700; }
+.form input { width: 100%; padding: 13px 14px; border: 1px solid #34352f; border-radius: 10px; color: var(--white); background: #0b0c0b; font: inherit; }
+.form input:focus { outline: 1px solid var(--gold); border-color: var(--gold); }
+.submit { min-height: 48px; margin-top: 4px; border: 0; border-radius: 10px; color: #10100e; background: linear-gradient(135deg, var(--champagne), var(--gold)); font-weight: 900; cursor: pointer; }
+.submit:disabled { cursor: not-allowed; filter: grayscale(0.6); opacity: 0.55; }
+
+@media (max-width: 520px) {
+  .panel { padding: 30px 22px; border-radius: 16px; }
+}

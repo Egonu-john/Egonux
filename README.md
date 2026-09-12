@@ -6,6 +6,8 @@ The first interactive operating-system MVP for the EGONUX digital-wealth ecosyst
 
 Open `/os` to launch the Enterprise MVP. The existing public website remains available at `/`.
 
+Open `/login` for the configuration-aware Firebase sandbox sign-up and sign-in experience.
+
 ## Release status
 
 Version 3.0.1 is the post-logo foundation-maintenance release. It upgrades the web runtime to Next.js 16 and React 19, completes official logo use across the public website, adds security headers and branded metadata, and introduces a production-route smoke test. Product data and interactions remain intentionally sandboxed.

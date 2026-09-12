@@ -80,6 +80,15 @@ try {
   assert.match(osBody, /Sandbox/);
   assert.match(osBody, /noindex, nofollow/);
 
+  const loginResponse = await fetch(`${baseUrl}/login`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const loginBody = await loginResponse.text();
+  assert.equal(loginResponse.status, 200);
+  assert.match(loginBody, /EGONUX ID/);
+  assert.match(loginBody, /Firebase sandbox configuration is not connected/);
+  assert.match(loginBody, /noindex, nofollow/);
+
   const logoResponse = await fetch(
     `${baseUrl}/brand/egonux-primary-logo.png`,
     { signal: AbortSignal.timeout(10_000) },

@@ -33,7 +33,17 @@ export interface ConsentRecord {
   source: 'web';
 }
 
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  email: string | null;
+  phoneNumber: string | null;
+  photoURL: string | null;
+  onboardingStatus: 'started' | 'profile-complete' | 'identity-pending' | 'verified';
+}
+
 export type AuditEventType =
   | 'auth.session.created'
   | 'auth.session.deleted'
+  | 'profile.upserted'
   | 'consent.recorded';
