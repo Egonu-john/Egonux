@@ -110,6 +110,19 @@
 .approvalList em[data-state='declined'] { color: #a5a39c; background: rgba(255,255,255,.05); }
 .approvalList > button > svg { margin-top: 6px; color: #5c5a55; }
 
+.history { margin-top: 24px; }
+.history .sectionHeading { margin-top: 0; }
+.history article { min-height: 58px; padding: 11px 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.06); border-bottom: 0; background: #151513; }
+.history article:first-of-type { border-radius: 13px 13px 0 0; }
+.history article:last-child { border-bottom: 1px solid rgba(255,255,255,.06); border-radius: 0 0 13px 13px; }
+.history article:only-of-type { border-radius: 13px; }
+.history article > svg { color: #74c68f; }
+.history article div { display: flex; flex-direction: column; min-width: 0; }
+.history article strong { overflow: hidden; color: #d8d3c8; font-size: .69rem; text-overflow: ellipsis; white-space: nowrap; }
+.history article small { margin-top: 4px; color: #6d6b64; font-size: .57rem; }
+.history article em { color: #89cda0; font-size: .55rem; font-style: normal; text-transform: uppercase; }
+.history article em[data-state='declined'] { color: #9b9890; }
+
 .securityStatus { padding: 18px; border: 1px solid rgba(103,194,134,.19); border-radius: 15px; display: flex; gap: 13px; background: rgba(54,104,70,.11); }
 .securityStatus[data-paused='true'] { border-color: rgba(217,182,95,.22); background: rgba(217,182,95,.07); }
 .securityStatus > span { color: #6fc38a; }
@@ -117,6 +130,13 @@
 .securityStatus small { color: #6fc38a; font-size: .55rem; letter-spacing: .14em; }
 .securityStatus strong { margin: 5px 0; font-size: .84rem; }
 .securityStatus p { color: #79776f; font-size: .66rem; line-height: 1.45; }
+.identityCard { margin-top: 12px; padding: 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--anosa-line); border-radius: 13px; background: rgba(217,182,95,.05); }
+.identityCard > div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.identityCard > div > span { width: 31px; height: 31px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #100d07; background: var(--anosa-gold); font-weight: 800; }
+.identityCard > div > div { display: flex; flex-direction: column; min-width: 0; }
+.identityCard small { color: var(--anosa-gold); font-size: .53rem; letter-spacing: .12em; }
+.identityCard strong { margin-top: 4px; overflow: hidden; color: #d8d3c8; font-size: .66rem; text-overflow: ellipsis; white-space: nowrap; }
+.identityCard em { color: #7dca96; font-size: .55rem; font-style: normal; letter-spacing: .1em; }
 .boundaryList { margin-top: 12px; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; overflow: hidden; }
 .boundaryList > div { min-height: 61px; padding: 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px; background: #151513; border-bottom: 1px solid rgba(255,255,255,.05); }
 .boundaryList > div:last-child { border: 0; }
