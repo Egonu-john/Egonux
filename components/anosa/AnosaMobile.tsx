@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Icon from '@/components/os/Icon';
 import type { AuthenticatedPrincipal } from '@/types/backend';
 import styles from '@/styles/AnosaMobile.module.css';
@@ -21,6 +21,15 @@ interface Approval {
   risk: 'Low' | 'Medium';
   state: ApprovalState;
 }
+
+interface DecisionRecord {
+  approvalId: string;
+  title: string;
+  state: Exclude<ApprovalState, 'pending'>;
+  recordedAt: string;
+}
+
+const workspaceStorageKey = 'egonux_anosa_founder_workspace_v1';
 
 const initialApprovals: Approval[] = [
   {
@@ -71,17 +80,69 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
   const [answer, setAnswer] = useState('');
   const [paused, setPaused] = useState(false);
   const [notice, setNotice] = useState('');
+  const [decisionLog, setDecisionLog] = useState<DecisionRecord[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
   const pendingCount = approvals.filter((approval) => approval.state === 'pending').length;
   const selected = useMemo(
     () => approvals.find((approval) => approval.id === selectedId) ?? null,
     [approvals, selectedId],
   );
 
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const stored = window.localStorage.getItem(workspaceStorageKey);
+        if (stored) {
+          const workspace = JSON.parse(stored) as {
+            approvals?: Array<{ id?: unknown; state?: unknown }>;
+            decisionLog?: DecisionRecord[];
+            paused?: boolean;
+          };
+          const savedStates = new Map(
+            (workspace.approvals ?? [])
+              .filter((item) => typeof item.id === 'string' && ['pending', 'approved', 'declined'].includes(String(item.state)))
+              .map((item) => [String(item.id), item.state as ApprovalState]),
+          );
+          setApprovals((current) => current.map((item) => ({
+            ...item,
+            state: savedStates.get(item.id) ?? item.state,
+          })));
+          setDecisionLog(Array.isArray(workspace.decisionLog) ? workspace.decisionLog.slice(0, 20) : []);
+          setPaused(workspace.paused === true);
+        }
+      } catch {
+        setNotice('Saved device state could not be restored. A clean workspace was opened.');
+      } finally {
+        setStorageReady(true);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
+    window.localStorage.setItem(
+      workspaceStorageKey,
+      JSON.stringify({
+        approvals: approvals.map(({ id, state }) => ({ id, state })),
+        decisionLog,
+        paused,
+      }),
+    );
+  }, [approvals, decisionLog, paused, storageReady]);
+
   const recordDecision = (state: Exclude<ApprovalState, 'pending'>) => {
     if (!selected || !confirmed || paused) return;
     setApprovals((current) => current.map((item) => (
       item.id === selected.id ? { ...item, state } : item
     )));
+    setDecisionLog((current) => [{
+      approvalId: selected.id,
+      title: selected.title,
+      state,
+      recordedAt: new Date().toISOString(),
+    }, ...current].slice(0, 20));
     setNotice(
       state === 'approved'
         ? 'Approval recorded. Execution remains locked.'
@@ -199,6 +260,18 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
                   </button>
                 ))}
               </div>
+              {decisionLog.length ? (
+                <section className={styles.history} aria-label="Decision history">
+                  <div className={styles.sectionHeading}><div><span>DEVICE RECORD</span><h2>Decision history</h2></div><small>{decisionLog.length} recorded</small></div>
+                  {decisionLog.map((record) => (
+                    <article key={`${record.approvalId}-${record.recordedAt}`}>
+                      <Icon name="check" size={15} />
+                      <div><strong>{record.title}</strong><small>{new Date(record.recordedAt).toLocaleString()}</small></div>
+                      <em data-state={record.state}>{record.state}</em>
+                    </article>
+                  ))}
+                </section>
+              ) : null}
             </div>
           ) : null}
 
@@ -208,6 +281,10 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
               <section className={styles.securityStatus} data-paused={paused}>
                 <span><Icon name={paused ? 'lock' : 'security'} size={28} /></span>
                 <div><small>SYSTEM STATE</small><strong>{paused ? 'ANOSA paused' : 'Protected and limited'}</strong><p>{paused ? 'All preparation and approvals are suspended on this device.' : 'Read, Prepare, and Approve are available. Execute is locked.'}</p></div>
+              </section>
+              <section className={styles.identityCard}>
+                <div><span>{founderName(principal).charAt(0)}</span><div><small>VERIFIED SESSION</small><strong>{principal?.email ?? 'Founder preview'}</strong></div></div>
+                <em>{principal?.roles.includes('founder') ? 'FOUNDER' : 'PREVIEW'}</em>
               </section>
               <div className={styles.boundaryList}>
                 <div><Icon name="check" /><span><strong>Read</strong><small>Approved sources only</small></span><em>Allowed</em></div>
