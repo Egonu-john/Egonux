@@ -1,7 +1,6 @@
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import type { NextApiResponse } from 'next';
 import type { IncomingHttpHeaders } from 'node:http';
-import { getAdminAuth } from '@/lib/firebase/admin';
 import { parseRoles } from '@/lib/auth/roles';
 import type { AuthenticatedPrincipal, EgonuxRole } from '@/types/backend';
 
@@ -66,6 +65,9 @@ export async function requirePrincipal(
   if (!cookie) throw new AuthenticationError('Authentication required.');
 
   try {
+    // Keep the Admin SDK out of public preview route initialization. It is only
+    // required after a secure session cookie is present and must be verified.
+    const { getAdminAuth } = await import('@/lib/firebase/admin');
     const token = await getAdminAuth().verifySessionCookie(cookie, true);
     const principal = toPrincipal(token);
     if (requiredRoles.length && !requiredRoles.some((role) => principal.roles.includes(role))) {

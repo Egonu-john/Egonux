@@ -18,6 +18,11 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const configuration = firebaseClientConfigurationStatus();
+  const requestedDestination = Array.isArray(router.query.next)
+    ? router.query.next[0]
+    : router.query.next;
+  const requestedPath = requestedDestination?.split(/[?#]/, 1)[0];
+  const destination = requestedPath === '/anosa' ? '/anosa' : '/os';
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,7 +34,7 @@ export default function LoginPage() {
       } else {
         await signInToEgonux(email, password);
       }
-      await router.push('/os');
+      await router.push(destination);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Authentication could not be completed.');
     } finally {

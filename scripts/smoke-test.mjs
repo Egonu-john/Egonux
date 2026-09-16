@@ -80,6 +80,16 @@ try {
   assert.match(osBody, /Sandbox/);
   assert.match(osBody, /noindex, nofollow/);
 
+  const anosaResponse = await fetch(`${baseUrl}/anosa`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const anosaBody = await anosaResponse.text();
+  assert.equal(anosaResponse.status, 200);
+  assert.match(anosaBody, /ANOSA Personal/);
+  assert.match(anosaBody, /Read · Prepare · Approve/);
+  assert.match(anosaBody, /Founder preview/);
+  assert.match(anosaBody, /noindex, nofollow/);
+
   const loginResponse = await fetch(`${baseUrl}/login`, {
     signal: AbortSignal.timeout(10_000),
   });
@@ -102,6 +112,7 @@ try {
   const robotsBody = await robotsResponse.text();
   assert.equal(robotsResponse.status, 200);
   assert.match(robotsBody, /Disallow: \/os/);
+  assert.match(robotsBody, /Disallow: \/anosa/);
   assert.match(robotsBody, /https:\/\/www\.egonux\.com\/sitemap\.xml/);
 
   const manifestResponse = await fetch(`${baseUrl}/site.webmanifest`, {
@@ -111,6 +122,15 @@ try {
   assert.equal(manifestResponse.status, 200);
   assert.equal(manifest.name, 'EGONUX');
   assert.equal(manifest.icons[0].src, '/brand/egonux-primary-logo.png');
+
+  const anosaManifestResponse = await fetch(`${baseUrl}/anosa.webmanifest`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const anosaManifest = await anosaManifestResponse.json();
+  assert.equal(anosaManifestResponse.status, 200);
+  assert.equal(anosaManifest.short_name, 'ANOSA');
+  assert.equal(anosaManifest.start_url, '/anosa');
+  assert.equal(anosaManifest.icons[1].src, '/brand/anosa-icon-512.png');
 
   const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`, {
     signal: AbortSignal.timeout(10_000),
