@@ -15,6 +15,8 @@ export interface AuthenticatedPrincipal {
   uid: string;
   email: string | null;
   emailVerified: boolean;
+  displayName: string | null;
+  title: string | null;
   roles: EgonuxRole[];
   sessionIssuedAt: number;
 }
