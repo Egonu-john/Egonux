@@ -48,4 +48,5 @@ export type AuditEventType =
   | 'auth.session.created'
   | 'auth.session.deleted'
   | 'profile.upserted'
-  | 'consent.recorded';
+  | 'consent.recorded'
+  | 'anosa.decision.recorded';

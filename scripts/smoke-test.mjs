@@ -134,6 +134,46 @@ try {
   assert.equal(anosaManifest.start_url, '/anosa');
   assert.equal(anosaManifest.icons[1].src, '/brand/anosa-icon-512.png');
 
+  const anosaServiceWorkerResponse = await fetch(`${baseUrl}/anosa-sw.js`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const anosaServiceWorker = await anosaServiceWorkerResponse.text();
+  assert.equal(anosaServiceWorkerResponse.status, 200);
+  assert.match(anosaServiceWorker, /anosa-shell-v1/);
+
+  const contextResponse = await fetch(`${baseUrl}/api/anosa/context`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const context = await contextResponse.json();
+  assert.equal(contextResponse.status, 200);
+  assert.equal(context.execution, 'locked');
+  assert.equal(context.sources.length, 4);
+  assert.deepEqual(context.capabilities, ['read', 'prepare', 'approve']);
+
+  const askResponse = await fetch(`${baseUrl}/api/anosa/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: 'Prepare today’s founder brief and three priorities' }),
+    signal: AbortSignal.timeout(20_000),
+  });
+  const intelligence = await askResponse.json();
+  assert.equal(askResponse.status, 200);
+  assert.equal(intelligence.sources.length, 4);
+  assert.ok(intelligence.proposals.length >= 1 && intelligence.proposals.length <= 3);
+  assert.equal(intelligence.proposals[0].executionBoundary, 'Decision recording only. Execution remains locked.');
+
+  const decisionResponse = await fetch(`${baseUrl}/api/anosa/decisions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Smoke decision', state: 'approved' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const decision = await decisionResponse.json();
+  assert.equal(decisionResponse.status, 201);
+  assert.equal(decision.execution, 'locked');
+  assert.equal(decision.decision.state, 'approved');
+  assert.match(decision.decision.contentHash, /^[a-f0-9]{64}$/);
+
   const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`, {
     signal: AbortSignal.timeout(10_000),
   });

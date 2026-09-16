@@ -88,6 +88,8 @@
 .orb { width: 43px; height: 43px; color: #15120b; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(145deg, #f1d98c, #9a7225); box-shadow: 0 0 25px rgba(217,182,95,.18); }
 .assistantCard p { margin: 22px 0 13px; color: #d7d2c7; line-height: 1.58; font-size: .79rem; }
 .assistantCard small { color: #6f6d67; margin-top: auto; font-size: .61rem; }
+.sourceChips { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+.sourceChips span { flex: 0 0 auto; max-width: 180px; overflow: hidden; padding: 6px 8px; color: #b9aa7b; border: 1px solid var(--anosa-line); border-radius: 999px; background: rgba(217,182,95,.05); font-size: .56rem; text-overflow: ellipsis; white-space: nowrap; }
 .prompts { display: flex; gap: 7px; overflow-x: auto; margin: 13px 0 18px; scrollbar-width: none; }
 .prompts button { white-space: nowrap; border: 1px solid rgba(255,255,255,.08); background: #171715; color: #aaa69d; border-radius: 999px; padding: 8px 11px; font-size: .65rem; cursor: pointer; }
 .askForm label { color: #8e8b83; font-size: .66rem; }
@@ -108,6 +110,8 @@
 .approvalList em { align-self: flex-start; margin-top: 8px; padding: 4px 7px; color: #cbb26e; background: rgba(217,182,95,.08); border-radius: 5px; font-size: .55rem; font-style: normal; text-transform: uppercase; }
 .approvalList em[data-state='approved'] { color: #8ed2a5; background: rgba(79,154,104,.1); }
 .approvalList em[data-state='declined'] { color: #a5a39c; background: rgba(255,255,255,.05); }
+.approvalList em[data-state='rejected'] { color: #c18f8f; background: rgba(150,65,65,.1); }
+.approvalList em[data-state='changes_requested'] { color: #d1b976; background: rgba(217,182,95,.1); }
 .approvalList > button > svg { margin-top: 6px; color: #5c5a55; }
 
 .history { margin-top: 24px; }
@@ -122,6 +126,8 @@
 .history article small { margin-top: 4px; color: #6d6b64; font-size: .57rem; }
 .history article em { color: #89cda0; font-size: .55rem; font-style: normal; text-transform: uppercase; }
 .history article em[data-state='declined'] { color: #9b9890; }
+.history article em[data-state='rejected'] { color: #c18f8f; }
+.history article em[data-state='changes_requested'] { color: #d1b976; }
 
 .securityStatus { padding: 18px; border: 1px solid rgba(103,194,134,.19); border-radius: 15px; display: flex; gap: 13px; background: rgba(54,104,70,.11); }
 .securityStatus[data-paused='true'] { border-color: rgba(217,182,95,.22); background: rgba(217,182,95,.07); }
@@ -147,7 +153,16 @@
 .boundaryList small { color: #6e6c65; font-size: .6rem; margin-top: 3px; }
 .boundaryList em { color: #76c790; font-size: .58rem; font-style: normal; }
 .boundaryList .locked { color: var(--anosa-gold); }
-.pauseButton, .osLink { margin-top: 12px; width: 100%; min-height: 43px; border-radius: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .7rem; cursor: pointer; }
+.sourceList { margin-top: 20px; }
+.sourceList article { padding: 10px 11px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.06); border-bottom: 0; background: #151513; }
+.sourceList article:first-of-type { border-radius: 12px 12px 0 0; }
+.sourceList article:last-child { border-bottom: 1px solid rgba(255,255,255,.06); border-radius: 0 0 12px 12px; }
+.sourceList article > svg { color: #6fc38a; }
+.sourceList article div { display: flex; flex-direction: column; }
+.sourceList article strong { color: #d8d3c8; font-size: .67rem; }
+.sourceList article small { margin-top: 3px; color: #6d6b64; font-size: .55rem; text-transform: capitalize; }
+.pauseButton, .installButton, .osLink { margin-top: 12px; width: 100%; min-height: 43px; border-radius: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .7rem; cursor: pointer; }
+.installButton { color: #100d07; border: 1px solid var(--anosa-gold); background: var(--anosa-gold); font-weight: 800; }
 .pauseButton { color: #c5b47d; border: 1px solid rgba(217,182,95,.17); background: rgba(217,182,95,.05); }
 .osLink { color: #89867e; border: 1px solid rgba(255,255,255,.06); }
 
@@ -167,12 +182,20 @@
 .impact span { display: flex; flex-direction: column; color: #e1dcd1; }
 .impact strong { font-size: .7rem; }
 .impact small { color: #7c7972; font-size: .62rem; line-height: 1.4; margin-top: 4px; }
+.proposalMeta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+.proposalMeta > div { padding: 10px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; background: rgba(255,255,255,.02); }
+.proposalMeta strong { color: var(--anosa-gold); font-size: .59rem; text-transform: uppercase; letter-spacing: .09em; }
+.proposalMeta small { margin-top: 5px; color: #88857d; font-size: .6rem; line-height: 1.4; }
 .confirm { display: flex; align-items: flex-start; gap: 10px; color: #aaa69d; font-size: .67rem; line-height: 1.45; cursor: pointer; }
 .confirm input { accent-color: var(--anosa-gold); margin-top: 2px; }
 .modalActions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 9px; margin-top: 17px; }
 .modalActions button { min-height: 43px; border-radius: 10px; border: 1px solid rgba(255,255,255,.08); background: #1d1d1a; color: #bbb7ad; font-size: .68rem; cursor: pointer; }
 .modalActions button:last-child { border-color: var(--anosa-gold); background: var(--anosa-gold); color: #0a0907; font-weight: 800; }
 .modalActions button:disabled { opacity: .38; cursor: not-allowed; }
+.modalActionsThree { display: grid; grid-template-columns: .75fr 1.15fr 1fr; gap: 7px; margin-top: 17px; }
+.modalActionsThree button { min-height: 43px; padding: 5px; border-radius: 10px; border: 1px solid rgba(255,255,255,.08); background: #1d1d1a; color: #bbb7ad; font-size: .61rem; cursor: pointer; }
+.modalActionsThree button:last-child { border-color: var(--anosa-gold); background: var(--anosa-gold); color: #0a0907; font-weight: 800; }
+.modalActionsThree button:disabled { opacity: .38; cursor: not-allowed; }
 .closeModal { position: absolute; top: 30px; right: 18px; border: 0; background: transparent; color: #78766f; cursor: pointer; }
 .recorded { margin-top: 16px; padding: 12px; color: #8bd0a1; border: 1px solid rgba(83,160,109,.16); border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: .7rem; }
 
