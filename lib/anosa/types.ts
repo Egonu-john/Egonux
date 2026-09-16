@@ -14,6 +14,8 @@ export interface AnosaProposal {
   sourceIds: string[];
   createdAt: string;
   state: 'pending' | AnosaDecisionState;
+  actionType?: 'brief' | 'email_draft' | 'task_draft' | 'github_draft';
+  draftPreview?: string;
 }
 
 export interface AnosaAnswer {

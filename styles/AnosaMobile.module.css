@@ -75,6 +75,12 @@
 .primaryCard small { color: var(--anosa-gold); font-size: .56rem; letter-spacing: .15em; }
 .primaryCard strong { margin: 4px 0; font-size: .79rem; }
 .primaryCard p { color: #77756f; font-size: .63rem; line-height: 1.35; }
+.alertCard { margin-top: 11px; padding: 13px; display: flex; gap: 10px; border: 1px solid rgba(102,198,138,.15); border-radius: 13px; background: rgba(54,104,70,.08); }
+.alertCard > svg { flex: 0 0 auto; color: #6fc38a; }
+.alertCard div { display: flex; flex-direction: column; }
+.alertCard small { color: #6fc38a; font-size: .53rem; letter-spacing: .12em; }
+.alertCard strong { margin: 4px 0; font-size: .72rem; }
+.alertCard p { color: #74726b; font-size: .61rem; line-height: 1.4; }
 .quickGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 10px; }
 .quickGrid button { color: #e9e4d8; border: 1px solid rgba(255,255,255,.06); background: var(--anosa-panel); border-radius: 13px; padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 7px; cursor: pointer; }
 .quickGrid svg { color: var(--anosa-gold); }
@@ -186,6 +192,10 @@
 .proposalMeta > div { padding: 10px; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,.06); border-radius: 10px; background: rgba(255,255,255,.02); }
 .proposalMeta strong { color: var(--anosa-gold); font-size: .59rem; text-transform: uppercase; letter-spacing: .09em; }
 .proposalMeta small { margin-top: 5px; color: #88857d; font-size: .6rem; line-height: 1.4; }
+.draftPreview { margin-top: 10px; padding: 11px; border: 1px dashed rgba(217,182,95,.28); border-radius: 10px; background: rgba(217,182,95,.04); }
+.draftPreview strong { color: var(--anosa-gold); font-size: .58rem; text-transform: uppercase; letter-spacing: .09em; }
+.draftPreview p { margin: 6px 0; color: #b7b1a4; font-size: .65rem; line-height: 1.45; }
+.draftPreview small { color: #726c5e; font-size: .5rem; letter-spacing: .08em; }
 .confirm { display: flex; align-items: flex-start; gap: 10px; color: #aaa69d; font-size: .67rem; line-height: 1.45; cursor: pointer; }
 .confirm input { accent-color: var(--anosa-gold); margin-top: 2px; }
 .modalActions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 9px; margin-top: 17px; }

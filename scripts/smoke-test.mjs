@@ -147,7 +147,9 @@ try {
   const context = await contextResponse.json();
   assert.equal(contextResponse.status, 200);
   assert.equal(context.execution, 'locked');
-  assert.equal(context.sources.length, 4);
+  assert.equal(context.sources.length, 7);
+  assert.equal(context.sources[0].owner, 'EGONUX Product');
+  assert.ok(context.sources.every((source) => source.purpose && source.freshness && source.classification));
   assert.deepEqual(context.capabilities, ['read', 'prepare', 'approve']);
 
   const askResponse = await fetch(`${baseUrl}/api/anosa/ask`, {
@@ -158,9 +160,10 @@ try {
   });
   const intelligence = await askResponse.json();
   assert.equal(askResponse.status, 200);
-  assert.equal(intelligence.sources.length, 4);
+  assert.equal(intelligence.sources.length, 7);
   assert.ok(intelligence.proposals.length >= 1 && intelligence.proposals.length <= 3);
   assert.equal(intelligence.proposals[0].executionBoundary, 'Decision recording only. Execution remains locked.');
+  assert.ok(intelligence.proposals[0].draftPreview);
 
   const decisionResponse = await fetch(`${baseUrl}/api/anosa/decisions`, {
     method: 'POST',

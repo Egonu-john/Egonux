@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Icon from '@/components/os/Icon';
 import type { AnosaSource } from '@/lib/anosa/sources';
@@ -28,6 +29,7 @@ const initialApprovals: AnosaProposal[] = [
     impact: 'Creates a draft only. No distribution.', risk: 'Low',
     executionBoundary: 'Decision recording only. Execution remains locked.',
     sourceIds: ['enterprise-mvp', 'anosa-mobile-v1'], createdAt: '2026-09-16T00:00:00.000Z', state: 'pending',
+    actionType: 'brief', draftPreview: 'Weekly founder brief covering product, access, security, and delivery signals.',
   },
   {
     id: 'access-002', title: 'Review elevated access',
@@ -36,6 +38,7 @@ const initialApprovals: AnosaProposal[] = [
     impact: 'No roles or permissions will change.', risk: 'Medium',
     executionBoundary: 'Decision recording only. Execution remains locked.',
     sourceIds: ['security-policy', 'anosa-mobile-v1'], createdAt: '2026-09-16T00:00:00.000Z', state: 'pending',
+    actionType: 'task_draft', draftPreview: 'Task draft: Review every elevated role and confirm its owner, purpose, and expiry.',
   },
   {
     id: 'roadmap-003', title: 'Prepare ANOSA intelligence roadmap',
@@ -44,6 +47,7 @@ const initialApprovals: AnosaProposal[] = [
     impact: 'Creates planning material only.', risk: 'Low',
     executionBoundary: 'Decision recording only. Execution remains locked.',
     sourceIds: ['anosa-mobile-v1', 'github-main'], createdAt: '2026-09-16T00:00:00.000Z', state: 'pending',
+    actionType: 'github_draft', draftPreview: 'GitHub planning draft only: sequence approved ANOSA milestones with acceptance gates.',
   },
 ];
 
@@ -64,6 +68,7 @@ function decisionLabel(state: AnosaProposal['state']) {
 }
 
 export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [approvals, setApprovals] = useState<AnosaProposal[]>(initialApprovals);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -118,6 +123,10 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     try {
       const response = await fetch('/api/anosa/decisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId: selected.id, title: selected.title, state }) });
       const body = await response.json();
+      if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') {
+        void router.push('/login?next=/anosa');
+        return;
+      }
       if (!response.ok) throw new Error(body.error || 'Decision ledger unavailable.');
       setApprovals((current) => current.map((item) => item.id === selected.id ? { ...item, state } : item));
       setDecisionLog((current) => [body.decision as AnosaDecisionRecord, ...current.filter((item) => item.id !== body.decision.id)].slice(0, 50));
@@ -164,13 +173,14 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
           <section className={styles.welcome}><p>WELCOME, {founderName(principal).toUpperCase()}</p><h1>Your intelligence surface is ready.</h1><span><i /> Read · Prepare · Approve</span></section>
           <section className={styles.lockCard}><div><Icon name="lock" size={18} /><span><strong>Execution locked</strong><small>ANOSA cannot act outside your approval boundary.</small></span></div><em>ACTIVE</em></section>
           <div className={styles.sectionHeading}><div><span>FOUNDER BRIEF</span><h2>Today at a glance</h2></div><small>Controlled intelligence</small></div>
-          <section className={styles.metrics}><article><span>Decisions</span><strong>{pendingCount}</strong><small>awaiting review</small></article><article><span>Security</span><strong>{paused ? 'Paused' : 'Clear'}</strong><small>execution locked</small></article><article><span>Sources</span><strong>{sources.length || 4}</strong><small>approved only</small></article></section>
+          <section className={styles.metrics}><article><span>Decisions</span><strong>{pendingCount}</strong><small>awaiting review</small></article><article><span>Security</span><strong>{paused ? 'Paused' : 'Clear'}</strong><small>step-up protected</small></article><article><span>Sources</span><strong>{sources.length || 7}</strong><small>governed only</small></article></section>
+          <section className={styles.alertCard}><Icon name="security" size={18} /><div><small>PRIVATE FOUNDER ALERT</small><strong>{pendingCount ? `${pendingCount} decisions await review` : 'No pending decisions'}</strong><p>Sensitive details stay inside ANOSA. Approvals require a recent verified sign-in.</p></div></section>
           <button className={styles.primaryCard} onClick={() => setActiveTab('approvals')} type="button"><span><Icon name="sparkles" size={20} /></span><div><small>NEXT DECISION</small><strong>Review {pendingCount} prepared proposals</strong><p>Each item shows purpose, sources, impact, risk, and boundary.</p></div><Icon name="chevron-right" /></button>
           <div className={styles.quickGrid}><button onClick={() => setActiveTab('ask')} type="button"><Icon name="ai" /><span>Ask ANOSA</span><small>Grounded intelligence</small></button><button onClick={() => setActiveTab('security')} type="button"><Icon name="security" /><span>Trust center</span><small>Sources and boundaries</small></button></div>
         </div> : null}
         {activeTab === 'ask' ? <div className={styles.view}>
           <div className={styles.viewTitle}><span>CONTROLLED INTELLIGENCE</span><h1>Ask ANOSA</h1><p>Every response is grounded in approved EGONUX sources and converted into bounded proposals for your review.</p></div>
-          <div className={styles.assistantCard} aria-live="polite"><div className={styles.orb}><Icon name="sparkles" /></div><p>{thinking ? 'Reading approved sources and preparing your founder response…' : answer?.answer || 'I am ready. Ask for today’s founder briefing or describe a decision you want prepared.'}</p><small>{answer ? `${answer.engine === 'ai-gateway' ? 'AI Gateway' : 'Grounded continuity mode'} · ${answer.confidence} · ${answer.sources.length} sources` : `${sources.length || 4} approved sources available`}</small></div>
+          <div className={styles.assistantCard} aria-live="polite"><div className={styles.orb}><Icon name="sparkles" /></div><p>{thinking ? 'Reading governed sources and preparing your founder response…' : answer?.answer || 'I am ready. Ask for today’s founder briefing or describe a decision you want prepared.'}</p><small>{answer ? `${answer.engine === 'ai-gateway' ? 'AI Gateway' : 'Grounded continuity mode'} · ${answer.confidence} · ${answer.sources.length} sources` : `${sources.length || 7} governed sources available`}</small></div>
           {answer ? <div className={styles.sourceChips}>{answer.sources.map((source) => <span key={source.id}>{source.label}</span>)}</div> : null}
           <div className={styles.prompts}>{['Give me today’s founder briefing and prepare three priority decisions', 'Prepare my weekly brief', 'Show access risks'].map((prompt) => <button key={prompt} onClick={() => setQuestion(prompt)} type="button">{prompt}</button>)}</div>
           <form className={styles.askForm} onSubmit={askAnosa}><label htmlFor="anosa-question">Message ANOSA</label><div><input disabled={paused || thinking} id="anosa-question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={paused ? 'ANOSA is paused' : 'Ask a founder question…'} /><button aria-label="Send" disabled={paused || thinking} type="submit"><Icon name="send" /></button></div></form>
@@ -184,8 +194,8 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
           <div className={styles.viewTitle}><span>TRUST CENTER</span><h1>Founder control</h1><p>Your authority boundary, trusted sources, and mobile installation are visible and reversible.</p></div>
           <section className={styles.securityStatus} data-paused={paused}><span><Icon name={paused ? 'lock' : 'security'} size={28} /></span><div><small>SYSTEM STATE</small><strong>{paused ? 'ANOSA paused' : 'Protected and limited'}</strong><p>{paused ? 'Preparation and approvals are suspended on this device.' : 'Read, Prepare, and Approve are available. Execute is locked.'}</p></div></section>
           <section className={styles.identityCard}><div><span>{founderName(principal).charAt(0)}</span><div><small>{principal?.title ?? 'VERIFIED SESSION'}</small><strong>{founderName(principal)}</strong><p>{principal?.email ?? 'Founder preview'}</p></div></div><em>{principal?.roles.includes('founder') ? 'FOUNDER' : 'PREVIEW'}</em></section>
-          <div className={styles.boundaryList}><div><Icon name="check" /><span><strong>Read</strong><small>{sources.length || 4} approved sources</small></span><em>Allowed</em></div><div><Icon name="check" /><span><strong>Prepare</strong><small>Grounded answers and proposals</small></span><em>Allowed</em></div><div><Icon name="check" /><span><strong>Approve</strong><small>Hashed founder decision ledger</small></span><em>Allowed</em></div><div><Icon name="lock" /><span><strong>Execute</strong><small>No external or financial actions</small></span><em className={styles.locked}>Locked</em></div></div>
-          <section className={styles.sourceList}><div className={styles.sectionHeading}><div><span>TRUSTED CONTEXT</span><h2>Connected sources</h2></div></div>{sources.map((source) => <article key={source.id}><Icon name="check" size={14} /><div><strong>{source.label}</strong><small>{source.category} · verified {source.verifiedAt}</small></div></article>)}</section>
+          <div className={styles.boundaryList}><div><Icon name="check" /><span><strong>Read</strong><small>{sources.length || 7} governed sources</small></span><em>Allowed</em></div><div><Icon name="check" /><span><strong>Prepare</strong><small>Grounded answers and exact draft previews</small></span><em>Allowed</em></div><div><Icon name="check" /><span><strong>Approve</strong><small>Recent sign-in + hashed ledger</small></span><em>Allowed</em></div><div><Icon name="lock" /><span><strong>Execute</strong><small>No email, task, GitHub, financial, or production actions</small></span><em className={styles.locked}>Locked</em></div></div>
+          <section className={styles.sourceList}><div className={styles.sectionHeading}><div><span>TRUSTED CONTEXT</span><h2>Source registry</h2></div></div>{sources.map((source) => <article key={source.id}><Icon name="check" size={14} /><div><strong>{source.label}</strong><small>{source.owner} · {source.freshness} · {source.classification}</small></div></article>)}</section>
           <button className={styles.installButton} onClick={installAnosa} type="button"><Icon name="home" /> Install ANOSA on this phone</button>
           <button className={styles.pauseButton} onClick={() => setPaused((value) => !value)} type="button"><Icon name="lock" /> {paused ? 'Resume founder workspace' : 'Pause ANOSA on this device'}</button>
           <Link className={styles.osLink} href="/os">Open EGONUX OS <Icon name="external" size={15} /></Link>
@@ -193,6 +203,6 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
       </div>
       <nav className={styles.nav} aria-label="ANOSA sections">{tabs.map((tab) => <button key={tab.id} data-active={activeTab === tab.id} onClick={() => setActiveTab(tab.id)} type="button"><span><Icon name={tab.icon} size={20} />{tab.id === 'approvals' && pendingCount ? <i>{pendingCount}</i> : null}</span>{tab.label}</button>)}</nav>
     </section>
-    {selected ? <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setSelectedId(null)}><section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="approval-title" onMouseDown={(event) => event.stopPropagation()}><div className={styles.modalHandle} /><span className={styles.modalEyebrow}>{selected.risk.toUpperCase()} RISK · {selected.sourceIds.length} SOURCES</span><h2 id="approval-title">{selected.title}</h2><p>{selected.detail}</p><div className={styles.proposalMeta}><div><strong>Purpose</strong><small>{selected.purpose}</small></div><div><strong>Impact</strong><small>{selected.impact}</small></div></div><div className={styles.impact}><Icon name="lock" size={18} /><span><strong>Execution boundary</strong><small>{selected.executionBoundary}</small></span></div>{selected.state === 'pending' ? <><label className={styles.confirm}><input checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} type="checkbox" /><span>I reviewed the sources, purpose, impact, risk, and locked execution boundary.</span></label><div className={styles.modalActionsThree}><button onClick={() => recordDecision('rejected')} disabled={!confirmed || paused || recording} type="button">Reject</button><button onClick={() => recordDecision('changes_requested')} disabled={!confirmed || paused || recording} type="button">Request changes</button><button onClick={() => recordDecision('approved')} disabled={!confirmed || paused || recording} type="button">{recording ? 'Recording…' : 'Approve'}</button></div></> : <div className={styles.recorded}><Icon name="check" /> Decision recorded: {decisionLabel(selected.state)}</div>}<button className={styles.closeModal} onClick={() => setSelectedId(null)} type="button" aria-label="Close"><Icon name="close" /></button></section></div> : null}
+    {selected ? <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setSelectedId(null)}><section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="approval-title" onMouseDown={(event) => event.stopPropagation()}><div className={styles.modalHandle} /><span className={styles.modalEyebrow}>{selected.risk.toUpperCase()} RISK · {selected.sourceIds.length} SOURCES</span><h2 id="approval-title">{selected.title}</h2><p>{selected.detail}</p><div className={styles.proposalMeta}><div><strong>Purpose</strong><small>{selected.purpose}</small></div><div><strong>Impact</strong><small>{selected.impact}</small></div></div>{selected.draftPreview ? <div className={styles.draftPreview}><strong>{(selected.actionType || 'brief').replace(/_/g, ' ')}</strong><p>{selected.draftPreview}</p><small>PREVIEW ONLY · NOT SENT OR APPLIED</small></div> : null}<div className={styles.impact}><Icon name="lock" size={18} /><span><strong>Execution boundary</strong><small>{selected.executionBoundary}</small></span></div>{selected.state === 'pending' ? <><label className={styles.confirm}><input checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} type="checkbox" /><span>I reviewed the sources, draft, purpose, impact, risk, and locked execution boundary.</span></label><div className={styles.modalActionsThree}><button onClick={() => recordDecision('rejected')} disabled={!confirmed || paused || recording} type="button">Reject</button><button onClick={() => recordDecision('changes_requested')} disabled={!confirmed || paused || recording} type="button">Request changes</button><button onClick={() => recordDecision('approved')} disabled={!confirmed || paused || recording} type="button">{recording ? 'Recording…' : 'Approve'}</button></div></> : <div className={styles.recorded}><Icon name="check" /> Decision recorded: {decisionLabel(selected.state)}</div>}<button className={styles.closeModal} onClick={() => setSelectedId(null)} type="button" aria-label="Close"><Icon name="close" /></button></section></div> : null}
   </main>;
 }
