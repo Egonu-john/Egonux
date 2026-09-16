@@ -6,6 +6,8 @@ The first interactive operating-system MVP for the EGONUX digital-wealth ecosyst
 
 Open `/os` to launch the Enterprise MVP. The existing public website remains available at `/`.
 
+Open `/anosa` to launch ANOSA Personal Mobile v1, the founder-only Read, Prepare, and Approve workspace. Execution remains locked.
+
 Open `/login` for the configuration-aware Firebase sandbox sign-up and sign-in experience.
 
 ## Release status
@@ -23,6 +25,7 @@ Version 3.0.1 is the post-logo foundation-maintenance release. It upgrades the w
 - **Founder Command Center** — Users, revenue, activity, fraud signals, AI insights and service health
 - **Enterprise foundation** — Security center, API catalog, webhooks, SDKs and health endpoint
 - **Responsive design** — Desktop workspace, tablet navigation and mobile command bar
+- **ANOSA Personal Mobile** — Installable founder workspace with explicit Read, Prepare, Approve, and Execute-locked boundaries
 - **Quality gate** — GitHub Actions runs lint, TypeScript, production build and route smoke checks
 
 This release intentionally uses demonstration data. It does not move, hold or exchange real money and does not process real identity documents.
@@ -91,6 +94,8 @@ yarn dev
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the site.
 
 Open [http://localhost:3000/os](http://localhost:3000/os) to use EGONUX OS.
+
+Open [http://localhost:3000/anosa](http://localhost:3000/anosa) to review ANOSA Personal Mobile.
 
 ### Build
 

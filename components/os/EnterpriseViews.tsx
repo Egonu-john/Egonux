@@ -1,4 +1,5 @@
 import { founderMetrics, platformServices, securityControls } from '@/lib/os-data';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Icon from './Icon';
 import styles from '@/styles/OS.module.css';
@@ -110,6 +111,7 @@ export function AdminView({ onToast }: EnterpriseViewProps) {
   return (
     <div className={styles.view}>
       <EnterpriseHeader description="A unified founder-level view of users, revenue, risk, operations, intelligence and platform health." eyebrow="Core layer 08 · Restricted" title="Founder Command Center">
+        <Link className={styles.outlineButton} href="/anosa"><Icon name="ai" size={16} /> Open ANOSA Mobile</Link>
         <button className={styles.outlineButton} onClick={() => onToast('Executive report generated in sandbox mode.')} type="button"><Icon name="arrow-down" size={16} /> Export report</button>
       </EnterpriseHeader>
       <section className={styles.commandBanner}><div><span className={styles.eyebrow}>Enterprise status</span><h2>EGONUX is operating normally.</h2><p>All critical services are available. Three fraud signals require human review.</p></div><div><span className={styles.liveDot} /> LIVE COMMAND VIEW<small>Updated 14:42 UTC</small></div></section>

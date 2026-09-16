@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /os
+Disallow: /anosa
 Disallow: /login
 Disallow: /api/
 
