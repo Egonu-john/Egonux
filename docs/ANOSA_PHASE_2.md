@@ -22,7 +22,7 @@ Phase 2 does not send messages, create external tasks, mutate GitHub, transfer f
 | Intelligence | Vercel AI Gateway with grounded continuity mode | Vertex AI governed inference |
 | Operational data | Allowlisted source registry | BigQuery authorized views |
 | Connectors | Read-only server adapters | Private Cloud Run services |
-| Evidence | Firestore create-only decision and audit records | Firestore plus Cloud KMS signatures and retention policy |
+| Evidence | SHA-256 device receipts; Firestore when server credentials exist | Firestore plus Cloud KMS signatures and retention policy |
 | Monitoring | Structured Vercel runtime logs and Speed Insights | Cloud Monitoring, Logging, alerting, and trace export |
 
 ## Release acceptance
@@ -30,6 +30,7 @@ Phase 2 does not send messages, create external tasks, mutate GitHub, transfer f
 - Sensitive approvals require recent verified authentication.
 - Every source exposes governance metadata.
 - Every draft is clearly labeled as preview-only.
+- Decisions are always integrity-hashed. Firestore persistence and audit mirroring activate only when production Google credentials are provisioned; otherwise ANOSA labels the device ledger truthfully.
 - No Phase 2 endpoint performs external execution.
 - Private API responses use `no-store`.
 - Lint, TypeScript, production build, smoke tests, production deployment, and post-deploy error scan pass.

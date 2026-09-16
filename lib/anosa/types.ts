@@ -35,4 +35,5 @@ export interface AnosaDecisionRecord {
   recordedAt: string;
   actorUid: string;
   contentHash: string;
+  persistence?: 'firestore' | 'device';
 }

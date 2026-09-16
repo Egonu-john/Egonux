@@ -56,7 +56,7 @@ export const ANOSA_SOURCES: readonly AnosaSource[] = [
   },
   {
     id: 'decision-ledger', label: 'Founder decision ledger', category: 'governance', location: 'firestore://anosaDecisions',
-    summary: 'Stores create-only founder decisions with actor identity, time, state, and a SHA-256 content hash.',
+    summary: 'Issues integrity-hashed founder decision records and promotes them to create-only Firestore storage when production credentials are available.',
     verifiedAt: '2026-09-16', owner: 'Founder Office', purpose: 'Decision traceability', freshness: 'Immediate', status: 'controlled', classification: 'confidential',
   },
   {

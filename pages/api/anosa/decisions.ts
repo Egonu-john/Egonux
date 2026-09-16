@@ -55,6 +55,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       id: randomUUID(),
       ...basis,
       contentHash: contentHash(basis),
+      persistence: process.env.EGONUX_AUTH_REQUIRED === 'true' ? 'firestore' : 'device',
     };
 
     if (process.env.EGONUX_AUTH_REQUIRED === 'true') {
@@ -80,12 +81,19 @@ export default async function handler(request: NextApiRequest, response: NextApi
           userAgent: request.headers['user-agent'] ?? null,
         },
       });
-      await batch.commit();
+      try {
+        await batch.commit();
+      } catch (error) {
+        record.persistence = 'device';
+        console.warn('ANOSA Firestore ledger unavailable; returning an integrity-hashed device receipt.', {
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
     }
 
     anosaLog(request, '/api/anosa/decisions', 'recorded', startedAt, { state: record.state, execution: 'locked' });
 
-    return response.status(201).json({ decision: record, execution: 'locked' });
+    return response.status(201).json({ decision: record, execution: 'locked', persistence: record.persistence });
   } catch (error) {
     if (error instanceof z.ZodError) return response.status(400).json({ error: 'Invalid decision record.' });
     if (error instanceof AuthenticationError) return response.status(401).json({ error: 'Authentication required.' });
