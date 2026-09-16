@@ -23,7 +23,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "base-uri 'self'",
-              `connect-src 'self' https://vitals.vercel-insights.com${developmentConnectSource}`,
+              `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://vitals.vercel-insights.com${developmentConnectSource}`,
               "font-src 'self' data:",
               "form-action 'self'",
               "frame-ancestors 'none'",
