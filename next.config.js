@@ -7,6 +7,7 @@ const developmentConnectSource =
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  serverExternalPackages: ['firebase-admin'],
   compiler: {
     removeConsole:
       process.env.NODE_ENV === 'production'
