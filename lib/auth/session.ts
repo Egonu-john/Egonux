@@ -48,11 +48,20 @@ export function setSessionCookie(
 }
 
 function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
+  const roles = resolveRoles(token.roles, token.email);
+  const isFounder = roles.includes('founder');
+
   return {
     uid: token.uid,
     email: token.email ?? null,
     emailVerified: token.email_verified ?? false,
-    roles: resolveRoles(token.roles, token.email),
+    displayName: isFounder
+      ? process.env.EGONUX_FOUNDER_DISPLAY_NAME?.trim() || token.name || null
+      : token.name || null,
+    title: isFounder
+      ? process.env.EGONUX_FOUNDER_TITLE?.trim() || 'Founder & Chief Executive Officer'
+      : null,
+    roles,
     sessionIssuedAt: token.iat,
   };
 }

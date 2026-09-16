@@ -136,6 +136,7 @@
 .identityCard > div > div { display: flex; flex-direction: column; min-width: 0; }
 .identityCard small { color: var(--anosa-gold); font-size: .53rem; letter-spacing: .12em; }
 .identityCard strong { margin-top: 4px; overflow: hidden; color: #d8d3c8; font-size: .66rem; text-overflow: ellipsis; white-space: nowrap; }
+.identityCard p { margin-top: 3px; overflow: hidden; color: #6d6b64; font-size: .56rem; text-overflow: ellipsis; white-space: nowrap; }
 .identityCard em { color: #7dca96; font-size: .55rem; font-style: normal; letter-spacing: .1em; }
 .boundaryList { margin-top: 12px; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; overflow: hidden; }
 .boundaryList > div { min-height: 61px; padding: 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 11px; background: #151513; border-bottom: 1px solid rgba(255,255,255,.05); }

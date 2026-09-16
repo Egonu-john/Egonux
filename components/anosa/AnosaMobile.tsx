@@ -66,6 +66,7 @@ const tabs: Array<{ id: Tab; label: string; icon: 'home' | 'ai' | 'check' | 'sec
 ];
 
 function founderName(principal: AuthenticatedPrincipal | null) {
+  if (principal?.displayName) return principal.displayName;
   if (!principal?.email) return 'Founder';
   const candidate = principal.email.split('@')[0]?.split(/[._-]/)[0];
   return candidate ? `${candidate.charAt(0).toUpperCase()}${candidate.slice(1)}` : 'Founder';
@@ -283,7 +284,7 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
                 <div><small>SYSTEM STATE</small><strong>{paused ? 'ANOSA paused' : 'Protected and limited'}</strong><p>{paused ? 'All preparation and approvals are suspended on this device.' : 'Read, Prepare, and Approve are available. Execute is locked.'}</p></div>
               </section>
               <section className={styles.identityCard}>
-                <div><span>{founderName(principal).charAt(0)}</span><div><small>VERIFIED SESSION</small><strong>{principal?.email ?? 'Founder preview'}</strong></div></div>
+                <div><span>{founderName(principal).charAt(0)}</span><div><small>{principal?.title ?? 'VERIFIED SESSION'}</small><strong>{founderName(principal)}</strong><p>{principal?.email ?? 'Founder preview'}</p></div></div>
                 <em>{principal?.roles.includes('founder') ? 'FOUNDER' : 'PREVIEW'}</em>
               </section>
               <div className={styles.boundaryList}>
