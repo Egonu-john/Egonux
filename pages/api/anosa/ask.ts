@@ -5,6 +5,7 @@ import { ANOSA_SOURCES, sourceContext } from '@/lib/anosa/sources';
 import { requireAnosaFounder } from '@/lib/anosa/server';
 import type { AnosaAnswer, AnosaProposal } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
+import { anosaLog } from '@/lib/anosa/telemetry';
 
 const questionSchema = z.object({ question: z.string().trim().min(3).max(1200) });
 const intelligenceSchema = z.object({
@@ -15,7 +16,9 @@ const intelligenceSchema = z.object({
     detail: z.string().min(12).max(500),
     impact: z.string().min(8).max(280),
     risk: z.enum(['Low', 'Medium', 'High']),
-    sourceIds: z.array(z.enum(['enterprise-mvp', 'anosa-mobile-v1', 'security-policy', 'github-main'])).min(1).max(4),
+    sourceIds: z.array(z.enum(['enterprise-mvp', 'anosa-mobile-v1', 'security-policy', 'github-main', 'deployment-health', 'decision-ledger', 'phase2-architecture'])).min(1).max(7),
+    actionType: z.enum(['brief', 'email_draft', 'task_draft', 'github_draft']),
+    draftPreview: z.string().min(8).max(800),
   })).min(1).max(3),
 });
 
@@ -47,11 +50,13 @@ function fallback(question: string): Omit<AnosaAnswer, 'generatedAt'> {
     sourceIds: [...sourceIds],
     createdAt: new Date().toISOString(),
     state: 'pending',
+    actionType: 'brief',
+    draftPreview: `Founder review draft: ${detail}`,
   }));
 
   return {
     answer: briefing
-      ? 'Founder briefing prepared from four approved EGONUX sources. The immediate priorities are identity and access assurance, validation of the ANOSA intelligence pilot, and conversion of known MVP gaps into an ordered delivery backlog. Three bounded proposals are ready for review.'
+      ? 'Founder briefing prepared from seven governed EGONUX sources. The immediate priorities are identity and access assurance, validation of the ANOSA intelligence pilot, and conversion of known MVP gaps into an ordered delivery backlog. Three bounded proposals are ready for review.'
       : `ANOSA reviewed “${question}” against the approved EGONUX product, governance, security, and delivery sources. A bounded proposal is ready for founder review; uncertainty remains limited to information not present in those sources.`,
     confidence: 'limited',
     engine: 'grounded-fallback',
@@ -61,6 +66,7 @@ function fallback(question: string): Omit<AnosaAnswer, 'generatedAt'> {
 }
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+  const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'POST') {
     response.setHeader('Allow', 'POST');
@@ -80,7 +86,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
           'You are ANOSA, the private founder intelligence assistant for EGONUX WEALTH CENTRAL HUB.',
           'Use only the supplied approved source summaries. Never claim live financial, customer, regulatory, or production data.',
           'Be concise and executive-ready. Surface uncertainty. Prepare one to three proposals.',
-          'Every proposal is non-executing: never send, publish, transfer funds, change access, or alter production.',
+          'Every proposal is non-executing: never send, publish, transfer funds, change access, or alter production. Return an exact draftPreview and actionType so the founder can inspect what would be prepared.',
         ].join(' '),
         prompt: `Founder: ${principal.displayName || principal.email || 'Founder'}\nRequest: ${question}\n\nApproved sources:\n${sourceContext()}`,
       });
@@ -92,6 +98,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
         createdAt: generatedAt,
         state: 'pending',
       }));
+      anosaLog(request, '/api/anosa/ask', 'prepared', startedAt, { engine: 'ai-gateway', proposals: proposals.length });
 
       return response.status(200).json({
         answer: output.answer,
@@ -103,6 +110,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       } satisfies AnosaAnswer);
     } catch (error) {
       console.warn('ANOSA AI Gateway unavailable; serving grounded fallback.', error);
+      anosaLog(request, '/api/anosa/ask', 'prepared', startedAt, { engine: 'grounded-fallback' });
       return response.status(200).json({ ...fallback(question), generatedAt } satisfies AnosaAnswer);
     }
   } catch (error) {

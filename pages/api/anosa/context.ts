@@ -2,8 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { ANOSA_SOURCES } from '@/lib/anosa/sources';
 import { requireAnosaFounder } from '@/lib/anosa/server';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
+import { anosaLog } from '@/lib/anosa/telemetry';
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+  const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'GET') {
     response.setHeader('Allow', 'GET');
@@ -12,6 +14,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
   try {
     await requireAnosaFounder(request);
+    anosaLog(request, '/api/anosa/context', 'loaded', startedAt, { sources: ANOSA_SOURCES.length });
     return response.status(200).json({
       sources: ANOSA_SOURCES,
       execution: 'locked',
