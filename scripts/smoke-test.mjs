@@ -69,6 +69,8 @@ try {
   const contentSecurityPolicy =
     homeResponse.headers.get('content-security-policy') ?? '';
   assert.match(contentSecurityPolicy, /frame-ancestors 'none'/);
+  assert.match(contentSecurityPolicy, /https:\/\/identitytoolkit\.googleapis\.com/);
+  assert.match(contentSecurityPolicy, /https:\/\/securetoken\.googleapis\.com/);
   assert.doesNotMatch(contentSecurityPolicy, /unsafe-eval/);
 
   const osResponse = await fetch(`${baseUrl}/os`, {
