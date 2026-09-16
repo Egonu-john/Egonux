@@ -174,6 +174,7 @@ try {
   const decision = await decisionResponse.json();
   assert.equal(decisionResponse.status, 201);
   assert.equal(decision.execution, 'locked');
+  assert.equal(decision.persistence, 'device');
   assert.equal(decision.decision.state, 'approved');
   assert.match(decision.decision.contentHash, /^[a-f0-9]{64}$/);
 
