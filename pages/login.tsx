@@ -21,9 +21,8 @@ export default function LoginPage() {
   const requestedDestination = Array.isArray(router.query.next)
     ? router.query.next[0]
     : router.query.next;
-  const destination = requestedDestination?.startsWith('/') && !requestedDestination.startsWith('//')
-    ? requestedDestination
-    : '/os';
+  const requestedPath = requestedDestination?.split(/[?#]/, 1)[0];
+  const destination = requestedPath === '/anosa' ? '/anosa' : '/os';
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
