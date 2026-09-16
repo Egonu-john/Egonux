@@ -16,11 +16,13 @@
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
+    "ai": "^7.0.102",
     "firebase": "^12.19.0",
     "firebase-admin": "13.6.0",
     "next": "16.3.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

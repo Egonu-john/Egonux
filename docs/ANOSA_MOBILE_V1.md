@@ -14,12 +14,17 @@ ANOSA is the private founder interface for EGONUX. Version 1 establishes a narro
 - A phone-first `/anosa` workspace using the official unchanged EGONUX logo.
 - Founder-only server authorization when `EGONUX_AUTH_REQUIRED=true`.
 - Today, Ask, Approval, and Security views.
-- Deliberate approval confirmation and visible decision state.
+- Vercel AI Gateway intelligence with a grounded deterministic continuity mode.
+- Four allowlisted source summaries covering the enterprise MVP, ANOSA specification, security policy, and reviewed GitHub main branch.
+- Structured proposals showing purpose, sources, impact, risk, and the execution boundary.
+- Approve, reject, and request-changes decisions with explicit confirmation.
+- A server-only Firestore decision ledger using create-only records, actor identity, timestamps, and a SHA-256 content hash.
+- A corresponding append-only security audit event for each production decision.
 - A local pause control and permanent v1 execution lock.
-- A dedicated web app manifest for adding ANOSA to an Android home screen.
+- A dedicated web app manifest, icons, safe asset-only service worker, and in-app installation control.
 - Preview mode when authentication is disabled, clearly marked as non-live.
 
-Prototype interactions use in-memory demonstration data and reset when the page reloads. They are not an audit log.
+The device keeps a convenience copy of proposals and recent decisions. In founder-authenticated production, the server ledger is authoritative. Protected HTML, API responses, and founder data are never added to the service-worker cache.
 
 ## Founder review path
 
@@ -37,18 +42,17 @@ For a deployed founder-only review environment:
 2. Set `EGONUX_AUTH_REQUIRED=true` and configure `EGONUX_ALLOWED_ORIGINS` to the exact HTTPS origin.
 3. During sandbox activation, set `EGONUX_FOUNDER_EMAILS` to the exact Firebase founder email. Production should replace the allowlist with the Firebase custom claim `roles: ['founder']` through an audited administrative process.
 4. Revoke existing sessions after changing claims, then sign in at `/login?next=/anosa`.
-5. On Android Chrome, open the browser menu and choose **Add to Home screen** or **Install app**.
+5. Set `ANOSA_AI_MODEL` if overriding the approved default. Vercel deployments use AI Gateway OIDC; local development may use `AI_GATEWAY_API_KEY`.
+6. On Android Chrome, tap **Install ANOSA on this phone**, or use **Add to Home screen** from the browser menu.
 
-Do not activate live data connectors until server-side authorization, source-level consent, retention rules, audit storage, and incident controls have been reviewed.
+Do not activate customer, payment, messaging, identity-document, or financial connectors until source-level consent, retention rules, step-up authentication, audit storage, and incident controls have been reviewed.
 
-## Next approved build gates
+## Future execution gates
 
-1. **Persistent approval ledger** — append-only records, timestamps, actor identity, scope hash, and revocation state.
-2. **Source registry** — allowlisted connectors with owner, purpose, fields, freshness, and consent metadata.
-3. **Grounded answer service** — citations for every operational claim and visible uncertainty.
-4. **Step-up authentication** — recent authentication and MFA before sensitive approvals.
-5. **Notification layer** — private founder alerts with no sensitive content on the lock screen.
-6. **Execution service** — remains a separate future system; requires policy evaluation, dual controls, idempotency, audit evidence, and explicit founder authorization.
+1. **Step-up authentication** — recent authentication and phishing-resistant MFA before sensitive approvals.
+2. **Connector governance** — owner, purpose, fields, freshness, consent, and retention metadata for each future data connector.
+3. **Notification layer** — private founder alerts with no sensitive content on the lock screen.
+4. **Execution service** — remains a separate future system and requires policy evaluation, dual controls, idempotency, audit evidence, and explicit founder authorization.
 
 ## Acceptance criteria for this milestone
 
@@ -57,5 +61,8 @@ Do not activate live data connectors until server-side authorization, source-lev
 - A signed-in non-founder cannot enter the route.
 - Every screen presents the execution boundary truthfully.
 - Approval requires an explicit checkbox and never invokes an external action.
+- Each prepared answer identifies its intelligence engine, confidence, and approved sources.
+- Production decisions are create-only, hashed, attributed, and mirrored into the audit stream.
+- The app is installable without caching authenticated HTML or private API data.
 - The official EGONUX logo is loaded from `/public/brand/egonux-primary-logo.png` without alteration.
 - Lint, TypeScript, production build, and smoke checks pass.

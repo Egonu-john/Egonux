@@ -1,0 +1,25 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { ANOSA_SOURCES } from '@/lib/anosa/sources';
+import { requireAnosaFounder } from '@/lib/anosa/server';
+import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
+
+export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+  response.setHeader('Cache-Control', 'no-store');
+  if (request.method !== 'GET') {
+    response.setHeader('Allow', 'GET');
+    return response.status(405).json({ error: 'Method not allowed.' });
+  }
+
+  try {
+    await requireAnosaFounder(request);
+    return response.status(200).json({
+      sources: ANOSA_SOURCES,
+      execution: 'locked',
+      capabilities: ['read', 'prepare', 'approve'],
+    });
+  } catch (error) {
+    if (error instanceof AuthenticationError) return response.status(401).json({ error: 'Authentication required.' });
+    if (error instanceof AuthorizationError) return response.status(403).json({ error: 'Founder access required.' });
+    throw error;
+  }
+}
