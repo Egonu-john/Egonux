@@ -35,7 +35,7 @@ For a deployed founder-only review environment:
 
 1. Configure the Firebase client values and approved Firebase Admin credentials.
 2. Set `EGONUX_AUTH_REQUIRED=true` and configure `EGONUX_ALLOWED_ORIGINS` to the exact HTTPS origin.
-3. Assign the Firebase custom claim `roles: ['founder']` to the founder account through an audited administrative process.
+3. During sandbox activation, set `EGONUX_FOUNDER_EMAILS` to the exact Firebase founder email. Production should replace the allowlist with the Firebase custom claim `roles: ['founder']` through an audited administrative process.
 4. Revoke existing sessions after changing claims, then sign in at `/login?next=/anosa`.
 5. On Android Chrome, open the browser menu and choose **Add to Home screen** or **Install app**.
 

@@ -1,7 +1,7 @@
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import type { NextApiResponse } from 'next';
 import type { IncomingHttpHeaders } from 'node:http';
-import { parseRoles } from '@/lib/auth/roles';
+import { resolveRoles } from '@/lib/auth/roles';
 import type { AuthenticatedPrincipal, EgonuxRole } from '@/types/backend';
 
 const DEFAULT_COOKIE_NAME = 'egonux_session';
@@ -52,7 +52,7 @@ function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
     uid: token.uid,
     email: token.email ?? null,
     emailVerified: token.email_verified ?? false,
-    roles: parseRoles(token.roles),
+    roles: resolveRoles(token.roles, token.email),
     sessionIssuedAt: token.iat,
   };
 }
