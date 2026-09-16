@@ -27,6 +27,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       return;
     }
 
+    let stage = 'verify-id-token';
     try {
       const decoded = await getAdminAuth().verifyIdToken(idToken, true);
       if (Date.now() / 1000 - decoded.auth_time > RECENT_SIGN_IN_SECONDS) {
@@ -35,7 +36,9 @@ export default async function handler(request: NextApiRequest, response: NextApi
       }
 
       const duration = sessionDurationMs();
+      stage = 'create-session-cookie';
       const session = await getAdminAuth().createSessionCookie(idToken, { expiresIn: duration });
+      stage = 'write-audit-event';
       await appendAuditEvent(request, {
         actorUid: decoded.uid,
         subjectUid: decoded.uid,
@@ -43,7 +46,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
       });
       setSessionCookie(response, session, duration / 1000);
       response.status(201).json({ authenticated: true, expiresIn: duration });
-    } catch {
+    } catch (error) {
+      const firebaseError = error as { code?: unknown; message?: unknown; name?: unknown };
+      console.error('[api/auth/session] failed', {
+        stage,
+        code: typeof firebaseError.code === 'string' ? firebaseError.code : undefined,
+        name: typeof firebaseError.name === 'string' ? firebaseError.name : undefined,
+        message: typeof firebaseError.message === 'string' ? firebaseError.message : String(error),
+      });
       response.status(401).json({ error: 'Unable to establish a secure session.' });
     }
     return;
