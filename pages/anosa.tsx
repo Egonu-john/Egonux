@@ -14,7 +14,7 @@ export default function AnosaPage({ principal, previewMode }: AnosaPageProps) {
     <>
       <Head>
         <title>ANOSA Personal — Founder Mobile</title>
-        <meta name="description" content="The private EGONUX founder workspace for reading, preparing, and approving decisions." />
+        <meta name="description" content="The private EGONUX founder workspace for governed intelligence, approvals, and controlled execution simulations." />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="theme-color" content="#080808" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -3,6 +3,7 @@ import { ANOSA_SOURCES } from '@/lib/anosa/sources';
 import { requireAnosaFounder } from '@/lib/anosa/server';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { anosaLog } from '@/lib/anosa/telemetry';
+import { publicExecutionStatus } from '@/lib/anosa/execution';
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   const startedAt = Date.now();
@@ -18,7 +19,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     return response.status(200).json({
       sources: ANOSA_SOURCES,
       execution: 'locked',
-      capabilities: ['read', 'prepare', 'approve'],
+      capabilities: ['read', 'prepare', 'approve', 'simulate'],
+      control: publicExecutionStatus(),
     });
   } catch (error) {
     if (error instanceof AuthenticationError) return response.status(401).json({ error: 'Authentication required.' });
