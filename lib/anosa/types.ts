@@ -37,3 +37,28 @@ export interface AnosaDecisionRecord {
   contentHash: string;
   persistence?: 'firestore' | 'device';
 }
+
+export type AnosaConnector = 'internal' | 'email' | 'task' | 'github';
+export type AnosaExecutionStatus = 'simulated' | 'blocked';
+
+export interface AnosaExecutionIntent {
+  id: string;
+  proposalId: string;
+  title: string;
+  actionType: NonNullable<AnosaProposal['actionType']>;
+  connector: AnosaConnector;
+  status: AnosaExecutionStatus;
+  mode: 'simulation';
+  requestedAt: string;
+  actorUid: string;
+  decisionHash: string;
+  idempotencyKey: string;
+  payloadHash: string;
+  contentHash: string;
+  policy: {
+    allowed: boolean;
+    checks: string[];
+    reason: string;
+  };
+  persistence?: 'firestore' | 'device';
+}

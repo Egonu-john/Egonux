@@ -89,6 +89,7 @@ try {
   assert.equal(anosaResponse.status, 200);
   assert.match(anosaBody, /ANOSA Personal/);
   assert.match(anosaBody, /Read · Prepare · Approve/);
+  assert.match(anosaBody, /Controlled execution · simulation only/);
   assert.match(anosaBody, /Founder preview/);
   assert.match(anosaBody, /noindex, nofollow/);
 
@@ -150,7 +151,10 @@ try {
   assert.equal(context.sources.length, 7);
   assert.equal(context.sources[0].owner, 'EGONUX Product');
   assert.ok(context.sources.every((source) => source.purpose && source.freshness && source.classification));
-  assert.deepEqual(context.capabilities, ['read', 'prepare', 'approve']);
+  assert.deepEqual(context.capabilities, ['read', 'prepare', 'approve', 'simulate']);
+  assert.equal(context.control.phase, 3);
+  assert.equal(context.control.externalExecution, 'disabled');
+  assert.equal(context.control.ledger, 'device');
 
   const askResponse = await fetch(`${baseUrl}/api/anosa/ask`, {
     method: 'POST',
@@ -177,6 +181,38 @@ try {
   assert.equal(decision.persistence, 'device');
   assert.equal(decision.decision.state, 'approved');
   assert.match(decision.decision.contentHash, /^[a-f0-9]{64}$/);
+
+  const intentResponse = await fetch(`${baseUrl}/api/anosa/intents`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      proposalId: 'smoke-proposal',
+      title: 'Smoke controlled simulation',
+      actionType: 'email_draft',
+      draftPreview: 'Exact email preview for smoke verification. Nothing will be sent.',
+      decisionHash: decision.decision.contentHash,
+      idempotencyKey: `smoke-proposal:${decision.decision.contentHash}`,
+    }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const intent = await intentResponse.json();
+  assert.equal(intentResponse.status, 201);
+  assert.equal(intent.intent.status, 'simulated');
+  assert.equal(intent.intent.mode, 'simulation');
+  assert.equal(intent.intent.connector, 'email');
+  assert.equal(intent.intent.persistence, 'device');
+  assert.equal(intent.externalExecution, 'disabled');
+  assert.match(intent.intent.payloadHash, /^[a-f0-9]{64}$/);
+  assert.match(intent.intent.contentHash, /^[a-f0-9]{64}$/);
+  assert.equal(intent.intent.policy.allowed, true);
+
+  const invalidIntentResponse = await fetch(`${baseUrl}/api/anosa/intents`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Unlinked intent', actionType: 'brief', draftPreview: 'Draft without evidence', idempotencyKey: 'missing-decision-hash' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  assert.equal(invalidIntentResponse.status, 400);
 
   const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`, {
     signal: AbortSignal.timeout(10_000),

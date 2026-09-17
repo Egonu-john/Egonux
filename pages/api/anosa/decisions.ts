@@ -7,6 +7,7 @@ import type { AnosaDecisionRecord } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { anosaLog } from '@/lib/anosa/telemetry';
+import { firestoreLedgerEnabled } from '@/lib/anosa/execution';
 
 const decisionSchema = z.object({
   proposalId: z.string().min(3).max(160),
@@ -32,7 +33,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       : await requireAnosaFounder(request);
 
     if (request.method === 'GET') {
-      if (process.env.EGONUX_AUTH_REQUIRED !== 'true') return response.status(200).json({ decisions: [] });
+      if (!firestoreLedgerEnabled()) return response.status(200).json({ decisions: [], persistence: 'device' });
       const snapshot = await getAdminFirestore()
         .collection('anosaDecisions')
         .where('actorUid', '==', principal.uid)
@@ -55,10 +56,10 @@ export default async function handler(request: NextApiRequest, response: NextApi
       id: randomUUID(),
       ...basis,
       contentHash: contentHash(basis),
-      persistence: process.env.EGONUX_AUTH_REQUIRED === 'true' ? 'firestore' : 'device',
+      persistence: firestoreLedgerEnabled() ? 'firestore' : 'device',
     };
 
-    if (process.env.EGONUX_AUTH_REQUIRED === 'true') {
+    if (firestoreLedgerEnabled()) {
       const database = getAdminFirestore();
       const batch = database.batch();
       batch.create(database.collection('anosaDecisions').doc(record.id), {
