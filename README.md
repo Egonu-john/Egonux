@@ -8,6 +8,8 @@ Open `/os` to launch the Enterprise MVP. The existing public website remains ava
 
 Open `/anosa` to launch ANOSA Personal Mobile v1, the founder-only Read, Prepare, and Approve workspace. Execution remains locked.
 
+Phase 3.1 adds a gated, keyless Firestore evidence ledger for permanent founder decisions and controlled-simulation receipts. See `docs/ANOSA_PHASE_3_1.md`; cloud activation requires a successful Founder canary and never enables external execution.
+
 Open `/login` for the configuration-aware Firebase sandbox sign-up and sign-in experience.
 
 ## Release status

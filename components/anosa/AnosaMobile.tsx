@@ -20,6 +20,16 @@ interface InstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+interface EvidenceStatus {
+  phase: string;
+  mode: 'cloud' | 'device';
+  projectConfigured: boolean;
+  identityConfigured: boolean;
+  ledgerEnabled: boolean;
+  canaryReady: boolean;
+  retention: 'permanent';
+}
+
 const workspaceStorageKey = 'egonux_anosa_founder_workspace_v2';
 const initialApprovals: AnosaProposal[] = [
   {
@@ -85,6 +95,8 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
   const [thinking, setThinking] = useState(false);
   const [recording, setRecording] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+  const [evidenceStatus, setEvidenceStatus] = useState<EvidenceStatus | null>(null);
+  const [testingEvidence, setTestingEvidence] = useState(false);
   const pendingCount = approvals.filter((approval) => approval.state === 'pending').length;
   const selected = useMemo(() => approvals.find((approval) => approval.id === selectedId) ?? null, [approvals, selectedId]);
 
@@ -109,10 +121,13 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
       fetch('/api/anosa/context').then((response) => response.ok ? response.json() : Promise.reject()),
       fetch('/api/anosa/decisions').then((response) => response.ok ? response.json() : Promise.reject()),
       fetch('/api/anosa/intents').then((response) => response.ok ? response.json() : Promise.reject()),
-    ]).then(([context, decisions, intents]) => {
+      fetch('/api/anosa/evidence-health').then((response) => response.ok ? response.json() : Promise.reject()),
+    ]).then(([context, decisions, intents, evidence]) => {
       if (Array.isArray(context.sources)) setSources(context.sources);
+      if (context.evidence) setEvidenceStatus(context.evidence);
       if (Array.isArray(decisions.decisions) && decisions.decisions.length) setDecisionLog(decisions.decisions);
       if (Array.isArray(intents.intents) && intents.intents.length) setExecutionIntents(intents.intents);
+      if (evidence.evidence) setEvidenceStatus(evidence.evidence);
     }).catch(() => setNotice('ANOSA opened with saved device data. Connected sources will retry on your next request.'));
     return () => { window.cancelAnimationFrame(frame); window.removeEventListener('beforeinstallprompt', installHandler); };
   }, []);
@@ -186,6 +201,20 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     setInstallPrompt(null);
   };
 
+  const testPermanentEvidence = async () => {
+    if (testingEvidence) return;
+    setTestingEvidence(true);
+    try {
+      const response = await fetch('/api/anosa/evidence-health', { method: 'POST' });
+      const body = await response.json();
+      if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') { void router.push('/login?next=/anosa'); return; }
+      if (body.evidence) setEvidenceStatus(body.evidence);
+      if (!response.ok) throw new Error(body.error || 'Permanent evidence canary failed.');
+      setNotice(`Cloud evidence verified. Canary ${body.canary.contentHash.slice(0, 12)} is permanently recorded.`);
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Permanent evidence canary failed.'); }
+    finally { setTestingEvidence(false); }
+  };
+
   return <main className={styles.page}>
     <div className={styles.ambient} aria-hidden="true" />
     <section className={styles.phone} aria-label="ANOSA Personal Mobile">
@@ -215,9 +244,10 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
           {decisionLog.length ? <section className={styles.history} aria-label="Decision history"><div className={styles.sectionHeading}><div><span>TAMPER-EVIDENT RECORD</span><h2>Decision history</h2></div><small>{decisionLog.length} recorded</small></div>{decisionLog.map((record) => <article key={record.id}><Icon name="check" size={15} /><div><strong>{record.title}</strong><small>{new Date(record.recordedAt).toLocaleString()} · {record.contentHash.slice(0, 10)}</small></div><em data-state={record.state}>{decisionLabel(record.state)}</em></article>)}</section> : null}
         </div> : null}
         {activeTab === 'control' ? <div className={styles.view}>
-          <div className={styles.viewTitle}><span>PHASE 3 · CONTROLLED EXECUTION</span><h1>Intent control center</h1><p>Approved drafts can be converted into policy-checked simulations. Email, task, GitHub, financial, and production side effects remain disabled.</p></div>
+          <div className={styles.viewTitle}><span>PHASE 3.1 · PERMANENT EVIDENCE</span><h1>Intent control center</h1><p>Approved drafts can be converted into policy-checked simulations. Email, task, GitHub, financial, and production side effects remain disabled.</p></div>
           <section className={styles.securityStatus}><span><Icon name="security" size={28} /></span><div><small>SERVER ENFORCED</small><strong>Simulation-only boundary</strong><p>Step-up identity, approval evidence, exact payload, idempotency, connector isolation, and integrity hashing are required.</p></div></section>
-          <div className={styles.boundaryList}><div><Icon name="check" /><span><strong>Policy engine</strong><small>Five mandatory checks per intent</small></span><em>Active</em></div><div><Icon name="check" /><span><strong>Integrity receipt</strong><small>Decision, payload, and intent hashes</small></span><em>Active</em></div><div><Icon name="lock" /><span><strong>Connectors</strong><small>Email, tasks, GitHub, payments, and production</small></span><em className={styles.locked}>Isolated</em></div><div><Icon name="lock" /><span><strong>External effects</strong><small>No send, publish, transfer, deploy, or access mutation</small></span><em className={styles.locked}>Disabled</em></div></div>
+          <div className={styles.boundaryList}><div><Icon name="check" /><span><strong>Policy engine</strong><small>Five mandatory checks per intent</small></span><em>Active</em></div><div><Icon name={evidenceStatus?.mode === 'cloud' ? 'check' : 'lock'} /><span><strong>Permanent evidence</strong><small>{evidenceStatus?.mode === 'cloud' ? 'Firestore append-only ledger' : 'Device ledger until cloud identity passes'}</small></span><em className={evidenceStatus?.mode === 'cloud' ? undefined : styles.locked}>{evidenceStatus?.mode === 'cloud' ? 'Cloud' : 'Gated'}</em></div><div><Icon name="lock" /><span><strong>Connectors</strong><small>Email, tasks, GitHub, payments, and production</small></span><em className={styles.locked}>Isolated</em></div><div><Icon name="lock" /><span><strong>External effects</strong><small>No send, publish, transfer, deploy, or access mutation</small></span><em className={styles.locked}>Disabled</em></div></div>
+          <button className={styles.installButton} onClick={testPermanentEvidence} disabled={!evidenceStatus?.canaryReady || testingEvidence} type="button"><Icon name="security" /> {testingEvidence ? 'Verifying cloud evidence…' : evidenceStatus?.canaryReady ? 'Run permanent evidence canary' : 'Cloud evidence activation pending'}</button>
           <section className={styles.history} aria-label="Execution intent history"><div className={styles.sectionHeading}><div><span>INTENT EVIDENCE</span><h2>Simulation history</h2></div><small>{executionIntents.length} recorded</small></div>{executionIntents.length ? executionIntents.map((intent) => <article key={intent.id}><Icon name="check" size={15} /><div><strong>{intent.title}</strong><small>{intent.connector} · {intent.contentHash.slice(0, 10)} · no external effect</small></div><em>{intent.status}</em></article>) : <article><Icon name="lock" size={15} /><div><strong>No execution intents yet</strong><small>Approve a proposal, then create its controlled simulation.</small></div><em>locked</em></article>}</section>
         </div> : null}
         {activeTab === 'security' ? <div className={styles.view}>

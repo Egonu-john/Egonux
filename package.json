@@ -1,6 +1,6 @@
 {
   "name": "egonux",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "EGONUX - Empowering the Next Generation of Digital Wealth",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
     "ai": "^7.0.102",
     "firebase": "^12.19.0",
     "firebase-admin": "13.6.0",
+    "google-auth-library": "^9.15.1",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",

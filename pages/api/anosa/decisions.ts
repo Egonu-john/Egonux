@@ -1,13 +1,14 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { requireAnosaFounder, requireAnosaStepUp, StepUpRequiredError } from '@/lib/anosa/server';
 import type { AnosaDecisionRecord } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
-import { getAdminFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import { anosaLog } from '@/lib/anosa/telemetry';
 import { firestoreLedgerEnabled } from '@/lib/anosa/execution';
+import { persistDecisionEvidence } from '@/lib/anosa/evidence';
 
 const decisionSchema = z.object({
   proposalId: z.string().min(3).max(160),
@@ -19,7 +20,7 @@ function contentHash(input: { proposalId: string; title: string; state: string; 
   return createHash('sha256').update(JSON.stringify(input)).digest('hex');
 }
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (!['GET', 'POST'].includes(request.method ?? '')) {
@@ -37,6 +38,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       const snapshot = await getAdminFirestore()
         .collection('anosaDecisions')
         .where('actorUid', '==', principal.uid)
+        .orderBy('recordedAt', 'desc')
         .limit(50)
         .get();
       const decisions = snapshot.docs.map((document) => {
@@ -60,30 +62,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
     };
 
     if (firestoreLedgerEnabled()) {
-      const database = getAdminFirestore();
-      const batch = database.batch();
-      batch.create(database.collection('anosaDecisions').doc(record.id), {
-        ...record,
-        serverReceivedAt: FieldValue.serverTimestamp(),
-        immutable: true,
-      });
-      batch.create(database.collection('auditEvents').doc(), {
-        actorUid: principal.uid,
-        type: 'anosa.decision.recorded',
-        occurredAt: FieldValue.serverTimestamp(),
-        metadata: {
-          proposalId: record.proposalId,
-          state: record.state,
-          contentHash: record.contentHash,
-          execution: 'locked',
-        },
-        request: {
-          forwardedFor: request.headers['x-forwarded-for'] ?? null,
-          userAgent: request.headers['user-agent'] ?? null,
-        },
-      });
       try {
-        await batch.commit();
+        await persistDecisionEvidence(record, {
+          forwardedFor: request.headers['x-forwarded-for'],
+          userAgent: request.headers['user-agent'],
+        });
       } catch (error) {
         record.persistence = 'device';
         console.warn('ANOSA Firestore ledger unavailable; returning an integrity-hashed device receipt.', {
@@ -103,4 +86,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     console.error('ANOSA decision ledger failed.', error);
     return response.status(503).json({ error: 'The secure decision ledger is temporarily unavailable. No decision was recorded.' });
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }

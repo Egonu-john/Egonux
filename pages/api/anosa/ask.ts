@@ -6,6 +6,7 @@ import { requireAnosaFounder } from '@/lib/anosa/server';
 import type { AnosaAnswer, AnosaProposal } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { anosaLog } from '@/lib/anosa/telemetry';
+import { withVercelOidcToken } from '@/lib/firebase/admin';
 
 const questionSchema = z.object({ question: z.string().trim().min(3).max(1200) });
 const intelligenceSchema = z.object({
@@ -65,7 +66,7 @@ function fallback(question: string): Omit<AnosaAnswer, 'generatedAt'> {
   };
 }
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'POST') {
@@ -119,4 +120,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     if (error instanceof AuthorizationError) return response.status(403).json({ error: 'Founder access required.' });
     throw error;
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }

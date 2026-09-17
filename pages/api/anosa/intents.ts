@@ -1,4 +1,4 @@
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { evaluateExecutionPolicy, executionMode, firestoreLedgerEnabled, integrityHash, intentDocumentId, publicExecutionStatus, toExecutionIntent } from '@/lib/anosa/execution';
@@ -6,7 +6,8 @@ import { requireAnosaFounder, requireAnosaStepUp, StepUpRequiredError } from '@/
 import { anosaLog } from '@/lib/anosa/telemetry';
 import type { AnosaExecutionIntent } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
-import { getAdminFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
+import { persistIntentEvidence } from '@/lib/anosa/evidence';
 
 const intentSchema = z.object({
   proposalId: z.string().min(3).max(160),
@@ -17,7 +18,7 @@ const intentSchema = z.object({
   idempotencyKey: z.string().min(12).max(200),
 });
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (!['GET', 'POST'].includes(request.method ?? '')) {
@@ -33,7 +34,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       }
       try {
         const snapshot = await getAdminFirestore().collection('anosaExecutionIntents')
-          .where('actorUid', '==', principal.uid).limit(50).get();
+          .where('actorUid', '==', principal.uid).orderBy('requestedAt', 'desc').limit(50).get();
         const intents = snapshot.docs.map((document) => {
           const data = document.data();
           const requestedAt = data.requestedAt instanceof Timestamp ? data.requestedAt.toDate().toISOString() : String(data.requestedAt);
@@ -75,18 +76,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     if (firestoreLedgerEnabled()) {
       try {
-        const database = getAdminFirestore();
-        const batch = database.batch();
-        batch.create(database.collection('anosaExecutionIntents').doc(intent.id), {
-          ...intent, serverReceivedAt: FieldValue.serverTimestamp(), immutable: true,
-        });
-        batch.create(database.collection('auditEvents').doc(), {
-          actorUid: principal.uid,
-          type: 'anosa.execution_intent.simulated',
-          occurredAt: FieldValue.serverTimestamp(),
-          metadata: { intentId: intent.id, proposalId: intent.proposalId, connector: intent.connector, status: intent.status, contentHash: intent.contentHash, externalExecution: 'disabled' },
-        });
-        await batch.commit();
+        await persistIntentEvidence(intent);
       } catch (error) {
         intent.persistence = 'device';
         console.warn('ANOSA Firestore intent ledger unavailable; returning an integrity-hashed device receipt.', {
@@ -105,4 +95,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     console.error('ANOSA controlled-execution intent failed.', error);
     return response.status(503).json({ error: 'The controlled-execution service is temporarily unavailable. Nothing was executed.' });
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }
