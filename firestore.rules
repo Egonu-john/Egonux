@@ -49,6 +49,21 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /anosaDecisions/{evidenceId} {
+      allow read: if hasRole('compliance') || hasRole('founder');
+      allow write: if false;
+    }
+
+    match /anosaExecutionIntents/{evidenceId} {
+      allow read: if hasRole('compliance') || hasRole('founder');
+      allow write: if false;
+    }
+
+    match /anosaEvidenceCanaries/{evidenceId} {
+      allow read: if hasRole('compliance') || hasRole('founder');
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

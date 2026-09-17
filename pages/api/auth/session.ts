@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getAdminAuth } from '@/lib/firebase/admin';
+import { getAdminAuth, withVercelOidcToken } from '@/lib/firebase/admin';
 import {
   requirePrincipal,
   setSessionCookie,
@@ -9,7 +9,7 @@ import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
 
 const RECENT_SIGN_IN_SECONDS = 5 * 60;
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Cache-Control', 'no-store');
 
   if (request.method === 'POST') {
@@ -95,4 +95,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
   response.setHeader('Allow', 'POST, DELETE');
   response.status(405).json({ error: 'Method not allowed.' });
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }

@@ -1,7 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AuthenticationError, requirePrincipal } from '@/lib/auth/session';
-import { getAdminFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import { appendAuditEvent } from '@/lib/server/audit';
 import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
 import type { ConsentPurpose } from '@/types/backend';
@@ -13,7 +13,7 @@ const purposes = new Set<ConsentPurpose>([
   'marketing',
 ]);
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'GET' && request.method !== 'POST') {
     response.setHeader('Allow', 'GET, POST');
@@ -68,4 +68,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
     response.status(500).json({ error: 'Unable to process the consent record.' });
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }

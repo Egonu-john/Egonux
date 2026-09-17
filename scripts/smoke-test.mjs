@@ -155,6 +155,26 @@ try {
   assert.equal(context.control.phase, 3);
   assert.equal(context.control.externalExecution, 'disabled');
   assert.equal(context.control.ledger, 'device');
+  assert.equal(context.evidence.phase, '3.1');
+  assert.equal(context.evidence.mode, 'device');
+  assert.equal(context.evidence.ledgerEnabled, false);
+  assert.equal(context.evidence.canaryReady, false);
+
+  const evidenceHealthResponse = await fetch(`${baseUrl}/api/anosa/evidence-health`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const evidenceHealth = await evidenceHealthResponse.json();
+  assert.equal(evidenceHealthResponse.status, 200);
+  assert.equal(evidenceHealth.evidence.retention, 'permanent');
+  assert.equal(evidenceHealth.evidence.externalExecution, 'disabled');
+
+  const evidenceCanaryResponse = await fetch(`${baseUrl}/api/anosa/evidence-health`, {
+    method: 'POST',
+    signal: AbortSignal.timeout(10_000),
+  });
+  const evidenceCanary = await evidenceCanaryResponse.json();
+  assert.equal(evidenceCanaryResponse.status, 412);
+  assert.equal(evidenceCanary.code, 'EVIDENCE_GATE_CLOSED');
 
   const askResponse = await fetch(`${baseUrl}/api/anosa/ask`, {
     method: 'POST',
@@ -229,7 +249,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.0.1-foundation');
+  assert.equal(health.version, '3.1.0-cloud-evidence');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

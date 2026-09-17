@@ -65,3 +65,18 @@ test('founder can read audit events but members cannot', async () => {
   await assertFails(getDoc(doc(member, 'auditEvents/event-2')));
   assert.ok(true);
 });
+
+test('permanent evidence is founder-readable and client-immutable', async () => {
+  await environment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), 'anosaDecisions/decision-1'), { actorUid: 'founder-1', immutable: true });
+    await setDoc(doc(context.firestore(), 'anosaExecutionIntents/intent-1'), { actorUid: 'founder-1', immutable: true });
+    await setDoc(doc(context.firestore(), 'anosaEvidenceCanaries/canary-1'), { actorUid: 'founder-1', immutable: true });
+  });
+  const founder = environment.authenticatedContext('founder-1', { roles: ['founder'] }).firestore();
+  const member = environment.authenticatedContext('member-5', { roles: ['member'] }).firestore();
+  for (const path of ['anosaDecisions/decision-1', 'anosaExecutionIntents/intent-1', 'anosaEvidenceCanaries/canary-1']) {
+    await assertSucceeds(getDoc(doc(founder, path)));
+    await assertFails(getDoc(doc(member, path)));
+    await assertFails(setDoc(doc(founder, path), { forged: true }));
+  }
+});

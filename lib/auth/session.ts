@@ -76,8 +76,11 @@ export async function requirePrincipal(
   try {
     // Keep the Admin SDK out of public preview route initialization. It is only
     // required after a secure session cookie is present and must be verified.
-    const { getAdminAuth } = await import('@/lib/firebase/admin');
-    const token = await getAdminAuth().verifyIdToken(cookie);
+    const { getAdminAuth, withVercelOidcToken } = await import('@/lib/firebase/admin');
+    const token = await withVercelOidcToken(
+      request.headers['x-vercel-oidc-token'],
+      () => getAdminAuth().verifyIdToken(cookie),
+    );
     const principal = toPrincipal(token);
     if (requiredRoles.length && !requiredRoles.some((role) => principal.roles.includes(role))) {
       throw new AuthorizationError('Insufficient permissions.');

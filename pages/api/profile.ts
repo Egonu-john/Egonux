@@ -1,11 +1,11 @@
 import { FieldValue } from 'firebase-admin/firestore';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AuthenticationError, requirePrincipal } from '@/lib/auth/session';
-import { getAdminFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import { appendAuditEvent } from '@/lib/server/audit';
 import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'GET' && request.method !== 'PUT') {
     response.setHeader('Allow', 'GET, PUT');
@@ -59,4 +59,8 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
     response.status(500).json({ error: 'Unable to process the member profile.' });
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }

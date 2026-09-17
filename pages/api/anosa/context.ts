@@ -4,8 +4,10 @@ import { requireAnosaFounder } from '@/lib/anosa/server';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { anosaLog } from '@/lib/anosa/telemetry';
 import { publicExecutionStatus } from '@/lib/anosa/execution';
+import { evidenceReadiness } from '@/lib/anosa/evidence';
+import { withVercelOidcToken } from '@/lib/firebase/admin';
 
-export default async function handler(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   const startedAt = Date.now();
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'GET') {
@@ -21,10 +23,15 @@ export default async function handler(request: NextApiRequest, response: NextApi
       execution: 'locked',
       capabilities: ['read', 'prepare', 'approve', 'simulate'],
       control: publicExecutionStatus(),
+      evidence: evidenceReadiness(Boolean(request.headers['x-vercel-oidc-token'] ?? process.env.VERCEL_OIDC_TOKEN)),
     });
   } catch (error) {
     if (error instanceof AuthenticationError) return response.status(401).json({ error: 'Authentication required.' });
     if (error instanceof AuthorizationError) return response.status(403).json({ error: 'Founder access required.' });
     throw error;
   }
+}
+
+export default function handler(request: NextApiRequest, response: NextApiResponse) {
+  return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }
