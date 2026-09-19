@@ -117,18 +117,20 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     const installHandler = (event: Event) => { event.preventDefault(); setInstallPrompt(event as InstallPromptEvent); };
     window.addEventListener('beforeinstallprompt', installHandler);
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/anosa-sw.js').catch(() => undefined);
+    const load = (path: string) => fetch(path).then((response) => response.ok ? response.json() : null).catch(() => null);
     Promise.all([
-      fetch('/api/anosa/context').then((response) => response.ok ? response.json() : Promise.reject()),
-      fetch('/api/anosa/decisions').then((response) => response.ok ? response.json() : Promise.reject()),
-      fetch('/api/anosa/intents').then((response) => response.ok ? response.json() : Promise.reject()),
-      fetch('/api/anosa/evidence-health').then((response) => response.ok ? response.json() : Promise.reject()),
+      load('/api/anosa/context'),
+      load('/api/anosa/decisions'),
+      load('/api/anosa/intents'),
+      load('/api/anosa/evidence-health'),
     ]).then(([context, decisions, intents, evidence]) => {
-      if (Array.isArray(context.sources)) setSources(context.sources);
-      if (context.evidence) setEvidenceStatus(context.evidence);
-      if (Array.isArray(decisions.decisions) && decisions.decisions.length) setDecisionLog(decisions.decisions);
-      if (Array.isArray(intents.intents) && intents.intents.length) setExecutionIntents(intents.intents);
-      if (evidence.evidence) setEvidenceStatus(evidence.evidence);
-    }).catch(() => setNotice('ANOSA opened with saved device data. Connected sources will retry on your next request.'));
+      if (Array.isArray(context?.sources)) setSources(context.sources);
+      if (context?.evidence) setEvidenceStatus(context.evidence);
+      if (Array.isArray(decisions?.decisions) && decisions.decisions.length) setDecisionLog(decisions.decisions);
+      if (Array.isArray(intents?.intents) && intents.intents.length) setExecutionIntents(intents.intents);
+      if (evidence?.evidence) setEvidenceStatus(evidence.evidence);
+      if (!context || !decisions || !intents) setNotice('ANOSA opened with saved device data. Some connected sources will retry on your next request.');
+    });
     return () => { window.cancelAnimationFrame(frame); window.removeEventListener('beforeinstallprompt', installHandler); };
   }, []);
 
