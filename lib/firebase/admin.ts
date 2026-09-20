@@ -1,45 +1,35 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-import { applicationDefault, getApps, initializeApp, type App, type Credential } from 'firebase-admin/app';
+import { writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { applicationDefault, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
-import { IdentityPoolClient } from 'google-auth-library';
 
-const oidcTokenContext = new AsyncLocalStorage<string>();
+const externalAccountPath = join(tmpdir(), 'egonux-gcp-external-account.json');
+const oidcTokenPath = join(tmpdir(), 'egonux-vercel-oidc-token');
 
-export function withVercelOidcToken<T>(token: string | string[] | undefined, callback: () => Promise<T>) {
-  const value = Array.isArray(token) ? token[0] : token;
-  return value ? oidcTokenContext.run(value, callback) : callback();
-}
-
-function workloadIdentityCredential(): Credential | null {
+function configureWorkloadIdentity(token: string) {
   const audience = process.env.GCP_WIF_AUDIENCE;
   const serviceAccount = process.env.GCP_SERVICE_ACCOUNT_EMAIL;
-  if (!audience || !serviceAccount) return null;
+  if (!audience || !serviceAccount) return;
 
-  const client = new IdentityPoolClient({
+  writeFileSync(oidcTokenPath, token, { mode: 0o600 });
+  writeFileSync(externalAccountPath, JSON.stringify({
     type: 'external_account',
     audience,
     subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
     token_url: 'https://sts.googleapis.com/v1/token',
-    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${encodeURIComponent(serviceAccount)}:generateAccessToken`,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    subject_token_supplier: {
-      getSubjectToken: async () => {
-        const token = oidcTokenContext.getStore() ?? process.env.VERCEL_OIDC_TOKEN;
-        if (!token) throw new Error('Vercel OIDC token is unavailable in this request context.');
-        return token;
-      },
-    },
-  });
+    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccount}:generateAccessToken`,
+    credential_source: { file: oidcTokenPath, format: { type: 'text' } },
+  }), { mode: 0o600 });
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = externalAccountPath;
+}
 
-  return {
-    async getAccessToken() {
-      const result = await client.getAccessToken();
-      if (!result.token) throw new Error('GCP workload identity exchange returned no access token.');
-      const expiry = client.credentials.expiry_date ?? Date.now() + 3_600_000;
-      return { access_token: result.token, expires_in: Math.max(1, Math.floor((expiry - Date.now()) / 1_000)) };
-    },
-  };
+export function withVercelOidcToken<T>(token: string | string[] | undefined, callback: () => Promise<T>) {
+  const value = Array.isArray(token) ? token[0] : token;
+  if (!value) return callback();
+  configureWorkloadIdentity(value);
+  return callback();
 }
 
 function getAdminApp(): App {
@@ -55,7 +45,7 @@ function getAdminApp(): App {
     throw new Error('GOOGLE_CLOUD_PROJECT is required for EGONUX server services.');
   }
 
-  return initializeApp({ credential: workloadIdentityCredential() ?? applicationDefault(), projectId });
+  return initializeApp({ credential: applicationDefault(), projectId });
 }
 
 export function getAdminAuth() {
