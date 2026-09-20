@@ -143,7 +143,7 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     if (!selected || !confirmed || paused || recording) return;
     setRecording(true);
     try {
-      const response = await fetch('/api/anosa/decisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId: selected.id, title: selected.title, state }) });
+      const response = await fetch('/api/anosa/decisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId: selected.id, title: selected.title, state, actionType: selected.actionType, draftPreview: selected.draftPreview }) });
       const body = await response.json();
       if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') {
         void router.push('/login?next=/anosa');
@@ -184,12 +184,14 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     setRecording(true);
     try {
       const idempotencyKey = `${selected.id}:${decision.contentHash}`;
-      const response = await fetch('/api/anosa/intents', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId: selected.id, title: selected.title, actionType: selected.actionType, draftPreview: selected.draftPreview, decisionHash: decision.contentHash, idempotencyKey }) });
+      const response = await fetch('/api/anosa/intents', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ proposalId: selected.id, title: selected.title, actionType: selected.actionType, draftPreview: selected.draftPreview, decisionId: decision.id, decisionHash: decision.contentHash, idempotencyKey }) });
       const body = await response.json();
       if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') { void router.push('/login?next=/anosa'); return; }
       if (!response.ok) throw new Error(body.error || 'Controlled simulation unavailable.');
       setExecutionIntents((current) => [body.intent as AnosaExecutionIntent, ...current.filter((item) => item.id !== body.intent.id)].slice(0, 50));
-      setNotice(`Policy-checked ${body.intent.connector} simulation recorded in the ${body.persistence === 'firestore' ? 'server ledger' : 'integrity-hashed device ledger'}. No external action occurred.`);
+      setNotice(body.replayed
+        ? `Replay safely resolved to the original ${body.intent.connector} simulation receipt. No duplicate was created.`
+        : `Policy-checked ${body.intent.connector} simulation recorded in the ${body.persistence === 'firestore' ? 'server ledger' : 'integrity-hashed device ledger'}. No external action occurred.`);
       setSelectedId(null); setActiveTab('control');
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Nothing was executed.'); }
     finally { setRecording(false); }

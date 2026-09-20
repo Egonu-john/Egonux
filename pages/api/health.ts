@@ -27,7 +27,7 @@ export default function handler(
 
   response.status(200).json({
     service: 'EGONUX OS',
-    version: '3.1.0-cloud-evidence',
+    version: '3.2.0-evidence-integrity',
     environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development',
     mode: 'sandbox',
     status: 'healthy',

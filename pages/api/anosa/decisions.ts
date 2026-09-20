@@ -7,16 +7,22 @@ import type { AnosaDecisionRecord } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import { anosaLog } from '@/lib/anosa/telemetry';
-import { firestoreLedgerEnabled } from '@/lib/anosa/execution';
+import { firestoreLedgerEnabled, integrityHash } from '@/lib/anosa/execution';
 import { persistDecisionEvidence } from '@/lib/anosa/evidence';
 
 const decisionSchema = z.object({
   proposalId: z.string().min(3).max(160),
   title: z.string().min(3).max(160),
   state: z.enum(['approved', 'rejected', 'changes_requested']),
+  actionType: z.enum(['brief', 'email_draft', 'task_draft', 'github_draft']).optional(),
+  draftPreview: z.string().min(8).max(8_000).optional(),
+}).superRefine((value, context) => {
+  if (value.state === 'approved' && (!value.actionType || !value.draftPreview)) {
+    context.addIssue({ code: 'custom', message: 'Approved decisions require an exact draft payload.' });
+  }
 });
 
-function contentHash(input: { proposalId: string; title: string; state: string; recordedAt: string; actorUid: string }) {
+function contentHash(input: { proposalId: string; title: string; state: string; recordedAt: string; actorUid: string; actionType?: string; payloadHash?: string }) {
   return createHash('sha256').update(JSON.stringify(input)).digest('hex');
 }
 
@@ -53,7 +59,13 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
 
     const input = decisionSchema.parse(request.body);
     const recordedAt = new Date().toISOString();
-    const basis = { ...input, recordedAt, actorUid: principal.uid };
+    const { draftPreview, ...decisionInput } = input;
+    const basis = {
+      ...decisionInput,
+      payloadHash: draftPreview ? integrityHash(draftPreview) : undefined,
+      recordedAt,
+      actorUid: principal.uid,
+    };
     const record: AnosaDecisionRecord = {
       id: randomUUID(),
       ...basis,
@@ -62,17 +74,10 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
     };
 
     if (firestoreLedgerEnabled()) {
-      try {
-        await persistDecisionEvidence(record, {
-          forwardedFor: request.headers['x-forwarded-for'],
-          userAgent: request.headers['user-agent'],
-        });
-      } catch (error) {
-        record.persistence = 'device';
-        console.warn('ANOSA Firestore ledger unavailable; returning an integrity-hashed device receipt.', {
-          message: error instanceof Error ? error.message : String(error),
-        });
-      }
+      await persistDecisionEvidence(record, {
+        forwardedFor: request.headers['x-forwarded-for'],
+        userAgent: request.headers['user-agent'],
+      });
     }
 
     anosaLog(request, '/api/anosa/decisions', 'recorded', startedAt, { state: record.state, execution: 'locked' });
@@ -84,7 +89,7 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
     if (error instanceof AuthorizationError) return response.status(403).json({ error: 'Founder access required.' });
     if (error instanceof StepUpRequiredError) return response.status(428).json({ error: 'Please sign in again before recording a founder decision.', code: 'STEP_UP_REQUIRED' });
     console.error('ANOSA decision ledger failed.', error);
-    return response.status(503).json({ error: 'The secure decision ledger is temporarily unavailable. No decision was recorded.' });
+    return response.status(503).json({ error: 'The permanent decision ledger is unavailable. No decision was recorded.' });
   }
 }
 

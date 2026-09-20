@@ -4,7 +4,11 @@ import { getAdminFirestore } from '@/lib/firebase/admin';
 import { firestoreLedgerEnabled, integrityHash } from '@/lib/anosa/execution';
 import type { AnosaDecisionRecord, AnosaExecutionIntent } from '@/lib/anosa/types';
 
-export const EVIDENCE_SCHEMA_VERSION = 1;
+export const EVIDENCE_SCHEMA_VERSION = 2;
+
+export class EvidenceReplayConflictError extends Error {
+  constructor() { super('An idempotency key was reused with a different simulation payload.'); }
+}
 
 export function evidenceReadiness(runtimeIdentityAvailable = Boolean(process.env.VERCEL_OIDC_TOKEN)) {
   const projectConfigured = Boolean(process.env.GOOGLE_CLOUD_PROJECT ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
@@ -12,7 +16,7 @@ export function evidenceReadiness(runtimeIdentityAvailable = Boolean(process.env
   const emulatorConfigured = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
   const ledgerEnabled = firestoreLedgerEnabled();
   return {
-    phase: '3.1',
+    phase: '3.2',
     schemaVersion: EVIDENCE_SCHEMA_VERSION,
     mode: ledgerEnabled ? 'cloud' : 'device',
     projectConfigured,
@@ -56,18 +60,34 @@ export async function persistDecisionEvidence(record: AnosaDecisionRecord, reque
 
 export async function persistIntentEvidence(intent: AnosaExecutionIntent) {
   const database = getAdminFirestore();
-  const batch = database.batch();
-  batch.create(database.collection('anosaExecutionIntents').doc(intent.id), {
-    ...intent,
-    ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
+  const reference = database.collection('anosaExecutionIntents').doc(intent.id);
+  return database.runTransaction(async (transaction) => {
+    const stored = await transaction.get(reference);
+    if (stored.exists) {
+      const existing = { id: stored.id, ...stored.data() } as AnosaExecutionIntent;
+      const sameRequest = existing.actorUid === intent.actorUid
+        && existing.proposalId === intent.proposalId
+        && existing.title === intent.title
+        && existing.actionType === intent.actionType
+        && existing.decisionHash === intent.decisionHash
+        && existing.idempotencyKey === intent.idempotencyKey
+        && existing.payloadHash === intent.payloadHash;
+      if (!sameRequest) throw new EvidenceReplayConflictError();
+      return { status: 'replayed' as const, intent: existing };
+    }
+    transaction.create(reference, {
+      ...intent,
+      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
+    });
+    const auditReference = database.collection('auditEvents').doc();
+    transaction.create(auditReference, {
+      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
+      type: 'anosa.execution_intent.simulated',
+      occurredAt: FieldValue.serverTimestamp(),
+      metadata: { proposalId: intent.proposalId, connector: intent.connector, status: intent.status, externalExecution: 'disabled' },
+    });
+    return { status: 'created' as const, intent };
   });
-  batch.create(database.collection('auditEvents').doc(), {
-    ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
-    type: 'anosa.execution_intent.simulated',
-    occurredAt: FieldValue.serverTimestamp(),
-    metadata: { proposalId: intent.proposalId, connector: intent.connector, status: intent.status, externalExecution: 'disabled' },
-  });
-  await batch.commit();
 }
 
 export async function runEvidenceCanary(actorUid: string) {

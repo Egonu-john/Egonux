@@ -155,7 +155,7 @@ try {
   assert.equal(context.control.phase, 3);
   assert.equal(context.control.externalExecution, 'disabled');
   assert.equal(context.control.ledger, 'device');
-  assert.equal(context.evidence.phase, '3.1');
+  assert.equal(context.evidence.phase, '3.2');
   assert.equal(context.evidence.mode, 'device');
   assert.equal(context.evidence.ledgerEnabled, false);
   assert.equal(context.evidence.canaryReady, false);
@@ -192,7 +192,13 @@ try {
   const decisionResponse = await fetch(`${baseUrl}/api/anosa/decisions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Smoke decision', state: 'approved' }),
+    body: JSON.stringify({
+      proposalId: 'smoke-proposal',
+      title: 'Smoke decision',
+      state: 'approved',
+      actionType: 'email_draft',
+      draftPreview: 'Exact email preview for smoke verification. Nothing will be sent.',
+    }),
     signal: AbortSignal.timeout(10_000),
   });
   const decision = await decisionResponse.json();
@@ -210,6 +216,7 @@ try {
       title: 'Smoke controlled simulation',
       actionType: 'email_draft',
       draftPreview: 'Exact email preview for smoke verification. Nothing will be sent.',
+      decisionId: decision.decision.id,
       decisionHash: decision.decision.contentHash,
       idempotencyKey: `smoke-proposal:${decision.decision.contentHash}`,
     }),
@@ -229,7 +236,7 @@ try {
   const invalidIntentResponse = await fetch(`${baseUrl}/api/anosa/intents`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Unlinked intent', actionType: 'brief', draftPreview: 'Draft without evidence', idempotencyKey: 'missing-decision-hash' }),
+    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Unlinked intent', actionType: 'brief', draftPreview: 'Draft without evidence', decisionId: 'missing-decision', idempotencyKey: 'missing-decision-hash' }),
     signal: AbortSignal.timeout(10_000),
   });
   assert.equal(invalidIntentResponse.status, 400);
@@ -249,7 +256,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.1.0-cloud-evidence');
+  assert.equal(health.version, '3.2.0-evidence-integrity');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',
