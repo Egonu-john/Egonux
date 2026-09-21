@@ -155,7 +155,9 @@ try {
   assert.equal(context.control.phase, 3);
   assert.equal(context.control.externalExecution, 'disabled');
   assert.equal(context.control.ledger, 'device');
-  assert.equal(context.evidence.phase, '3.3');
+  assert.equal(context.evidence.phase, '3.4');
+  assert.equal(context.evidence.signingReady, false);
+  assert.equal(context.evidence.signatureMode, 'unsigned');
   assert.equal(context.evidence.mode, 'device');
   assert.equal(context.evidence.ledgerEnabled, false);
   assert.equal(context.evidence.canaryReady, false);
@@ -173,7 +175,7 @@ try {
   });
   const evidenceVerification = await evidenceVerificationResponse.json();
   assert.equal(evidenceVerificationResponse.status, 200);
-  assert.equal(evidenceVerification.verification.phase, '3.3');
+  assert.equal(evidenceVerification.verification.phase, '3.4');
   assert.equal(evidenceVerification.verification.status, 'unavailable');
   assert.equal(evidenceVerification.verification.externalExecution, 'disabled');
 
@@ -265,7 +267,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.3.0-evidence-verification');
+  assert.equal(health.version, '3.4.0-kms-evidence-signing');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

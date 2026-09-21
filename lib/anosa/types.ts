@@ -72,17 +72,19 @@ export interface AnosaAuditEvent {
   type: string;
   occurredAt: string;
   contentHash: string;
-  schemaVersion: 1 | 2;
+  schemaVersion: 1 | 2 | 3;
+  signatureVerified: boolean;
   verified: boolean;
 }
 
 export interface AnosaEvidenceVerification {
-  phase: '3.3';
+  phase: '3.4';
   status: 'verified' | 'attention' | 'unavailable';
   checkedAt: string;
   checkedRecords: number;
   verifiedRecords: number;
   brokenRecords: number;
+  signedRecords: number;
   auditEvents: AnosaAuditEvent[];
   externalExecution: 'disabled';
 }

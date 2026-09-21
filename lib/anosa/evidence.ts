@@ -3,8 +3,9 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { firestoreLedgerEnabled, integrityHash } from '@/lib/anosa/execution';
 import type { AnosaDecisionRecord, AnosaExecutionIntent } from '@/lib/anosa/types';
+import { kmsSigningConfigured, kmsSigningEnabled, signEvidenceHash, verifyEvidenceSignature, type EvidenceKmsSignature } from '@/lib/anosa/kms';
 
-export const EVIDENCE_SCHEMA_VERSION = 2;
+export const EVIDENCE_SCHEMA_VERSION = 3;
 
 export class EvidenceReplayConflictError extends Error {
   constructor() { super('An idempotency key was reused with a different simulation payload.'); }
@@ -16,40 +17,45 @@ export function evidenceReadiness(runtimeIdentityAvailable = Boolean(process.env
   const emulatorConfigured = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
   const ledgerEnabled = firestoreLedgerEnabled();
   return {
-    phase: '3.3',
+    phase: '3.4',
     schemaVersion: EVIDENCE_SCHEMA_VERSION,
     mode: ledgerEnabled ? 'cloud' : 'device',
     projectConfigured,
     identityConfigured: federationConfigured || emulatorConfigured,
     ledgerEnabled,
     canaryReady: ledgerEnabled && projectConfigured && (federationConfigured || emulatorConfigured),
+    signingEnabled: kmsSigningEnabled(),
+    signingReady: ledgerEnabled && projectConfigured && federationConfigured && kmsSigningConfigured(),
+    signatureMode: kmsSigningConfigured() ? 'cloud-kms' : 'unsigned',
     retention: 'permanent',
     externalExecution: 'disabled',
   } as const;
 }
 
-function immutableEnvelope(kind: 'decision' | 'execution_intent' | 'canary', id: string, actorUid: string, contentHash: string) {
+function immutableEnvelope(kind: 'decision' | 'execution_intent' | 'canary', id: string, actorUid: string, contentHash: string, signature: EvidenceKmsSignature | null) {
   return {
     evidenceKind: kind,
     evidenceId: id,
     actorUid,
     contentHash,
-    schemaVersion: EVIDENCE_SCHEMA_VERSION,
+    schemaVersion: signature ? EVIDENCE_SCHEMA_VERSION : 2,
     immutable: true,
     retentionClass: 'permanent',
+    ...(signature ? { signature } : {}),
     serverReceivedAt: FieldValue.serverTimestamp(),
   };
 }
 
 export async function persistDecisionEvidence(record: AnosaDecisionRecord, request: { forwardedFor?: string | string[]; userAgent?: string }) {
+  const signature = await signEvidenceHash(record.contentHash);
   const database = getAdminFirestore();
   const batch = database.batch();
   batch.create(database.collection('anosaDecisions').doc(record.id), {
     ...record,
-    ...immutableEnvelope('decision', record.id, record.actorUid, record.contentHash),
+    ...immutableEnvelope('decision', record.id, record.actorUid, record.contentHash, signature),
   });
   batch.create(database.collection('auditEvents').doc(), {
-    ...immutableEnvelope('decision', record.id, record.actorUid, record.contentHash),
+    ...immutableEnvelope('decision', record.id, record.actorUid, record.contentHash, signature),
     type: 'anosa.decision.recorded',
     occurredAt: FieldValue.serverTimestamp(),
     metadata: { proposalId: record.proposalId, state: record.state, execution: 'locked' },
@@ -59,6 +65,7 @@ export async function persistDecisionEvidence(record: AnosaDecisionRecord, reque
 }
 
 export async function persistIntentEvidence(intent: AnosaExecutionIntent) {
+  const signature = await signEvidenceHash(intent.contentHash);
   const database = getAdminFirestore();
   const reference = database.collection('anosaExecutionIntents').doc(intent.id);
   return database.runTransaction(async (transaction) => {
@@ -77,11 +84,11 @@ export async function persistIntentEvidence(intent: AnosaExecutionIntent) {
     }
     transaction.create(reference, {
       ...intent,
-      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
+      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash, signature),
     });
     const auditReference = database.collection('auditEvents').doc();
     transaction.create(auditReference, {
-      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash),
+      ...immutableEnvelope('execution_intent', intent.id, intent.actorUid, intent.contentHash, signature),
       type: 'anosa.execution_intent.simulated',
       occurredAt: FieldValue.serverTimestamp(),
       metadata: { proposalId: intent.proposalId, connector: intent.connector, status: intent.status, externalExecution: 'disabled' },
@@ -95,17 +102,18 @@ export async function runEvidenceCanary(actorUid: string) {
   const id = randomUUID();
   const occurredAt = new Date().toISOString();
   const contentHash = integrityHash({ id, actorUid, occurredAt, purpose: 'phase-3.1-cloud-evidence-canary' });
+  const signature = await signEvidenceHash(contentHash);
   const reference = database.collection('anosaEvidenceCanaries').doc(id);
   const auditReference = database.collection('auditEvents').doc();
   const batch = database.batch();
   batch.create(reference, {
-    ...immutableEnvelope('canary', id, actorUid, contentHash),
+    ...immutableEnvelope('canary', id, actorUid, contentHash, signature),
     occurredAt,
     purpose: 'phase-3.1-cloud-evidence-canary',
     externalExecution: 'disabled',
   });
   batch.create(auditReference, {
-    ...immutableEnvelope('canary', id, actorUid, contentHash),
+    ...immutableEnvelope('canary', id, actorUid, contentHash, signature),
     type: 'anosa.evidence.canary.passed',
     occurredAt: FieldValue.serverTimestamp(),
     metadata: { canaryId: id, externalExecution: 'disabled' },
@@ -115,5 +123,7 @@ export async function runEvidenceCanary(actorUid: string) {
   const data = stored.data();
   const serverReceivedAt = data?.serverReceivedAt instanceof Timestamp ? data.serverReceivedAt.toDate().toISOString() : null;
   if (!stored.exists || data?.contentHash !== contentHash) throw new Error('Evidence canary verification failed.');
-  return { id, contentHash, serverReceivedAt, persistence: 'firestore' as const, verified: true as const };
+  const signatureVerified = signature ? await verifyEvidenceSignature(contentHash, data?.signature) : false;
+  if (kmsSigningEnabled() && !signatureVerified) throw new Error('Evidence KMS signature verification failed.');
+  return { id, contentHash, serverReceivedAt, persistence: 'firestore' as const, verified: true as const, signed: Boolean(signature), signatureVerified, signatureMode: signature ? 'cloud-kms' as const : 'unsigned' as const };
 }

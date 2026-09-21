@@ -5,9 +5,10 @@ import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { firestoreLedgerEnabled } from '@/lib/anosa/execution';
 import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import type { AnosaAuditEvent, AnosaEvidenceVerification } from '@/lib/anosa/types';
+import { verifyEvidenceSignature } from '@/lib/anosa/kms';
 
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
-const SUPPORTED_SCHEMA_VERSIONS = new Set([1, 2]);
+const SUPPORTED_SCHEMA_VERSIONS = new Set([1, 2, 3]);
 
 function isoDate(value: unknown) {
   return value instanceof Timestamp ? value.toDate().toISOString() : String(value ?? '');
@@ -22,6 +23,14 @@ function validEnvelope(data: FirebaseFirestore.DocumentData, id: string, actorUi
     && HASH_PATTERN.test(String(data.contentHash ?? ''));
 }
 
+function matchingSignature(left: unknown, right: unknown) {
+  if (!left || !right || typeof left !== 'object' || typeof right !== 'object') return false;
+  const first = left as Record<string, unknown>;
+  const second = right as Record<string, unknown>;
+  return first.value === second.value && first.keyVersion === second.keyVersion
+    && first.algorithm === second.algorithm && first.digest === second.digest;
+}
+
 async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Cache-Control', 'no-store');
   if (request.method !== 'GET') {
@@ -34,8 +43,8 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
     const checkedAt = new Date().toISOString();
     if (!firestoreLedgerEnabled()) {
       const verification: AnosaEvidenceVerification = {
-        phase: '3.3', status: 'unavailable', checkedAt, checkedRecords: 0,
-        verifiedRecords: 0, brokenRecords: 0, auditEvents: [], externalExecution: 'disabled',
+        phase: '3.4', status: 'unavailable', checkedAt, checkedRecords: 0,
+        verifiedRecords: 0, brokenRecords: 0, signedRecords: 0, auditEvents: [], externalExecution: 'disabled',
       };
       return response.status(200).json({ verification, persistence: 'device' });
     }
@@ -55,17 +64,25 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
       ...intents.docs.map((document) => ({ kind: 'execution_intent', document, expectedType: 'anosa.execution_intent.simulated' })),
     ];
     let verifiedRecords = 0;
+    let signedRecords = 0;
     const auditEvents: AnosaAuditEvent[] = [];
     for (const record of records) {
       const data = record.document.data();
       const audit = auditByEvidence.get(`${record.kind}:${record.document.id}`);
       const auditData = audit?.data;
-      const verified = validEnvelope(data, record.document.id, principal.uid)
+      const baseVerified = validEnvelope(data, record.document.id, principal.uid)
         && Boolean(auditData)
         && validEnvelope(auditData!, record.document.id, principal.uid)
         && auditData?.type === record.expectedType
         && auditData?.contentHash === data.contentHash;
+      const schemaVersion = Number(data.schemaVersion);
+      const signatureVerified = schemaVersion === 3
+        && baseVerified
+        && matchingSignature(data.signature, auditData?.signature)
+        && await verifyEvidenceSignature(String(data.contentHash), data.signature);
+      const verified = baseVerified && (schemaVersion < 3 || signatureVerified);
       if (verified) verifiedRecords += 1;
+      if (signatureVerified) signedRecords += 1;
       auditEvents.push({
         id: audit?.id ?? `missing:${record.document.id}`,
         evidenceKind: record.kind as 'decision' | 'execution_intent',
@@ -73,16 +90,17 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
         type: String(auditData?.type ?? 'audit.missing'),
         occurredAt: isoDate(auditData?.occurredAt ?? data.recordedAt ?? data.requestedAt),
         contentHash: String(data.contentHash ?? ''),
-        schemaVersion: Number(data.schemaVersion) === 1 ? 1 : 2,
+        schemaVersion: schemaVersion === 1 ? 1 : schemaVersion === 3 ? 3 : 2,
+        signatureVerified,
         verified,
       });
     }
     auditEvents.sort((left, right) => right.occurredAt.localeCompare(left.occurredAt));
     const brokenRecords = records.length - verifiedRecords;
     const verification: AnosaEvidenceVerification = {
-      phase: '3.3', status: brokenRecords === 0 ? 'verified' : 'attention', checkedAt,
+      phase: '3.4', status: brokenRecords === 0 ? 'verified' : 'attention', checkedAt,
       checkedRecords: records.length, verifiedRecords, brokenRecords,
-      auditEvents: auditEvents.slice(0, 50), externalExecution: 'disabled',
+      signedRecords, auditEvents: auditEvents.slice(0, 50), externalExecution: 'disabled',
     };
     return response.status(200).json({ verification, persistence: 'firestore' });
   } catch (error) {
