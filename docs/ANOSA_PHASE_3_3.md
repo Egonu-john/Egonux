@@ -7,6 +7,7 @@ Phase 3.3 makes permanent Phase 3 evidence independently reviewable inside the a
 - `/api/anosa/evidence-verification` is founder-authenticated, read-only, and never mutates ledger records.
 - Decision and simulation receipts are checked for the immutable envelope, schema version, permanent retention, actor ownership, SHA-256 format, and a matching audit event.
 - Audit events must reference the same evidence ID and content hash and use the expected event type.
+- Both immutable schema v1 receipts from Phase 3.1 and schema v2 receipts from Phase 3.2 are verified against their original audit twins; records are never rewritten during verification.
 - Broken or missing links are surfaced as `attention`; they are never silently treated as verified.
 - The Control screen displays verification totals and a bounded recent audit trail.
 - Email, tasks, GitHub, payments, identity changes, and production actions remain disabled.

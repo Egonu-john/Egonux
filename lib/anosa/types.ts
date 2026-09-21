@@ -72,6 +72,7 @@ export interface AnosaAuditEvent {
   type: string;
   occurredAt: string;
   contentHash: string;
+  schemaVersion: 1 | 2;
   verified: boolean;
 }
 

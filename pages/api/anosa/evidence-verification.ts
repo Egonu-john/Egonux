@@ -7,6 +7,7 @@ import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import type { AnosaAuditEvent, AnosaEvidenceVerification } from '@/lib/anosa/types';
 
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
+const SUPPORTED_SCHEMA_VERSIONS = new Set([1, 2]);
 
 function isoDate(value: unknown) {
   return value instanceof Timestamp ? value.toDate().toISOString() : String(value ?? '');
@@ -17,7 +18,7 @@ function validEnvelope(data: FirebaseFirestore.DocumentData, id: string, actorUi
     && data.actorUid === actorUid
     && data.immutable === true
     && data.retentionClass === 'permanent'
-    && data.schemaVersion === 2
+    && SUPPORTED_SCHEMA_VERSIONS.has(Number(data.schemaVersion))
     && HASH_PATTERN.test(String(data.contentHash ?? ''));
 }
 
@@ -72,6 +73,7 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
         type: String(auditData?.type ?? 'audit.missing'),
         occurredAt: isoDate(auditData?.occurredAt ?? data.recordedAt ?? data.requestedAt),
         contentHash: String(data.contentHash ?? ''),
+        schemaVersion: Number(data.schemaVersion) === 1 ? 1 : 2,
         verified,
       });
     }
