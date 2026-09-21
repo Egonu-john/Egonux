@@ -136,6 +136,7 @@
 .history article em[data-state='changes_requested'] { color: #d1b976; }
 .history article em[data-state='escalated'] { color: #d1b976; }
 .reviewAction { border: 1px solid rgba(217,182,95,.35); border-radius: 7px; padding: 6px 8px; background: rgba(217,182,95,.08); color: var(--anosa-gold); font-size: .55rem; cursor: pointer; }
+.secondaryAction { width: 100%; min-height: 42px; margin-top: 10px; border: 1px solid rgba(217,182,95,.35); border-radius: 10px; background: rgba(217,182,95,.07); color: var(--anosa-gold); font-size: .62rem; font-weight: 700; cursor: pointer; }
 .reviewComposer { display: flex; flex-direction: column; gap: 7px; margin-top: 15px; }
 .reviewComposer span { color: var(--anosa-gold); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; }
 .reviewComposer textarea { min-height: 92px; resize: vertical; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 11px; background: #11110f; color: #e5e0d5; font: inherit; font-size: .7rem; line-height: 1.45; }
