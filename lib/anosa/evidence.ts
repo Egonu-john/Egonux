@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { firestoreLedgerEnabled, integrityHash } from '@/lib/anosa/execution';
-import type { AnosaDecisionRecord, AnosaExecutionIntent } from '@/lib/anosa/types';
+import type { AnosaDecisionRecord, AnosaEvidenceReview, AnosaExecutionIntent } from '@/lib/anosa/types';
 import { kmsSigningConfigured, kmsSigningEnabled, signEvidenceHash, verifyEvidenceSignature, type EvidenceKmsSignature } from '@/lib/anosa/kms';
 
 export const EVIDENCE_SCHEMA_VERSION = 3;
@@ -32,7 +32,7 @@ export function evidenceReadiness(runtimeIdentityAvailable = Boolean(process.env
   } as const;
 }
 
-function immutableEnvelope(kind: 'decision' | 'execution_intent' | 'canary', id: string, actorUid: string, contentHash: string, signature: EvidenceKmsSignature | null) {
+function immutableEnvelope(kind: 'decision' | 'execution_intent' | 'canary' | 'review', id: string, actorUid: string, contentHash: string, signature: EvidenceKmsSignature | null) {
   return {
     evidenceKind: kind,
     evidenceId: id,
@@ -95,6 +95,23 @@ export async function persistIntentEvidence(intent: AnosaExecutionIntent) {
     });
     return { status: 'created' as const, intent };
   });
+}
+
+export async function persistEvidenceReview(review: AnosaEvidenceReview) {
+  const signature = await signEvidenceHash(review.contentHash);
+  const database = getAdminFirestore();
+  const batch = database.batch();
+  batch.create(database.collection('anosaEvidenceReviews').doc(review.id), {
+    ...review,
+    ...immutableEnvelope('review', review.id, review.reviewerUid, review.contentHash, signature),
+  });
+  batch.create(database.collection('auditEvents').doc(), {
+    ...immutableEnvelope('review', review.id, review.reviewerUid, review.contentHash, signature),
+    type: 'anosa.evidence.reviewed',
+    occurredAt: FieldValue.serverTimestamp(),
+    metadata: { evidenceKind: review.evidenceKind, evidenceId: review.evidenceId, state: review.state, externalExecution: 'disabled' },
+  });
+  await batch.commit();
 }
 
 export async function runEvidenceCanary(actorUid: string) {

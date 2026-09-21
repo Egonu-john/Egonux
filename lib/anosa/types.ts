@@ -88,3 +88,18 @@ export interface AnosaEvidenceVerification {
   auditEvents: AnosaAuditEvent[];
   externalExecution: 'disabled';
 }
+
+export type AnosaReviewState = 'approved' | 'rejected' | 'escalated';
+
+export interface AnosaEvidenceReview {
+  id: string;
+  evidenceKind: 'decision' | 'execution_intent';
+  evidenceId: string;
+  state: AnosaReviewState;
+  reason: string;
+  reviewedAt: string;
+  reviewerUid: string;
+  contentHash: string;
+  externalExecution: 'disabled';
+  persistence?: 'firestore' | 'device';
+}

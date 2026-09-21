@@ -252,6 +252,18 @@ try {
   });
   assert.equal(invalidIntentResponse.status, 400);
 
+  const reviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ evidenceKind: 'decision', evidenceId: decision.decision.id, state: 'escalated', reason: 'Founder escalation for additional evidence review.' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const review = await reviewResponse.json();
+  assert.equal(reviewResponse.status, 201);
+  assert.equal(review.review.state, 'escalated');
+  assert.equal(review.review.persistence, 'device');
+  assert.equal(review.externalExecution, 'disabled');
+  assert.match(review.review.contentHash, /^[a-f0-9]{64}$/);
+
   const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`, {
     signal: AbortSignal.timeout(10_000),
   });
@@ -267,7 +279,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.4.0-kms-evidence-signing');
+  assert.equal(health.version, '3.5.0-human-review-lifecycle');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',
