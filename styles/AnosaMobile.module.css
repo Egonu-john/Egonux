@@ -169,6 +169,16 @@
 .sourceList article small { margin-top: 3px; color: #6d6b64; font-size: .55rem; text-transform: capitalize; }
 .pauseButton, .installButton, .osLink { margin-top: 12px; width: 100%; min-height: 43px; border-radius: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .7rem; cursor: pointer; }
 .installButton { color: #100d07; border: 1px solid var(--anosa-gold); background: var(--anosa-gold); font-weight: 800; }
+.verifyButton { margin-top: 9px; width: 100%; min-height: 43px; border: 1px solid rgba(102,198,138,.25); border-radius: 11px; color: #8ed2a5; background: rgba(54,104,70,.12); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: .7rem; font-weight: 700; cursor: pointer; }
+.verifyButton:disabled { opacity: .42; cursor: not-allowed; }
+.verificationCard { margin-top: 12px; padding: 14px; border: 1px solid rgba(217,182,95,.2); border-radius: 13px; background: rgba(217,182,95,.05); }
+.verificationCard[data-status='verified'] { border-color: rgba(102,198,138,.24); background: rgba(54,104,70,.1); }
+.verificationCard > div { display: flex; align-items: center; gap: 10px; color: #73c990; }
+.verificationCard span { display: flex; flex-direction: column; }
+.verificationCard small { color: #6fc38a; font-size: .53rem; letter-spacing: .13em; }
+.verificationCard strong { margin-top: 4px; color: #e8e3d7; font-size: .74rem; }
+.verificationCard p { margin: 10px 0; color: #77756f; font-size: .62rem; line-height: 1.45; }
+.verificationCard em { color: var(--anosa-gold); font-size: .52rem; font-style: normal; letter-spacing: .1em; }
 .pauseButton { color: #c5b47d; border: 1px solid rgba(217,182,95,.17); background: rgba(217,182,95,.05); }
 .osLink { color: #89867e; border: 1px solid rgba(255,255,255,.06); }
 

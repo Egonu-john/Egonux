@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Icon from '@/components/os/Icon';
 import type { AnosaSource } from '@/lib/anosa/sources';
-import type { AnosaAnswer, AnosaDecisionRecord, AnosaDecisionState, AnosaExecutionIntent, AnosaProposal } from '@/lib/anosa/types';
+import type { AnosaAnswer, AnosaDecisionRecord, AnosaDecisionState, AnosaEvidenceVerification, AnosaExecutionIntent, AnosaProposal } from '@/lib/anosa/types';
 import type { AuthenticatedPrincipal } from '@/types/backend';
 import styles from '@/styles/AnosaMobile.module.css';
 
@@ -97,6 +97,8 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [evidenceStatus, setEvidenceStatus] = useState<EvidenceStatus | null>(null);
   const [testingEvidence, setTestingEvidence] = useState(false);
+  const [verification, setVerification] = useState<AnosaEvidenceVerification | null>(null);
+  const [verifyingLedger, setVerifyingLedger] = useState(false);
   const pendingCount = approvals.filter((approval) => approval.state === 'pending').length;
   const selected = useMemo(() => approvals.find((approval) => approval.id === selectedId) ?? null, [approvals, selectedId]);
 
@@ -123,12 +125,14 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
       load('/api/anosa/decisions'),
       load('/api/anosa/intents'),
       load('/api/anosa/evidence-health'),
-    ]).then(([context, decisions, intents, evidence]) => {
+      load('/api/anosa/evidence-verification'),
+    ]).then(([context, decisions, intents, evidence, verificationResult]) => {
       if (Array.isArray(context?.sources)) setSources(context.sources);
       if (context?.evidence) setEvidenceStatus(context.evidence);
       if (Array.isArray(decisions?.decisions) && decisions.decisions.length) setDecisionLog(decisions.decisions);
       if (Array.isArray(intents?.intents) && intents.intents.length) setExecutionIntents(intents.intents);
       if (evidence?.evidence) setEvidenceStatus(evidence.evidence);
+      if (verificationResult?.verification) setVerification(verificationResult.verification);
       if (!context || !decisions || !intents) setNotice('ANOSA opened with saved device data. Some connected sources will retry on your next request.');
     });
     return () => { window.cancelAnimationFrame(frame); window.removeEventListener('beforeinstallprompt', installHandler); };
@@ -219,6 +223,23 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
     finally { setTestingEvidence(false); }
   };
 
+  const verifyLedger = async () => {
+    if (verifyingLedger) return;
+    setVerifyingLedger(true);
+    try {
+      const response = await fetch('/api/anosa/evidence-verification');
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || 'Evidence verification unavailable.');
+      setVerification(body.verification);
+      setNotice(body.verification.status === 'verified'
+        ? `${body.verification.verifiedRecords} evidence records match their audit events. No broken links found.`
+        : body.verification.status === 'attention'
+          ? `${body.verification.brokenRecords} evidence records require audit review.`
+          : 'Cloud verification becomes available when the permanent ledger is enabled.');
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Evidence verification unavailable.'); }
+    finally { setVerifyingLedger(false); }
+  };
+
   return <main className={styles.page}>
     <div className={styles.ambient} aria-hidden="true" />
     <section className={styles.phone} aria-label="ANOSA Personal Mobile">
@@ -248,10 +269,13 @@ export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps
           {decisionLog.length ? <section className={styles.history} aria-label="Decision history"><div className={styles.sectionHeading}><div><span>TAMPER-EVIDENT RECORD</span><h2>Decision history</h2></div><small>{decisionLog.length} recorded</small></div>{decisionLog.map((record) => <article key={record.id}><Icon name="check" size={15} /><div><strong>{record.title}</strong><small>{new Date(record.recordedAt).toLocaleString()} · {record.contentHash.slice(0, 10)}</small></div><em data-state={record.state}>{decisionLabel(record.state)}</em></article>)}</section> : null}
         </div> : null}
         {activeTab === 'control' ? <div className={styles.view}>
-          <div className={styles.viewTitle}><span>PHASE 3.2 · EVIDENCE INTEGRITY</span><h1>Intent control center</h1><p>Approved drafts can be converted into policy-checked simulations. Email, task, GitHub, financial, and production side effects remain disabled.</p></div>
+          <div className={styles.viewTitle}><span>PHASE 3.3 · VERIFICATION &amp; AUDIT</span><h1>Intent control center</h1><p>Permanent receipts are checked against their server audit events. Email, task, GitHub, financial, and production side effects remain disabled.</p></div>
           <section className={styles.securityStatus}><span><Icon name="security" size={28} /></span><div><small>SERVER ENFORCED</small><strong>Simulation-only boundary</strong><p>Step-up identity, approval evidence, exact payload, idempotency, connector isolation, and integrity hashing are required.</p></div></section>
           <div className={styles.boundaryList}><div><Icon name="check" /><span><strong>Policy engine</strong><small>Five mandatory checks per intent</small></span><em>Active</em></div><div><Icon name={evidenceStatus?.mode === 'cloud' ? 'check' : 'lock'} /><span><strong>Permanent evidence</strong><small>{evidenceStatus?.mode === 'cloud' ? 'Firestore append-only ledger' : 'Device ledger until cloud identity passes'}</small></span><em className={evidenceStatus?.mode === 'cloud' ? undefined : styles.locked}>{evidenceStatus?.mode === 'cloud' ? 'Cloud' : 'Gated'}</em></div><div><Icon name="lock" /><span><strong>Connectors</strong><small>Email, tasks, GitHub, payments, and production</small></span><em className={styles.locked}>Isolated</em></div><div><Icon name="lock" /><span><strong>External effects</strong><small>No send, publish, transfer, deploy, or access mutation</small></span><em className={styles.locked}>Disabled</em></div></div>
           <button className={styles.installButton} onClick={testPermanentEvidence} disabled={!evidenceStatus?.canaryReady || testingEvidence} type="button"><Icon name="security" /> {testingEvidence ? 'Verifying cloud evidence…' : evidenceStatus?.canaryReady ? 'Run permanent evidence canary' : 'Cloud evidence activation pending'}</button>
+          <button className={styles.verifyButton} onClick={verifyLedger} disabled={evidenceStatus?.mode !== 'cloud' || verifyingLedger} type="button"><Icon name="check" /> {verifyingLedger ? 'Checking evidence chain…' : 'Verify evidence audit trail'}</button>
+          <section className={styles.verificationCard} data-status={verification?.status ?? 'unavailable'}><div><Icon name={verification?.status === 'verified' ? 'check' : 'security'} size={20} /><span><small>LEDGER VERIFICATION</small><strong>{verification?.status === 'verified' ? 'Evidence chain verified' : verification?.status === 'attention' ? 'Audit review required' : 'Verification pending'}</strong></span></div><p>{verification ? `${verification.verifiedRecords} of ${verification.checkedRecords} records verified · ${verification.brokenRecords} broken links` : 'Run verification to compare permanent receipts with their audit events.'}</p><em>EXECUTION DISABLED</em></section>
+          {verification?.auditEvents.length ? <section className={styles.history} aria-label="Audit trail"><div className={styles.sectionHeading}><div><span>SERVER AUDIT</span><h2>Recent audit trail</h2></div><small>{verification.auditEvents.length} checked</small></div>{verification.auditEvents.slice(0, 10).map((event) => <article key={event.id}><Icon name={event.verified ? 'check' : 'lock'} size={15} /><div><strong>{event.type.replace('anosa.', '').replace(/\./g, ' ')}</strong><small>{event.contentHash.slice(0, 10)} · {new Date(event.occurredAt).toLocaleString()}</small></div><em>{event.verified ? 'verified' : 'review'}</em></article>)}</section> : null}
           <section className={styles.history} aria-label="Execution intent history"><div className={styles.sectionHeading}><div><span>INTENT EVIDENCE</span><h2>Simulation history</h2></div><small>{executionIntents.length} recorded</small></div>{executionIntents.length ? executionIntents.map((intent) => <article key={intent.id}><Icon name="check" size={15} /><div><strong>{intent.title}</strong><small>{intent.connector} · {intent.contentHash.slice(0, 10)} · no external effect</small></div><em>{intent.status}</em></article>) : <article><Icon name="lock" size={15} /><div><strong>No execution intents yet</strong><small>Approve a proposal, then create its controlled simulation.</small></div><em>locked</em></article>}</section>
         </div> : null}
         {activeTab === 'security' ? <div className={styles.view}>

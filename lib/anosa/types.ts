@@ -64,3 +64,24 @@ export interface AnosaExecutionIntent {
   };
   persistence?: 'firestore' | 'device';
 }
+
+export interface AnosaAuditEvent {
+  id: string;
+  evidenceKind: 'decision' | 'execution_intent' | 'canary';
+  evidenceId: string;
+  type: string;
+  occurredAt: string;
+  contentHash: string;
+  verified: boolean;
+}
+
+export interface AnosaEvidenceVerification {
+  phase: '3.3';
+  status: 'verified' | 'attention' | 'unavailable';
+  checkedAt: string;
+  checkedRecords: number;
+  verifiedRecords: number;
+  brokenRecords: number;
+  auditEvents: AnosaAuditEvent[];
+  externalExecution: 'disabled';
+}

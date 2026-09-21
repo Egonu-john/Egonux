@@ -16,7 +16,7 @@ export function evidenceReadiness(runtimeIdentityAvailable = Boolean(process.env
   const emulatorConfigured = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
   const ledgerEnabled = firestoreLedgerEnabled();
   return {
-    phase: '3.2',
+    phase: '3.3',
     schemaVersion: EVIDENCE_SCHEMA_VERSION,
     mode: ledgerEnabled ? 'cloud' : 'device',
     projectConfigured,
