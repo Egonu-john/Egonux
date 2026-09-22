@@ -39,6 +39,14 @@
         { "fieldPath": "actorUid", "order": "ASCENDING" },
         { "fieldPath": "runAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "anosaReleaseSimulations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "actorUid", "order": "ASCENDING" },
+        { "fieldPath": "simulatedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

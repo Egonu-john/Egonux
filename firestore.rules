@@ -89,6 +89,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /anosaReleaseSimulations/{simulationId} {
+      allow read: if hasRole('compliance') || hasRole('founder');
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

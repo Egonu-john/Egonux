@@ -322,6 +322,28 @@ try {
   assert.equal(recoveryDrill.status, 'unavailable');
   assert.equal(recoveryDrill.externalExecution, 'disabled');
 
+  const releaseCommandResponse = await fetch(`${baseUrl}/api/anosa/release-command`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const releaseCommand = await releaseCommandResponse.json();
+  assert.equal(releaseCommandResponse.status, 200);
+  assert.equal(releaseCommand.manifest.version, '4.0.0');
+  assert.equal(releaseCommand.manifest.workstreams.length, 13);
+  assert.match(releaseCommand.manifest.manifestHash, /^[a-f0-9]{64}$/);
+  assert.deepEqual(releaseCommand.simulations, []);
+  assert.equal(releaseCommand.status, 'unavailable');
+  assert.equal(releaseCommand.externalExecution, 'disabled');
+
+  const releaseSimulationResponse = await fetch(`${baseUrl}/api/anosa/release-command`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'run_release_readiness_simulation', requestId: 'smoke-release-simulation-1' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const releaseSimulation = await releaseSimulationResponse.json();
+  assert.equal(releaseSimulationResponse.status, 200);
+  assert.equal(releaseSimulation.status, 'unavailable');
+  assert.equal(releaseSimulation.externalExecution, 'disabled');
+
   const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
@@ -346,7 +368,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.9.0-containment-recovery-drill');
+  assert.equal(health.version, '4.0.0-release-command-center');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

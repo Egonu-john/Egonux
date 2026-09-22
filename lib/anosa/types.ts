@@ -151,3 +151,32 @@ export interface AnosaRecoveryDrill {
   immutable: true;
   externalExecution: 'disabled';
 }
+
+export type AnosaReleaseWorkstreamStatus = 'ready' | 'blocked';
+
+export interface AnosaReleaseWorkstream {
+  id: string;
+  name: string;
+  sequence: number;
+  dependencies: string[];
+  status: AnosaReleaseWorkstreamStatus;
+}
+
+export interface AnosaReleaseSimulation {
+  id: string;
+  requestId: string;
+  manifestVersion: '4.0.0';
+  manifestHash: string;
+  status: 'ready';
+  mode: 'simulation';
+  simulatedAt: string;
+  actorUid: string;
+  readyWorkstreams: number;
+  blockedWorkstreams: number;
+  dependencyChecks: number;
+  recoveryDrillId: string;
+  reviewIntegrityCheckedAt: string;
+  contentHash: string;
+  immutable: true;
+  externalExecution: 'disabled';
+}
