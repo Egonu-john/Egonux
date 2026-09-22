@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { firestoreLedgerEnabled } from '@/lib/anosa/execution';
+import { listIntegrityIncidents } from '@/lib/anosa/integrity-monitor';
 import { readReviewIntegrity } from '@/lib/anosa/review-integrity';
 import { requireAnosaFounder } from '@/lib/anosa/server';
-import type { AnosaReviewIntegrity } from '@/lib/anosa/types';
 import { AuthenticationError, AuthorizationError } from '@/lib/auth/session';
 import { withVercelOidcToken } from '@/lib/firebase/admin';
 
@@ -14,22 +14,24 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
   }
   try {
     const principal = await requireAnosaFounder(request);
-    const checkedAt = new Date().toISOString();
-    if (!firestoreLedgerEnabled()) {
-      const integrity: AnosaReviewIntegrity = {
-        phase: '3.7', status: 'unavailable', checkedAt, checkedReceipts: 0,
-        verifiedReceipts: 0, brokenReceipts: 0, currentStates: 0,
-        verifiedStates: 0, externalExecution: 'disabled',
-      };
-      return response.status(200).json({ integrity, persistence: 'device' });
-    }
-    const integrity = await readReviewIntegrity(principal.uid, checkedAt);
-    return response.status(200).json({ integrity, persistence: 'firestore' });
+    if (!firestoreLedgerEnabled()) return response.status(412).json({ error: 'Cloud evidence is required before exporting an integrity report.', code: 'EVIDENCE_GATE_CLOSED' });
+    const generatedAt = new Date().toISOString();
+    const [integrity, incidents] = await Promise.all([
+      readReviewIntegrity(principal.uid, generatedAt), listIntegrityIncidents(principal.uid),
+    ]);
+    const report = {
+      report: 'ANOSA Phase 3.8 Evidence Integrity Report', generatedAt,
+      scope: 'Founder review ledger and integrity incidents', integrity, incidents,
+      externalExecution: 'disabled',
+    };
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
+    response.setHeader('Content-Disposition', `attachment; filename="anosa-integrity-${generatedAt.slice(0, 10)}.json"`);
+    return response.status(200).send(JSON.stringify(report, null, 2));
   } catch (error) {
     if (error instanceof AuthenticationError) return response.status(401).json({ error: 'Authentication required.' });
     if (error instanceof AuthorizationError) return response.status(403).json({ error: 'Founder access required.' });
-    console.error('ANOSA review integrity verification failed.', error);
-    return response.status(503).json({ error: 'Review integrity verification is temporarily unavailable. No records were changed.' });
+    console.error('ANOSA integrity report export failed.', error);
+    return response.status(503).json({ error: 'Integrity report export is temporarily unavailable. No records were changed.' });
   }
 }
 

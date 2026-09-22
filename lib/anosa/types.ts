@@ -118,3 +118,19 @@ export interface AnosaReviewIntegrity {
   verifiedStates: number;
   externalExecution: 'disabled';
 }
+
+export interface AnosaIntegrityIncident {
+  id: string;
+  fingerprint: string;
+  severity: 'high' | 'medium';
+  status: 'open';
+  detectedAt: string;
+  actorUid: string;
+  brokenReceipts: number;
+  mismatchedStates: number;
+  checkedReceipts: number;
+  currentStates: number;
+  contentHash: string;
+  immutable: true;
+  externalExecution: 'disabled';
+}

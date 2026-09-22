@@ -1,5 +1,6 @@
 import { integrityHash } from '@/lib/anosa/execution';
 import type { AnosaEvidenceReview, AnosaReviewIntegrity } from '@/lib/anosa/types';
+import { getAdminFirestore } from '@/lib/firebase/admin';
 
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
 
@@ -94,4 +95,15 @@ export function verifyReviewIntegrity(input: {
     verifiedStates,
     externalExecution: 'disabled',
   };
+}
+
+export async function readReviewIntegrity(reviewerUid: string, checkedAt = new Date().toISOString()) {
+  const database = getAdminFirestore();
+  const [reviews, states, audits] = await Promise.all([
+    database.collection('anosaEvidenceReviews').where('reviewerUid', '==', reviewerUid).limit(100).get(),
+    database.collection('anosaEvidenceReviewStates').where('reviewerUid', '==', reviewerUid).limit(100).get(),
+    database.collection('auditEvents').where('actorUid', '==', reviewerUid).limit(150).get(),
+  ]);
+  const map = (snapshot: FirebaseFirestore.QuerySnapshot) => snapshot.docs.map((document) => ({ id: document.id, data: document.data() }));
+  return verifyReviewIntegrity({ reviewerUid, reviews: map(reviews), states: map(states), audits: map(audits), checkedAt });
 }

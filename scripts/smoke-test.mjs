@@ -280,6 +280,29 @@ try {
   assert.equal(reviewIntegrity.integrity.status, 'unavailable');
   assert.equal(reviewIntegrity.integrity.externalExecution, 'disabled');
 
+  const integrityIncidentsResponse = await fetch(`${baseUrl}/api/anosa/integrity-incidents`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const integrityIncidents = await integrityIncidentsResponse.json();
+  assert.equal(integrityIncidentsResponse.status, 200);
+  assert.deepEqual(integrityIncidents.incidents, []);
+  assert.equal(integrityIncidents.status, 'unavailable');
+  assert.equal(integrityIncidents.externalExecution, 'disabled');
+
+  const integrityMonitorResponse = await fetch(`${baseUrl}/api/anosa/integrity-incidents`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'run_integrity_check' }), signal: AbortSignal.timeout(10_000),
+  });
+  const integrityMonitor = await integrityMonitorResponse.json();
+  assert.equal(integrityMonitorResponse.status, 200);
+  assert.equal(integrityMonitor.status, 'unavailable');
+  assert.equal(integrityMonitor.externalExecution, 'disabled');
+
+  const integrityReportResponse = await fetch(`${baseUrl}/api/anosa/integrity-report`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  assert.equal(integrityReportResponse.status, 412);
+
   const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
@@ -304,7 +327,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.7.0-review-audit-integrity');
+  assert.equal(health.version, '3.8.0-integrity-incident-response');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',
