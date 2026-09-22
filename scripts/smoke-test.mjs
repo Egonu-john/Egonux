@@ -254,7 +254,7 @@ try {
 
   const reviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ evidenceKind: 'decision', evidenceId: decision.decision.id, state: 'escalated', reason: 'Founder escalation for additional evidence review.' }),
+    body: JSON.stringify({ operation: 'review', evidenceKind: 'decision', evidenceId: decision.decision.id, state: 'escalated', reason: 'Founder escalation for additional evidence review.', requestId: 'smoke-review-request-1' }),
     signal: AbortSignal.timeout(10_000),
   });
   const review = await reviewResponse.json();
@@ -263,6 +263,22 @@ try {
   assert.equal(review.review.persistence, 'device');
   assert.equal(review.externalExecution, 'disabled');
   assert.match(review.review.contentHash, /^[a-f0-9]{64}$/);
+
+  const invalidReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'review', evidenceKind: 'decision', evidenceId: decision.decision.id, state: 'approved', reason: 'Missing the required replay identifier.' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  assert.equal(invalidReviewResponse.status, 400);
+
+  const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
+  });
+  const controlledReview = await controlledReviewResponse.json();
+  assert.equal(controlledReviewResponse.status, 201);
+  assert.equal(controlledReview.event.evidenceKind, 'controlled_test');
+  assert.equal(controlledReview.externalExecution, 'disabled');
 
   const sitemapResponse = await fetch(`${baseUrl}/sitemap.xml`, {
     signal: AbortSignal.timeout(10_000),
@@ -279,7 +295,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.5.0-human-review-lifecycle');
+  assert.equal(health.version, '3.6.0-review-policy-hardening');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

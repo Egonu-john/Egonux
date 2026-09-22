@@ -27,7 +27,7 @@ export default function handler(
 
   response.status(200).json({
     service: 'EGONUX OS',
-    version: '3.5.0-human-review-lifecycle',
+    version: '3.6.0-review-policy-hardening',
     environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development',
     mode: 'sandbox',
     status: 'healthy',

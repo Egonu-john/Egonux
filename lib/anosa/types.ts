@@ -67,7 +67,7 @@ export interface AnosaExecutionIntent {
 
 export interface AnosaAuditEvent {
   id: string;
-  evidenceKind: 'decision' | 'execution_intent' | 'canary';
+  evidenceKind: 'decision' | 'execution_intent' | 'canary' | 'controlled_test';
   evidenceId: string;
   type: string;
   occurredAt: string;
@@ -90,10 +90,11 @@ export interface AnosaEvidenceVerification {
 }
 
 export type AnosaReviewState = 'approved' | 'rejected' | 'escalated';
+export type AnosaReviewEvidenceKind = 'decision' | 'execution_intent' | 'controlled_test';
 
 export interface AnosaEvidenceReview {
   id: string;
-  evidenceKind: 'decision' | 'execution_intent';
+  evidenceKind: AnosaReviewEvidenceKind;
   evidenceId: string;
   state: AnosaReviewState;
   reason: string;
@@ -101,5 +102,7 @@ export interface AnosaEvidenceReview {
   reviewerUid: string;
   contentHash: string;
   externalExecution: 'disabled';
+  requestId: string;
+  previousReviewId?: string;
   persistence?: 'firestore' | 'device';
 }
