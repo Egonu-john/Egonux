@@ -303,6 +303,25 @@ try {
   });
   assert.equal(integrityReportResponse.status, 412);
 
+  const recoveryDrillsResponse = await fetch(`${baseUrl}/api/anosa/recovery-drills`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const recoveryDrills = await recoveryDrillsResponse.json();
+  assert.equal(recoveryDrillsResponse.status, 200);
+  assert.deepEqual(recoveryDrills.drills, []);
+  assert.equal(recoveryDrills.status, 'unavailable');
+  assert.equal(recoveryDrills.externalExecution, 'disabled');
+
+  const recoveryDrillResponse = await fetch(`${baseUrl}/api/anosa/recovery-drills`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'run_containment_recovery_drill', requestId: 'smoke-recovery-drill-1' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const recoveryDrill = await recoveryDrillResponse.json();
+  assert.equal(recoveryDrillResponse.status, 200);
+  assert.equal(recoveryDrill.status, 'unavailable');
+  assert.equal(recoveryDrill.externalExecution, 'disabled');
+
   const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
@@ -327,7 +346,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.8.0-integrity-incident-response');
+  assert.equal(health.version, '3.9.0-containment-recovery-drill');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

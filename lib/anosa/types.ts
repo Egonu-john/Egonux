@@ -134,3 +134,20 @@ export interface AnosaIntegrityIncident {
   immutable: true;
   externalExecution: 'disabled';
 }
+
+export interface AnosaRecoveryDrill {
+  id: string;
+  requestId: string;
+  scenario: 'controlled_integrity_isolation';
+  status: 'recovered';
+  containment: 'isolated';
+  recovery: 'verified';
+  runAt: string;
+  actorUid: string;
+  checkedReceipts: number;
+  verifiedReceipts: number;
+  verifiedStates: number;
+  contentHash: string;
+  immutable: true;
+  externalExecution: 'disabled';
+}

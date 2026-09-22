@@ -74,10 +74,11 @@ test('permanent evidence is founder-readable and client-immutable', async () => 
     await setDoc(doc(context.firestore(), 'anosaControlledReviewTests/test-1'), { actorUid: 'founder-1', immutable: true });
     await setDoc(doc(context.firestore(), 'anosaEvidenceReviewStates/state-1'), { reviewerUid: 'founder-1', state: 'escalated' });
     await setDoc(doc(context.firestore(), 'anosaIntegrityIncidents/incident-1'), { actorUid: 'founder-1', immutable: true });
+    await setDoc(doc(context.firestore(), 'anosaRecoveryDrills/drill-1'), { actorUid: 'founder-1', immutable: true });
   });
   const founder = environment.authenticatedContext('founder-1', { roles: ['founder'] }).firestore();
   const member = environment.authenticatedContext('member-5', { roles: ['member'] }).firestore();
-  for (const path of ['anosaDecisions/decision-1', 'anosaExecutionIntents/intent-1', 'anosaEvidenceCanaries/canary-1', 'anosaControlledReviewTests/test-1', 'anosaEvidenceReviewStates/state-1', 'anosaIntegrityIncidents/incident-1']) {
+  for (const path of ['anosaDecisions/decision-1', 'anosaExecutionIntents/intent-1', 'anosaEvidenceCanaries/canary-1', 'anosaControlledReviewTests/test-1', 'anosaEvidenceReviewStates/state-1', 'anosaIntegrityIncidents/incident-1', 'anosaRecoveryDrills/drill-1']) {
     await assertSucceeds(getDoc(doc(founder, path)));
     await assertFails(getDoc(doc(member, path)));
     await assertFails(setDoc(doc(founder, path), { forged: true }));
