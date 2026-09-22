@@ -141,7 +141,12 @@ export async function persistEvidenceReview(review: AnosaEvidenceReview) {
       throw new EvidenceReviewTransitionError('The requested review transition is not permitted.');
     }
     const previousReviewId = currentState.exists ? String(currentState.data()?.reviewId ?? '') : undefined;
-    const stored = { ...review, ...(previousReviewId ? { previousReviewId } : {}) };
+    const stored = {
+      ...review,
+      targetEvidenceKind: review.evidenceKind,
+      targetEvidenceId: review.evidenceId,
+      ...(previousReviewId ? { previousReviewId } : {}),
+    };
     transaction.create(reviewReference, {
       ...stored,
       ...immutableEnvelope('review', review.id, review.reviewerUid, review.contentHash, signature),

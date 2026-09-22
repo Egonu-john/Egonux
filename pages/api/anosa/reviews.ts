@@ -38,7 +38,9 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
         .where('reviewerUid', '==', principal.uid).orderBy('reviewedAt', 'desc').limit(50).get();
       const reviews = snapshot.docs.map((document) => {
         const data = document.data();
-        return { id: document.id, ...data, reviewedAt: isoDate(data.reviewedAt) } as AnosaEvidenceReview;
+        const evidenceKind = data.evidenceKind === 'review' && data.targetEvidenceKind ? data.targetEvidenceKind : data.evidenceKind;
+        const evidenceId = data.evidenceKind === 'review' && data.targetEvidenceId ? data.targetEvidenceId : data.evidenceId;
+        return { id: document.id, ...data, evidenceKind, evidenceId, reviewedAt: isoDate(data.reviewedAt) } as AnosaEvidenceReview;
       });
       return response.status(200).json({ reviews, persistence: 'firestore' });
     }

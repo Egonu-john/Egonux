@@ -271,6 +271,15 @@ try {
   });
   assert.equal(invalidReviewResponse.status, 400);
 
+  const reviewIntegrityResponse = await fetch(`${baseUrl}/api/anosa/review-integrity`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const reviewIntegrity = await reviewIntegrityResponse.json();
+  assert.equal(reviewIntegrityResponse.status, 200);
+  assert.equal(reviewIntegrity.integrity.phase, '3.7');
+  assert.equal(reviewIntegrity.integrity.status, 'unavailable');
+  assert.equal(reviewIntegrity.integrity.externalExecution, 'disabled');
+
   const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
@@ -295,7 +304,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '3.6.0-review-policy-hardening');
+  assert.equal(health.version, '3.7.0-review-audit-integrity');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

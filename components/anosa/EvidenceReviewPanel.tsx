@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Icon from '@/components/os/Icon';
-import type { AnosaAuditEvent, AnosaEvidenceReview, AnosaEvidenceVerification, AnosaReviewState } from '@/lib/anosa/types';
+import type { AnosaAuditEvent, AnosaEvidenceReview, AnosaEvidenceVerification, AnosaReviewIntegrity, AnosaReviewState } from '@/lib/anosa/types';
 import styles from '@/styles/AnosaMobile.module.css';
 
 export default function EvidenceReviewPanel({ verification }: { verification: AnosaEvidenceVerification | null }) {
@@ -12,6 +12,7 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
   const [notice, setNotice] = useState('');
   const [recording, setRecording] = useState(false);
   const [controlledTest, setControlledTest] = useState<AnosaAuditEvent | null>(null);
+  const [integrity, setIntegrity] = useState<AnosaReviewIntegrity | null>(null);
   const queue = [...(verification?.auditEvents.filter((event) => !event.verified) ?? []), ...(controlledTest ? [controlledTest] : [])];
 
   const startControlledTest = async () => {
@@ -32,6 +33,9 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
     fetch('/api/anosa/reviews').then((response) => response.ok ? response.json() : null)
       .then((body) => { if (Array.isArray(body?.reviews)) setReviews(body.reviews); })
       .catch(() => undefined);
+    fetch('/api/anosa/review-integrity').then((response) => response.ok ? response.json() : null)
+      .then((body) => { if (body?.integrity) setIntegrity(body.integrity); })
+      .catch(() => undefined);
   }, []);
 
   const record = async (state: AnosaReviewState) => {
@@ -46,6 +50,9 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
       if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') { void router.push('/login?next=/anosa'); return; }
       if (!response.ok) throw new Error(body.error || 'Evidence review could not be recorded.');
       setReviews((current) => [body.review as AnosaEvidenceReview, ...current].slice(0, 50));
+      fetch('/api/anosa/review-integrity').then((integrityResponse) => integrityResponse.ok ? integrityResponse.json() : null)
+        .then((integrityBody) => { if (integrityBody?.integrity) setIntegrity(integrityBody.integrity); })
+        .catch(() => undefined);
       setNotice(`${state} review recorded. External execution remained disabled.`);
       if (selected.id.startsWith('controlled-review:')) setControlledTest(null);
       setSelected(null); setReason('');
@@ -61,6 +68,7 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
       {!controlledTest ? <button className={styles.secondaryAction} disabled={recording} onClick={() => void startControlledTest()} type="button">{recording ? 'Creating controlled test…' : 'Run controlled review test'}</button> : null}
     </section>
     {reviews.length ? <section className={styles.history} aria-label="Human review receipts"><div className={styles.sectionHeading}><div><span>REVIEW RECEIPTS</span><h2>Human review history</h2></div><small>{reviews.length} recorded</small></div>{reviews.slice(0, 10).map((review) => <article key={review.id}><Icon name="check" size={15} /><div><strong>{review.reason}</strong><small>{review.evidenceKind.replace('_', ' ')} · {review.contentHash.slice(0, 10)}</small></div><em data-state={review.state}>{review.state}</em></article>)}</section> : null}
+    {integrity ? <section className={styles.verificationCard} data-status={integrity.status} aria-label="Review audit integrity"><div><Icon name={integrity.status === 'verified' ? 'check' : 'lock'} size={18} /><span><small>PHASE 3.7 · ADMINISTRATIVE OVERSIGHT</small><strong>{integrity.status === 'verified' ? 'Review ledger integrity verified' : integrity.status === 'attention' ? 'Review ledger needs attention' : 'Cloud review verification pending'}</strong></span></div><p>{integrity.verifiedReceipts} of {integrity.checkedReceipts} receipts verified · {integrity.verifiedStates} of {integrity.currentStates} current states verified · {integrity.brokenReceipts} broken receipts</p><em>EXTERNAL EXECUTION DISABLED</em></section> : null}
     {selected ? <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setSelected(null)}><section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="evidence-review-title" onMouseDown={(event) => event.stopPropagation()}><div className={styles.modalHandle} /><span className={styles.modalEyebrow}>PHASE 3.5 · HUMAN REVIEW</span><h2 id="evidence-review-title">Review evidence exception</h2><p>{selected.type.replace('anosa.', '').replace(/\./g, ' ')}</p><div className={styles.proposalMeta}><div><strong>Evidence</strong><small>{selected.evidenceKind.replace('_', ' ')} · {selected.evidenceId}</small></div><div><strong>Integrity</strong><small>{selected.contentHash.slice(0, 20)} · v{selected.schemaVersion}</small></div></div><label className={styles.reviewComposer}><span>Review reason</span><textarea maxLength={2000} minLength={12} onChange={(event) => setReason(event.target.value)} placeholder="Explain the decision (minimum 12 characters)…" value={reason} /></label><div className={styles.impact}><Icon name="lock" size={18} /><span><strong>Simulation-only boundary</strong><small>This review records evidence only. It cannot send, publish, transfer, deploy, or change access.</small></span></div><div className={styles.modalActionsThree}><button disabled={reason.trim().length < 12 || recording} onClick={() => record('rejected')} type="button">Reject</button><button disabled={reason.trim().length < 12 || recording} onClick={() => record('escalated')} type="button">Escalate</button><button disabled={reason.trim().length < 12 || recording} onClick={() => record('approved')} type="button">{recording ? 'Recording…' : 'Approve'}</button></div><button className={styles.closeModal} onClick={() => setSelected(null)} type="button" aria-label="Close"><Icon name="close" /></button></section></div> : null}
   </>;
 }

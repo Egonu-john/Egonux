@@ -106,3 +106,15 @@ export interface AnosaEvidenceReview {
   previousReviewId?: string;
   persistence?: 'firestore' | 'device';
 }
+
+export interface AnosaReviewIntegrity {
+  phase: '3.7';
+  status: 'verified' | 'attention' | 'unavailable';
+  checkedAt: string;
+  checkedReceipts: number;
+  verifiedReceipts: number;
+  brokenReceipts: number;
+  currentStates: number;
+  verifiedStates: number;
+  externalExecution: 'disabled';
+}
