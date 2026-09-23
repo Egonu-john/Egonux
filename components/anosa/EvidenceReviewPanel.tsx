@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Icon from '@/components/os/Icon';
-import type { AnosaAuditEvent, AnosaEvidenceReview, AnosaEvidenceVerification, AnosaIntegrityIncident, AnosaRecoveryDrill, AnosaReleaseSimulation, AnosaReleaseWorkstream, AnosaReviewIntegrity, AnosaReviewState } from '@/lib/anosa/types';
+import type { AnosaAuditEvent, AnosaEvidenceReview, AnosaEvidenceVerification, AnosaIntegrityIncident, AnosaRecoveryDrill, AnosaReleaseSimulation, AnosaReleaseWorkstream, AnosaReviewIntegrity, AnosaReviewState, AnosaWorkPackage, AnosaWorkPackageRegistrySnapshot } from '@/lib/anosa/types';
 import styles from '@/styles/AnosaMobile.module.css';
 
 export default function EvidenceReviewPanel({ verification }: { verification: AnosaEvidenceVerification | null }) {
@@ -17,9 +17,12 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
   const [recoveryDrills, setRecoveryDrills] = useState<AnosaRecoveryDrill[]>([]);
   const [releaseManifest, setReleaseManifest] = useState<{ version: string; manifestHash: string; workstreams: AnosaReleaseWorkstream[] } | null>(null);
   const [releaseSimulations, setReleaseSimulations] = useState<AnosaReleaseSimulation[]>([]);
+  const [workPackageRegistry, setWorkPackageRegistry] = useState<{ version: string; registryHash: string; packages: AnosaWorkPackage[] } | null>(null);
+  const [registrySnapshots, setRegistrySnapshots] = useState<AnosaWorkPackageRegistrySnapshot[]>([]);
   const [monitoring, setMonitoring] = useState(false);
   const [drilling, setDrilling] = useState(false);
   const [simulatingRelease, setSimulatingRelease] = useState(false);
+  const [recordingRegistry, setRecordingRegistry] = useState(false);
   const queue = [...(verification?.auditEvents.filter((event) => !event.verified) ?? []), ...(controlledTest ? [controlledTest] : [])];
 
   const startControlledTest = async () => {
@@ -53,6 +56,11 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
       .then((body) => {
         if (body?.manifest) setReleaseManifest(body.manifest);
         if (Array.isArray(body?.simulations)) setReleaseSimulations(body.simulations);
+      }).catch(() => undefined);
+    fetch('/api/anosa/work-packages').then((response) => response.ok ? response.json() : null)
+      .then((body) => {
+        if (body?.registry) setWorkPackageRegistry(body.registry);
+        if (Array.isArray(body?.snapshots)) setRegistrySnapshots(body.snapshots);
       }).catch(() => undefined);
   }, []);
 
@@ -125,6 +133,24 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
     finally { setSimulatingRelease(false); }
   };
 
+  const recordRegistry = async () => {
+    if (recordingRegistry) return;
+    setRecordingRegistry(true);
+    try {
+      const response = await fetch('/api/anosa/work-packages', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'record_work_package_registry', requestId: crypto.randomUUID() }),
+      });
+      const body = await response.json();
+      if (response.status === 428 && body.code === 'STEP_UP_REQUIRED') { void router.push('/login?next=/anosa'); return; }
+      if (!response.ok) throw new Error(body.error || 'Work-package registry could not be recorded.');
+      if (body.registry) setWorkPackageRegistry(body.registry);
+      if (body.snapshot) setRegistrySnapshots((current) => [body.snapshot as AnosaWorkPackageRegistrySnapshot, ...current.filter((item) => item.id !== body.snapshot.id)].slice(0, 25));
+      setNotice('Work-package registry recorded. KYC/AML remains planning-only and external execution stayed disabled.');
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Work-package registry failed closed.'); }
+    finally { setRecordingRegistry(false); }
+  };
+
   const record = async (state: AnosaReviewState) => {
     if (!selected || reason.trim().length < 12 || recording) return;
     setRecording(true);
@@ -166,6 +192,15 @@ export default function EvidenceReviewPanel({ verification }: { verification: An
       </> : <article><Icon name="lock" size={15} /><div><strong>Release manifest loading</strong><small>Dependency gates remain closed until verified.</small></div><em>locked</em></article>}
       {releaseSimulations.slice(0, 3).map((simulation) => <article key={simulation.id}><Icon name="check" size={15} /><div><strong>Release readiness simulated</strong><small>{simulation.readyWorkstreams} ready · {simulation.blockedWorkstreams} gated · no deployment</small></div><em data-state="approved">{simulation.status}</em></article>)}
       <button className={styles.secondaryAction} disabled={simulatingRelease || integrity?.status !== 'verified' || recoveryDrills.length === 0} onClick={() => void runReleaseReadinessSimulation()} type="button">{simulatingRelease ? 'Simulating release readiness…' : 'Run release readiness simulation'}</button>
+    </section>
+    <section className={styles.history} aria-label="MVP work-package registry">
+      <div className={styles.sectionHeading}><div><span>PHASE 4.1 · WORK CONTROL</span><h2>Work-package registry</h2></div><small>{registrySnapshots.length} verified</small></div>
+      {workPackageRegistry ? <>
+        <article><Icon name="check" size={15} /><div><strong>Registry v{workPackageRegistry.version}</strong><small>{workPackageRegistry.packages.length} packages · {workPackageRegistry.registryHash.slice(0, 10)}</small></div><em>controlled</em></article>
+        {workPackageRegistry.packages.slice(4, 7).map((workPackage) => <article key={workPackage.id}><Icon name={workPackage.status === 'complete' ? 'check' : 'lock'} size={15} /><div><strong>{workPackage.sequence}. {workPackage.name}</strong><small>{workPackage.owner} · {workPackage.risk} risk · {workPackage.acceptanceEvidence.length} controls</small></div><em data-state={workPackage.status === 'complete' ? 'approved' : undefined}>{workPackage.status.replace('-', ' ')}</em></article>)}
+      </> : <article><Icon name="lock" size={15} /><div><strong>Work-package registry loading</strong><small>Registry recording remains locked until verified.</small></div><em>locked</em></article>}
+      {registrySnapshots.slice(0, 3).map((snapshot) => <article key={snapshot.id}><Icon name="check" size={15} /><div><strong>Registry snapshot recorded</strong><small>{snapshot.completePackages} complete · {snapshot.plannedPackages} planned · {snapshot.gatedPackages} gated</small></div><em data-state="approved">{snapshot.status}</em></article>)}
+      <button className={styles.secondaryAction} disabled={recordingRegistry || releaseSimulations.length === 0} onClick={() => void recordRegistry()} type="button">{recordingRegistry ? 'Recording registry…' : 'Record work-package registry'}</button>
     </section>
     {selected ? <div className={styles.modalBackdrop} role="presentation" onMouseDown={() => setSelected(null)}><section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="evidence-review-title" onMouseDown={(event) => event.stopPropagation()}><div className={styles.modalHandle} /><span className={styles.modalEyebrow}>PHASE 3.5 · HUMAN REVIEW</span><h2 id="evidence-review-title">Review evidence exception</h2><p>{selected.type.replace('anosa.', '').replace(/\./g, ' ')}</p><div className={styles.proposalMeta}><div><strong>Evidence</strong><small>{selected.evidenceKind.replace('_', ' ')} · {selected.evidenceId}</small></div><div><strong>Integrity</strong><small>{selected.contentHash.slice(0, 20)} · v{selected.schemaVersion}</small></div></div><label className={styles.reviewComposer}><span>Review reason</span><textarea maxLength={2000} minLength={12} onChange={(event) => setReason(event.target.value)} placeholder="Explain the decision (minimum 12 characters)…" value={reason} /></label><div className={styles.impact}><Icon name="lock" size={18} /><span><strong>Simulation-only boundary</strong><small>This review records evidence only. It cannot send, publish, transfer, deploy, or change access.</small></span></div><div className={styles.modalActionsThree}><button disabled={reason.trim().length < 12 || recording} onClick={() => record('rejected')} type="button">Reject</button><button disabled={reason.trim().length < 12 || recording} onClick={() => record('escalated')} type="button">Escalate</button><button disabled={reason.trim().length < 12 || recording} onClick={() => record('approved')} type="button">{recording ? 'Recording…' : 'Approve'}</button></div><button className={styles.closeModal} onClick={() => setSelected(null)} type="button" aria-label="Close"><Icon name="close" /></button></section></div> : null}
   </>;

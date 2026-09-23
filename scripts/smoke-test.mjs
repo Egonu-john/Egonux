@@ -344,6 +344,30 @@ try {
   assert.equal(releaseSimulation.status, 'unavailable');
   assert.equal(releaseSimulation.externalExecution, 'disabled');
 
+  const workPackagesResponse = await fetch(`${baseUrl}/api/anosa/work-packages`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  const workPackages = await workPackagesResponse.json();
+  assert.equal(workPackagesResponse.status, 200);
+  assert.equal(workPackages.registry.version, '4.1.0');
+  assert.equal(workPackages.registry.packages.length, 13);
+  assert.equal(workPackages.registry.packages[5].id, 'kyc-aml');
+  assert.equal(workPackages.registry.packages[5].status, 'planned');
+  assert.match(workPackages.registry.registryHash, /^[a-f0-9]{64}$/);
+  assert.deepEqual(workPackages.snapshots, []);
+  assert.equal(workPackages.status, 'unavailable');
+  assert.equal(workPackages.externalExecution, 'disabled');
+
+  const registryRecordResponse = await fetch(`${baseUrl}/api/anosa/work-packages`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ operation: 'record_work_package_registry', requestId: 'smoke-work-package-registry-1' }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  const registryRecord = await registryRecordResponse.json();
+  assert.equal(registryRecordResponse.status, 200);
+  assert.equal(registryRecord.status, 'unavailable');
+  assert.equal(registryRecord.externalExecution, 'disabled');
+
   const controlledReviewResponse = await fetch(`${baseUrl}/api/anosa/reviews`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ operation: 'create_controlled_test' }), signal: AbortSignal.timeout(10_000),
@@ -368,7 +392,7 @@ try {
   assert.equal(healthResponse.headers.get('cache-control'), 'no-store');
   assert.equal(health.status, 'healthy');
   assert.equal(health.mode, 'sandbox');
-  assert.equal(health.version, '4.0.0-release-command-center');
+  assert.equal(health.version, '4.1.0-work-package-registry');
 
   const rejectedResponse = await fetch(`${baseUrl}/api/health`, {
     method: 'POST',

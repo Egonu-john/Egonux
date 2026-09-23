@@ -47,6 +47,14 @@
         { "fieldPath": "actorUid", "order": "ASCENDING" },
         { "fieldPath": "simulatedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "anosaWorkPackageRegistries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "actorUid", "order": "ASCENDING" },
+        { "fieldPath": "recordedAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

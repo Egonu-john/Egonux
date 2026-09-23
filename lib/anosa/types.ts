@@ -180,3 +180,32 @@ export interface AnosaReleaseSimulation {
   immutable: true;
   externalExecution: 'disabled';
 }
+
+export interface AnosaWorkPackage {
+  id: string;
+  name: string;
+  sequence: number;
+  owner: string;
+  risk: 'low' | 'medium' | 'high';
+  status: 'complete' | 'planned' | 'dependency-gated';
+  dependencies: string[];
+  acceptanceEvidence: string[];
+}
+
+export interface AnosaWorkPackageRegistrySnapshot {
+  id: string;
+  requestId: string;
+  registryVersion: '4.1.0';
+  registryHash: string;
+  status: 'recorded';
+  recordedAt: string;
+  actorUid: string;
+  packageCount: number;
+  completePackages: number;
+  plannedPackages: number;
+  gatedPackages: number;
+  releaseSimulationId: string;
+  contentHash: string;
+  immutable: true;
+  externalExecution: 'disabled';
+}
