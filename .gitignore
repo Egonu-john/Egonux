@@ -39,3 +39,4 @@ yarn-error.log*
 # generated framework agent hints
 /AGENTS.md
 /CLAUDE.md
+firestore-debug.log
