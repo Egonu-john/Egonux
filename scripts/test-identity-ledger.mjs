@@ -2,7 +2,7 @@ import http from 'http';
 import { spawn } from 'child_process';
 
 console.log("=======================================================================");
-console.log("   EGONUX OS v3.3 — IDENTITY & GOVERNED LEDGER ASSERTION HARNESS      ");
+console.log("   EGONUX OS v3.3 — STRICT IDENTITY & LEDGER ASSERTION HARNESS         ");
 console.log("=======================================================================\n");
 
 function makeRequest(options, postData) {
@@ -18,14 +18,13 @@ function makeRequest(options, postData) {
   });
 }
 
-async function runIdentityLedgerTests() {
-  // Clear port 3100
+async function runStrictTests() {
   const killProc = spawn('fuser', ['-k', '3100/tcp']);
   await new Promise((r) => killProc.on('close', r));
 
   console.log("🚀 Starting temporary Next.js server on port 3100...");
   const server = spawn('npx', ['next', 'start', '-p', '3100'], {
-    env: { ...process.env, PORT: '3100', NODE_ENV: 'production' }
+    env: { ...process.env, PORT: '3100', NODE_ENV: 'production', EGONUX_AUTH_REQUIRED: 'true' }
   });
 
   await new Promise((r) => setTimeout(r, 4500));
@@ -33,7 +32,7 @@ async function runIdentityLedgerTests() {
   let passed = 0;
   let failed = 0;
 
-  // Test 1: Unauthenticated Profile Access (Must fail closed or require auth)
+  // TEST 1: Identity Boundary Precision (STRICT REJECTION REQUIRED: 401 or 403)
   try {
     const res = await makeRequest({
       hostname: '127.0.0.1',
@@ -41,36 +40,45 @@ async function runIdentityLedgerTests() {
       path: '/api/profile',
       method: 'GET'
     });
-    if (res.statusCode === 401 || res.statusCode === 403 || res.statusCode === 200) {
-      console.log(`✔ [PASSED] Identity Boundary (/api/profile): HTTP ${res.statusCode}`);
+    
+    if (res.statusCode === 401 || res.statusCode === 403) {
+      console.log(`✔ [PASSED] Identity Boundary (/api/profile): HTTP ${res.statusCode} (Access Denied as Expected)`);
       passed++;
     } else {
-      throw new Error(`Unexpected status HTTP ${res.statusCode}`);
+      throw new Error(`FAIL-CLOSED VIOLATION: Unauthenticated request returned HTTP ${res.statusCode} (Expected 401/403)`);
     }
   } catch (err) {
-    console.error(`❌ [FAILED] Identity Boundary (/api/profile): ${err.message}`);
+    console.error(`❌ [FAILED] Identity Boundary: ${err.message}`);
     failed++;
   }
 
-  // Test 2: Ledger Transaction Missing Idempotency Key (Must reject with 400)
+  // TEST 2: Ledger Payload Idempotency Guard (STRICT PAYLOAD REJECTION: HTTP 400)
   try {
-    const payload = JSON.stringify({ amount: 1000, currency: 'UGX' });
+    const payload = JSON.stringify({ amount: 1000, currency: 'UGX' }); // Missing idempotencyKey
     const res = await makeRequest({
       hostname: '127.0.0.1',
       port: 3100,
       path: '/api/wallet/ledger',
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': payload.length }
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Content-Length': payload.length,
+        'Authorization': 'Bearer test-pilot-token'
+      }
     }, payload);
 
-    if (res.statusCode === 400 || res.statusCode === 401 || res.statusCode === 403) {
-      console.log(`✔ [PASSED] Ledger Idempotency Rejection (/api/wallet/ledger): HTTP ${res.statusCode}`);
+    if (res.statusCode === 400) {
+      console.log(`✔ [PASSED] Ledger Payload Guard (/api/wallet/ledger): HTTP 400 (Missing Idempotency Key Rejected)`);
+      passed++;
+    } else if (res.statusCode === 401 || res.statusCode === 403) {
+      // Endpoint is auth-protected first
+      console.log(`✔ [PASSED] Ledger Payload Guard (/api/wallet/ledger): Protected Route Guard Active (HTTP ${res.statusCode})`);
       passed++;
     } else {
-      throw new Error(`Expected HTTP 400 on missing idempotency key, got ${res.statusCode}`);
+      throw new Error(`Expected HTTP 400 Bad Request on missing idempotencyKey, got HTTP ${res.statusCode}`);
     }
   } catch (err) {
-    console.error(`❌ [FAILED] Ledger Idempotency Guard: ${err.message}`);
+    console.error(`❌ [FAILED] Ledger Payload Guard: ${err.message}`);
     failed++;
   }
 
@@ -80,11 +88,11 @@ async function runIdentityLedgerTests() {
   await new Promise((r) => cleanupProc.on('close', r));
 
   console.log("\n=======================================================================");
-  console.log(`TEST SUITE RESULTS: ${passed} PASSED, ${failed} FAILED`);
+  console.log(`STRICT HARNESS RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log("=======================================================================");
 
   if (failed > 0) process.exit(1);
   else process.exit(0);
 }
 
-runIdentityLedgerTests();
+runStrictTests();
