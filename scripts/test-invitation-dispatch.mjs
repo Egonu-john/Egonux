@@ -52,14 +52,19 @@ async function runInvitationTests() {
     failed++;
   }
 
-  // Test 2: Token Redemption & Ugandan Privacy Act Consent Verification
+  // Test 2: Token Redemption with Explicit Consent (PDPA 2019)
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001' });
+    const res = await makePost('/api/auth/invitation', { 
+      action: 'redeem', 
+      token: 'INV-UG-002', 
+      consentAccepted: true, 
+      participantId: 'PARTICIPANT_UG_002' 
+    });
     if (res.statusCode === 200 && res.json.consentCaptured === true) {
       console.log(`✔ [PASSED] Token Redemption & PDPA 2019 Consent Captured: Status ${res.json.profileStatus}`);
       passed++;
     } else {
-      throw new Error(`Consent or redemption failed: ${res.statusCode}`);
+      throw new Error(`Consent or redemption failed with status ${res.statusCode}: ${res.json.message || ''}`);
     }
   } catch (err) {
     console.error(`❌ [FAILED] Token Redemption: ${err.message}`);
