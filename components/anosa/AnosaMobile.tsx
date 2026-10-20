@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAnosaContext } from '@/lib/anosa/useAnosaContext';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Icon from '@/components/os/Icon';
 import EvidenceReviewPanel from '@/components/anosa/EvidenceReviewPanel';
@@ -84,6 +85,13 @@ function decisionLabel(state: AnosaProposal['state']) {
 
 export default function AnosaMobile({ principal, previewMode }: AnosaMobileProps) {
   const router = useRouter();
+  const anosaContextState = useAnosaContext();
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[ANOSA Runtime Status]:", anosaContextState.status);
+    }
+  }, [anosaContextState.status]);
+  // Runtime context state: ${anosaContextState.status}
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [approvals, setApprovals] = useState<AnosaProposal[]>(initialApprovals);
   const [selectedId, setSelectedId] = useState<string | null>(null);
