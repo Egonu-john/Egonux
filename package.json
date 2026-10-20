@@ -13,7 +13,8 @@
     "test:smoke": "export NODE_ENV=development; export EGONUX_AUTH_REQUIRED=false; node scripts/smoke-test.mjs",
     "check": "npm run lint && npm run typecheck && npm run build && npm run test:smoke",
     "check:backend": "npm run lint && npm run typecheck && npm run test:rules",
-    "test:v33": "node scripts/test-identity-ledger.mjs"
+    "test:v33": "node scripts/test-identity-ledger.mjs",
+    "test:v33-full": "npm run typecheck && npm run build && npm run test:v33"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
