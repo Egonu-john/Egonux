@@ -1,4 +1,4 @@
-name: EGONUX TIRP integrity foundation
+name: EGONUX TIRP integrity tests
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Verify TIRP foundation
+    name: Verify TIRP integrity, release policy and recovery
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,29 +28,5 @@ jobs:
         with:
           node-version: 24
 
-      - name: Test integrity manifest and tamper detection
-        run: node --test tests/tirp-integrity.test.mjs
-
-  attest-source:
-    name: Attest validated source snapshot
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-      attestations: write
-      artifact-metadata: write
-    steps:
-      - name: Check out exact source commit
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Create source archive for the validated commit
-        run: git archive --format=tar.gz --output=egonux-source-${GITHUB_SHA}.tar.gz "${GITHUB_SHA}"
-
-      - name: Generate GitHub artifact attestation
-        uses: actions/attest@v4
-        with:
-          subject-path: egonux-source-${{ github.sha }}.tar.gz
+      - name: Test TIRP controls
+        run: npm run test:tirp

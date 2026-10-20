@@ -15,11 +15,12 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 25
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -45,11 +46,36 @@ jobs:
       - name: Test Firestore authorization rules
         run: npm run test:rules
 
+      - name: Test TIRP integrity, release policy and recovery validation
+        run: npm run test:tirp
+
       - name: Build production bundle
         run: npm run build
 
-      - name: Smoke-test production routes
+      - name: Smoke-test public routes and anonymous API denial
         run: npm run test:smoke
 
-      - name: Test TIRP integrity and tamper detection
-        run: node --test tests/tirp-integrity.test.mjs
+  attest-source:
+    name: Attest source snapshot after full quality gate
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Check out exact validated commit
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Create source archive for the validated commit
+        run: git archive --format=tar.gz --output=egonux-source-${GITHUB_SHA}.tar.gz "${GITHUB_SHA}"
+
+      - name: Generate GitHub artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: egonux-source-${{ github.sha }}.tar.gz
