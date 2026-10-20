@@ -34,9 +34,12 @@ This document describes implemented foundation controls and planned controls sep
 - A dependency-free Node.js CLI creates and verifies SHA-256 manifests for explicitly selected regular files.
 - Verification rejects missing files, changed contents, malformed manifests, duplicate entries, symlinks and unsafe relative paths.
 - Automated tests exercise successful verification and negative/tampering cases.
-- A dedicated GitHub Actions workflow runs the TIRP tests. On pushes to `main`, after validation succeeds, it creates a source archive for the exact commit and requests a GitHub artifact attestation.
+- The dedicated TIRP workflow runs integrity, release-policy and recovery validation tests on pull requests and pushes to `main`.
+- The main quality-gate workflow creates a source archive attestation only after lint, type-check, Firestore rules tests, TIRP tests, production build and smoke tests all pass on a push to `main`.
+- `scripts/tirp-release.mjs` verifies an archive's GitHub artifact attestation against the expected repository, signer workflow and source ref.
+- `scripts/tirp-recovery.mjs` validates recovery-bundle file hashes in read-only mode and never restores, overwrites or deletes data.
 
-The manifest CLI is a drift detector, not a signature system. A party able to replace both a file and its manifest can produce a matching pair. Keep the expected manifest in a separately protected location or sign/attest the release artifact and verify that attestation against an explicit policy. The source archive attestation establishes provenance for that source archive; it does not, by itself, prove that a Vercel deployment is enforcing integrity or that the application build is safe.
+The manifest CLI is a drift detector, not a signature system. A party able to replace both a file and its manifest can produce a matching pair. Keep the expected manifest in a separately protected location. GitHub artifact attestations provide keyless cryptographic provenance for the source archive; no long-lived private signing key is committed to the repository. This attestation does not, by itself, prove that a Vercel deployment is enforcing integrity or that the application build is safe.
 
 ## CLI
 
@@ -80,7 +83,7 @@ The future operational audit event should include: event ID, UTC timestamp, envi
 
 ## Not yet implemented / production gates
 
-This foundation does **not** yet configure GitHub branch protection, a protected signing key, independent immutable production audit storage, a backup vault, automatic runtime isolation, deployment-time attestation enforcement, Vercel rollback automation or production data restoration. These require separate configuration, credentials, provider permissions and end-to-end tests. The workflow does not automatically deploy or change production.
+This foundation does **not** yet configure GitHub branch protection, independent immutable production audit storage, a backup vault, automatic runtime isolation, deployment-time attestation enforcement, Vercel rollback automation or production data restoration. These require separate configuration, credentials, provider permissions and end-to-end tests. GitHub branch-protection settings were not accessible to the integration, so the repository owner must configure required checks and review rules in GitHub Settings. The workflow does not automatically deploy or change production.
 
 ## Acceptance criteria
 
