@@ -36,6 +36,14 @@ export function IdentityView() {
 
   return (
     <div className={styles.view}>
+      
+      {/* ANOSA Quick Hub Navigation */}
+      <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
+        <a href="/login" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🔑 Identity Portal</a>
+        <a href="/docs/sdk" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🛠️ Developer SDK</a>
+        <a href="/docs/analytics" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>📈 Financial Intelligence</a>
+      </div>
+  
       <ViewHeader
         description="Your trusted passport across every EGONUX service, secured by one policy and one recovery system."
         eyebrow="Core layer 01"
