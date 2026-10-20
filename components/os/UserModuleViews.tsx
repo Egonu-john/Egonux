@@ -1,6 +1,7 @@
+import WalletLedgerView from "@/components/wallet/WalletLedgerView";
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
-import { communityChannels, courses, products, transactions } from '@/lib/os-data';
+import { communityChannels, courses, products } from '@/lib/os-data';
 import type { ActionRequest } from '@/types/egonux';
 import Icon from './Icon';
 import styles from '@/styles/OS.module.css';
@@ -112,58 +113,10 @@ interface WalletViewProps {
   onAction: (action: ActionRequest['type']) => void;
 }
 
-export function WalletView({ onAction }: WalletViewProps) {
+export function WalletView(_props: WalletViewProps) {
   return (
-    <div className={styles.view}>
-      <ViewHeader
-        description="One protected ledger for deposits, transfers, withdrawals, QR payments and savings vaults."
-        eyebrow="Core layer 02 · Sandbox"
-        title="EGONUX Wallet"
-        action={<button className={styles.outlineButton} type="button"><Icon name="qr" size={17} /> Show payment QR</button>}
-      />
-
-      <section className={styles.walletHeroGrid}>
-        <article className={styles.balanceCardLarge}>
-          <div className={styles.balanceTopline}><div><span>Total portfolio</span><button type="button">All accounts</button></div><span className={styles.verifiedPill}><Icon name="lock" size={13} /> Protected</span></div>
-          <strong>UGX 1,250,000</strong>
-          <small>Indicative equivalent · USD 338.42</small>
-          <div className={styles.walletActionRow}>
-            <button onClick={() => onAction('Deposit')} type="button"><Icon name="arrow-down" /> Deposit</button>
-            <button onClick={() => onAction('Transfer')} type="button"><Icon name="send" /> Transfer</button>
-            <button onClick={() => onAction('Withdraw')} type="button"><Icon name="arrow-up" /> Withdraw</button>
-          </div>
-        </article>
-        <article className={styles.panel}>
-          <span className={styles.eyebrow}>Multi-currency accounts</span>
-          <div className={styles.currencyList}>
-            <div><span className={styles.currencyFlag}>UG</span><div><strong>Ugandan Shilling</strong><small>Primary account</small></div><strong>1,250,000 <small>UGX</small></strong></div>
-            <div><span className={styles.currencyFlag}>US</span><div><strong>US Dollar</strong><small>Available in Phase 2</small></div><strong>0.00 <small>USD</small></strong></div>
-            <div><span className={styles.currencyFlag}>EU</span><div><strong>Euro</strong><small>Available in Phase 2</small></div><strong>0.00 <small>EUR</small></strong></div>
-          </div>
-        </article>
-      </section>
-
-      <section className={styles.vaultGrid}>
-        <article className={styles.vaultCard}><span><Icon name="security" /></span><div><small>Emergency vault</small><strong>UGX 420,000</strong><div className={styles.progressTrack}><span style={{ width: '56%' }} /></div><em>56% of UGX 750,000 target</em></div></article>
-        <article className={styles.vaultCard}><span><Icon name="marketplace" /></span><div><small>Business growth</small><strong>UGX 285,000</strong><div className={styles.progressTrack}><span style={{ width: '38%' }} /></div><em>38% of UGX 750,000 target</em></div></article>
-        <button className={styles.addVaultCard} type="button"><span><Icon name="plus" /></span><strong>Create savings vault</strong><small>Automate a new goal</small></button>
-      </section>
-
-      <section className={styles.panel}>
-        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Ledger</span><h2>Transaction history</h2></div><button className={styles.outlineButton} type="button">Export statement <Icon name="arrow-down" size={15} /></button></div>
-        <div className={styles.transactionListFull}>
-          {transactions.map((transaction) => (
-            <div className={styles.transactionRow} key={transaction.id}>
-              <span className={`${styles.transactionIcon} ${transaction.direction === 'in' ? styles.transactionIn : ''}`}><Icon name={transaction.direction === 'in' ? 'arrow-down' : 'arrow-up'} size={17} /></span>
-              <div className={styles.transactionName}><strong>{transaction.merchant}</strong><span>{transaction.detail} · {transaction.id}</span></div>
-              <span className={`${styles.statusPill} ${transaction.status === 'Review' ? styles.statusWarning : ''}`}>{transaction.status}</span>
-              <div className={styles.transactionAmount}><strong className={transaction.direction === 'in' ? styles.positiveText : ''}>{transaction.direction === 'in' ? '+' : '-'}{transaction.amount}</strong><span>{transaction.date}</span></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <p className={styles.legalBanner}><Icon name="security" size={17} /> Sandbox only. Real deposits, withdrawals, transfers, custody and currency services remain disabled until applicable licences and regulated partners are in place.</p>
+    <div className="space-y-6">
+      <WalletLedgerView />
     </div>
   );
 }
