@@ -145,11 +145,13 @@ try {
   // Production smoke tests intentionally run without a founder session.
   // Every ANOSA API route must reject anonymous access before exposing private
   // context, evidence, release state, recovery state, or decision records.
-  for (const route of ["/api/anosa/context","/api/anosa/evidence-health","/api/anosa/evidence-verification","/api/anosa/ask","/api/anosa/decisions","/api/anosa/intents","/api/anosa/reviews","/api/anosa/review-integrity","/api/anosa/integrity-incidents","/api/anosa/integrity-report","/api/anosa/recovery-drills","/api/anosa/release-command","/api/anosa/work-packages"]) {
-    const response = await fetch(`${baseUrl}${route}`, {
+  for (const route of [{"path":"/api/anosa/context","method":"GET"},{"path":"/api/anosa/evidence-health","method":"GET"},{"path":"/api/anosa/evidence-verification","method":"GET"},{"path":"/api/anosa/ask","method":"POST","body":{"question":"Prepare a security smoke-test brief"}},{"path":"/api/anosa/decisions","method":"GET"},{"path":"/api/anosa/intents","method":"GET"},{"path":"/api/anosa/reviews","method":"GET"},{"path":"/api/anosa/review-integrity","method":"GET"},{"path":"/api/anosa/integrity-incidents","method":"GET"},{"path":"/api/anosa/integrity-report","method":"GET"},{"path":"/api/anosa/recovery-drills","method":"GET"},{"path":"/api/anosa/release-command","method":"GET"},{"path":"/api/anosa/work-packages","method":"GET"}]) {
+    const response = await fetch(`${baseUrl}${route.path}`, {
+      method: route.method,
+      ...(route.body ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(route.body) } : {}),
       signal: AbortSignal.timeout(10_000),
     });
-    assert.equal(response.status, 401, `Expected anonymous access to ${route} to be rejected`);
+    assert.equal(response.status, 401, `Expected anonymous access to ${route.path} to be rejected`);
     const body = await response.json();
     assert.equal(body.error, 'Authentication required.');
   }
