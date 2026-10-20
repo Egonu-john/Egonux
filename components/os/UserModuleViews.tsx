@@ -304,3 +304,76 @@ export function CommunityView({ onToast }: { onToast?: (msg: string) => void }) 
     </div>
   );
 }
+
+
+export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
+  const [apiKey, setApiKey] = useState("egx_live_99a84f7b20e14c");
+  const [copiedKey, setCopiedKey] = useState(false);
+  const [themeAccent, setThemeAccent] = useState("Royal Gold (#D4AF37)");
+  const [autoReconcile, setAutoReconcile] = useState(true);
+
+  const copyApiKey = async () => {
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      setCopiedKey(true);
+      if (onToast) onToast("API key copied to clipboard!");
+      setTimeout(() => setCopiedKey(false), 2500);
+    } catch {
+      if (onToast) onToast("API Key: " + apiKey);
+    }
+  };
+
+  const handleRotateKey = () => {
+    const newKey = "egx_live_" + Math.random().toString(36).substring(2, 16);
+    setApiKey(newKey);
+    if (onToast) onToast("Security API Key rotated successfully!");
+  };
+
+  return (
+    <div className={styles.view}>
+      <ViewHeader
+        description="Configure ecosystem parameters, developer API keys, UI theme standards, and security controls."
+        eyebrow="Core Layer 10 • System Configuration"
+        title="EGONUX System Settings"
+        action={<span className={styles.statusPill}>System Status: Optimal</span>}
+      />
+
+      <section className={styles.twoColumnGrid}>
+        <article className={styles.panel}>
+          <span className={styles.eyebrow}>Developer & API Security</span>
+          <h3>Live Sandbox API Key</h3>
+          <p className={styles.mutedText}>Used for authenticating local SDK calls and WebSocket feeds.</p>
+          <div className={styles.referralLink}>
+            <span>{apiKey}</span>
+            <button onClick={copyApiKey} type="button">{copiedKey ? "Copied!" : "Copy"}</button>
+          </div>
+          <button onClick={handleRotateKey} type="button" className={styles.outlineButton} style={{ marginTop: "12px" }}>
+            Rotate Secret Key
+          </button>
+        </article>
+
+        <article className={styles.panel}>
+          <span className={styles.eyebrow}>Appearance & Themes</span>
+          <h3>Visual Identity Standard</h3>
+          <p className={styles.mutedText}>Current Active Accent: <strong>{themeAccent}</strong></p>
+          <div className={styles.tabContainer} style={{ marginTop: "16px" }}>
+            <button onClick={() => { setThemeAccent("Royal Gold (#D4AF37)"); if(onToast) onToast("Theme set to Royal Gold!"); }} className={styles.activeTab}>Royal Gold</button>
+            <button onClick={() => { setThemeAccent("Cyber Emerald (#10B981)"); if(onToast) onToast("Theme set to Cyber Emerald!"); }}>Cyber Emerald</button>
+          </div>
+        </article>
+      </section>
+
+      <section className={styles.panel} style={{ marginTop: "20px" }}>
+        <div className={styles.sectionTitleRowCompact}>
+          <div>
+            <span className={styles.eyebrow}>Automated Ledger Rules</span>
+            <h2>Auto-Reconciliation Engine</h2>
+          </div>
+          <button onClick={() => { setAutoReconcile(!autoReconcile); if(onToast) onToast("Auto-reconciliation " + (!autoReconcile ? "enabled" : "disabled")); }} type="button" className={styles.primaryButton}>
+            {autoReconcile ? "Status: Enabled" : "Status: Disabled"}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
