@@ -50,3 +50,6 @@ jobs:
 
       - name: Smoke-test production routes
         run: npm run test:smoke
+
+      - name: Test TIRP integrity and tamper detection
+        run: node --test tests/tirp-integrity.test.mjs
