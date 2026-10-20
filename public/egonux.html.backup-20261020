@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EGONUX - Wealth Central Hub</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #030305;
+      color: #E2E8F0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      padding: 20px 12px 40px;
+    }
+
+    /* BRAND HEADERS */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      background: linear-gradient(135deg, #FFF5C0 0%, #E5B842 40%, #B8860B 70%, #785109 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(229, 184, 66, 0.3);
+    }
+
+    .brand-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: #D4AF37;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* MAIN CONTAINER GRID */
+    .dashboard-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 280px 1fr 300px;
+      }
+    }
+
+    /* GLASS CARD CONTAINER */
+    .glass-card {
+      background: rgba(14, 16, 22, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 12px rgba(212, 175, 55, 0.05);
+      backdrop-filter: blur(12px);
+      position: relative;
+    }
+
+    .glass-card-glow {
+      border-color: rgba(212, 175, 55, 0.45);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.15), inset 0 0 15px rgba(212, 175, 55, 0.08);
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #F3E5AB;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* EMBLEM LOGO */
+    .emblem-box {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 12px;
+      border: 2px solid #D4AF37;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(10, 10, 14, 0.9) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .emblem-crown {
+      font-size: 20px;
+      color: #FFD700;
+      margin-bottom: -2px;
+    }
+
+    .emblem-monogram {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFF099, #D4AF37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* GRID ITEM BOXES */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(22, 24, 32, 0.9);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 10px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: #FFD700;
+      background: rgba(212, 175, 55, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .icon-symbol {
+      font-size: 18px;
+      color: #D4AF37;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .icon-label {
+      font-size: 9px;
+      color: #A1A1AA;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* LIST ITEM ROWS */
+    .list-row {
+      background: rgba(18, 20, 28, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .list-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFD700;
+      font-size: 12px;
+    }
+
+    /* FINTECH VIRTUAL CARD */
+    .credit-card {
+      background: linear-gradient(135deg, #A87A1E 0%, #4A330B 50%, #111116 100%);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      border-radius: 14px;
+      padding: 14px;
+      color: #FFFFFF;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+      margin-bottom: 14px;
+    }
+
+    .card-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: #FFF099;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card-number {
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      margin: 16px 0 10px;
+      color: #F3E5AB;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #D4AF37;
+      letter-spacing: 0.1em;
+    }
+
+    /* CHART GRAPH */
+    .chart-container {
+      height: 90px;
+      background: rgba(8, 9, 12, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      padding: 10px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, rgba(212, 175, 55, 0.2), #D4AF37);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .total-wealth {
+      font-size: 22px;
+      font-family: monospace;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-top: 4px;
+    }
+
+    .badge-live {
+      font-size: 8px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-family: monospace;
+    }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(212, 175, 55, 0.7);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1 class="brand-title">EGONUX</h1>
+    <p class="brand-subtitle">Wealth Central Hub</p>
+  </header>
+
+  <!-- DASHBOARD MAIN LAYOUT -->
+  <main class="dashboard-grid">
+
+    <!-- LEFT COLUMN: GAME HUB -->
+    <section class="glass-card">
+      <div class="card-title">🎮 Game Hub</div>
+
+      <div class="icon-grid">
+        <div class="icon-btn">
+          <span class="icon-symbol">🎮</span>
+          <span class="icon-label">Games</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">🏆</span>
+          <span class="icon-label">Ranks</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">🎖️</span>
+          <span class="icon-label">Rewards</span>
+        </div>
+      </div>
+
+      <div class="card-title" style="font-size: 10px; color: #A1A1AA; margin-bottom: 8px;">Featured Games</div>
+
+      <div class="list-row">
+        <div class="list-info">
+          <div class="list-icon">🐉</div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #FFF;">Cyber Quest</div>
+            <div style="font-size: 9px; color: #71717A;">P2E Arena</div>
+          </div>
+        </div>
+        <span style="color: #71717A; font-size: 10px;">›</span>
+      </div>
+
+      <div class="list-row">
+        <div class="list-info">
+          <div class="list-icon">⚔️</div>
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #FFF;">Apex Conquest</div>
+            <div style="font-size: 9px; color: #71717A;">Strategy</div>
+          </div>
+        </div>
+        <span style="color: #71717A; font-size: 10px;">›</span>
+      </div>
+    </section>
+
+    <!-- CENTER COLUMN: E-COMMERCE & MARKETPLACE -->
+    <section class="glass-card glass-card-glow" style="text-align: center;">
+      
+      <!-- EMBLEM -->
+      <div class="emblem-box">
+        <span class="emblem-crown">👑</span>
+        <span class="emblem-monogram">EG</span>
+      </div>
+
+      <div class="card-title" style="justify-content: center; font-size: 14px;">E-Commerce & Marketplace</div>
+      <p style="font-size: 10px; color: #A1A1AA; margin-bottom: 16px;">Luxury Tech, Apparel & Digital Assets</p>
+
+      <div class="product-grid">
+        <div class="icon-btn">
+          <span class="icon-symbol">💻</span>
+          <span class="icon-label">Tech</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">🎧</span>
+          <span class="icon-label">Audio</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">👔</span>
+          <span class="icon-label">Apparel</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">🧥</span>
+          <span class="icon-label">Suits</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">⌚</span>
+          <span class="icon-label">Watches</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">📱</span>
+          <span class="icon-label">Mobile</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">💎</span>
+          <span class="icon-label">Jewelry</span>
+        </div>
+        <div class="icon-btn">
+          <span class="icon-symbol">👟</span>
+          <span class="icon-label">Sneakers</span>
+        </div>
+      </div>
+
+      <!-- AFFILIATE DASHBOARD PERFORMANCE -->
+      <div style="margin-top: 20px; text-align: left;">
+        <div class="card-title" style="font-size: 11px;">Affiliate Dashboard Performance</div>
+        <div class="chart-container">
+          <div class="chart-bar" style="height: 35%;"></div>
+          <div class="chart-bar" style="height: 55%;"></div>
+          <div class="chart-bar" style="height: 45%;"></div>
+          <div class="chart-bar" style="height: 75%;"></div>
+          <div class="chart-bar" style="height: 60%;"></div>
+          <div class="chart-bar" style="height: 95%; background: #FFD700; box-shadow: 0 0 10px #FFD700;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: FINTECH SERVICES -->
+    <section class="glass-card">
+      <div class="card-title">💳 Fintech Services</div>
+
+      <!-- VIRTUAL CARD -->
+      <div class="credit-card">
+        <div class="card-brand">
+          <span>EGONUX</span>
+          <span>📡</span>
+        </div>
+        <div class="card-number">1234 5678 1256 7890</div>
+        <div class="card-meta">
+          <span>CREDIT CARD</span>
+          <span>EXP 12/28</span>
+        </div>
+      </div>
+
+      <!-- TOTAL WEALTH -->
+      <div style="background: rgba(10, 11, 15, 0.9); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 12px; padding: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 9px; color: #A1A1AA; text-transform: uppercase;">Total Wealth</span>
+          <span class="badge-live">• LIVE</span>
+        </div>
+        <div class="total-wealth">$1,635.00</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER SIGNATURE -->
+  <footer class="footer">
+    EGONU JOHN WILLIAM
+  </footer>
+
+</body>
+</html>

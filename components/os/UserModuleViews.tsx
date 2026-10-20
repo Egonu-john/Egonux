@@ -1,7 +1,7 @@
 import WalletLedgerView from "@/components/wallet/WalletLedgerView";
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
-import { useMemo, useState } from 'react';
-import { communityChannels, courses, products } from '@/lib/os-data';
+import { useState } from 'react';
+import { communityChannels } from '@/lib/os-data';
 import type { ActionRequest } from '@/types/egonux';
 import Icon from './Icon';
 import styles from '@/styles/OS.module.css';
@@ -123,124 +123,61 @@ export function WalletView(_props: WalletViewProps) {
 
 interface MarketplaceViewProps {
   onAddToCart: (title: string) => void;
+
+  onToast?: (msg: string) => void;
 }
 
-export function MarketplaceView({ onAddToCart }: MarketplaceViewProps) {
-  const [category, setCategory] = useState('All');
-  const categories = ['All', ...Array.from(new Set(products.map((product) => product.category)))];
-  const visibleProducts = useMemo(
-    () => category === 'All' ? products : products.filter((product) => product.category === category),
-    [category]
-  );
+export function MarketplaceView({ onToast, onAddToCart }: MarketplaceViewProps) {
+  const [cartCount, setCartCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("products");
+
+  const handleAddToCart = (title: string) => {
+    setCartCount(prev => prev + 1);
+    if (onAddToCart) {
+      onAddToCart(title);
+    }
+    if (onToast) {
+      onToast("Added " + title + " to your cart!");
+    }
+  };
 
   return (
     <div className={styles.view}>
       <ViewHeader
-        description="Discover verified digital products, business services and selected physical goods from trusted vendors."
-        eyebrow="Core layer 03"
+        description="Explore verified digital goods, cloud capacity, developer utilities, and ecosystem assets."
+        eyebrow="Core Layer 03 • Digital Commerce"
         title="EGONUX Marketplace"
-        action={<button className={styles.primaryButtonSmall} type="button"><Icon name="plus" size={16} /> Become a vendor</button>}
+        action={<span className={styles.statusPill}>Cart ({cartCount})</span>}
       />
-      <section className={styles.marketBanner}>
-        <div><span className={styles.eyebrow}>Built for digital builders</span><h2>Turn knowledge into an asset.</h2><p>Premium tools, services and resources curated for your next move.</p><button type="button">Explore featured collection <Icon name="chevron-right" size={16} /></button></div>
-        <div className={styles.marketOrb}><span>EGX</span><small>CURATED</small></div>
-      </section>
-      <div className={styles.filterRow}>
-        <div className={styles.filterTabs}>
-          {categories.map((item) => <button className={category === item ? styles.filterActive : ''} key={item} onClick={() => setCategory(item)} type="button">{item}</button>)}
-        </div>
-        <span>{visibleProducts.length} verified listings</span>
+      <div className={styles.tabContainer}>
+        <button onClick={() => setActiveTab("products")} className={activeTab === "products" ? styles.activeTab : ""}>Featured Assets</button>
+        <button onClick={() => setActiveTab("orders")} className={activeTab === "orders" ? styles.activeTab : ""}>Recent Orders</button>
       </div>
-      <section className={styles.productGrid}>
-        {visibleProducts.map((product) => (
-          <article className={styles.productCard} key={product.id}>
-            <div className={styles.productArtwork} style={{ '--product-accent': product.accent } as CSSProperties}>
-              <span>{product.icon}</span><small>{product.type}</small>
-            </div>
-            <div className={styles.productBody}>
-              <span>{product.category}<em>★ {product.rating}</em></span>
-              <h2>{product.title}</h2>
-              <p>by {product.vendor}</p>
-              <div><strong>{product.price}</strong><button aria-label={`Add ${product.title} to cart`} onClick={() => onAddToCart(product.title)} type="button"><Icon name="cart" size={17} /> Add</button></div>
-            </div>
-          </article>
-        ))}
-      </section>
-      <section className={styles.vendorCallout}><span><Icon name="marketplace" /></span><div><small>Vendor program</small><h2>Build your storefront on shared EGONUX infrastructure.</h2><p>Identity verification, orders, reviews, analytics and payouts—one operational foundation.</p></div><button className={styles.outlineButton} type="button">Read vendor standards <Icon name="external" size={15} /></button></section>
-    </div>
-  );
-}
-
-interface LearnViewProps { onToast: (message: string) => void; }
-
-export function LearnView({ onToast }: LearnViewProps) {
-  return (
-    <div className={styles.view}>
-      <ViewHeader
-        description="Structured learning paths, practical assessments, progress tracking and verifiable credentials."
-        eyebrow="Core layer 04"
-        title="EGONUX Learn"
-        action={<button className={styles.outlineButton} type="button"><Icon name="identity" size={17} /> My certificates</button>}
-      />
-      <section className={styles.learningStats}>
-        <div><span><Icon name="learn" /></span><strong>3</strong><small>Active courses</small></div>
-        <div><span><Icon name="play" /></span><strong>14.2h</strong><small>Time invested</small></div>
-        <div><span><Icon name="check" /></span><strong>28</strong><small>Lessons completed</small></div>
-        <div><span><Icon name="identity" /></span><strong>2</strong><small>Certificates earned</small></div>
-      </section>
-      <section className={styles.sectionBlock}>
-        <div className={styles.sectionTitleRow}><div><span className={styles.eyebrow}>Your learning</span><h2>Continue building</h2></div><button className={styles.textButton} type="button">View full catalog <Icon name="chevron-right" size={15} /></button></div>
-        <div className={styles.courseGrid}>
-          {courses.map((course) => (
-            <article className={styles.courseCard} key={course.id}>
-              <div className={styles.courseArtwork} style={{ '--course-accent': course.accent } as CSSProperties}><span>{course.track}</span><Icon name="learn" size={34} /></div>
-              <div className={styles.courseBody}>
-                <span>{course.level}<em>{course.duration}</em></span><h2>{course.title}</h2><p>{course.lessons} practical lessons · assessment included</p>
-                <div className={styles.progressTrack}><span style={{ width: `${course.progress}%` }} /></div>
-                <div><small>{course.progress > 0 ? `${course.progress}% complete` : 'Ready to start'}</small><button onClick={() => onToast(`${course.title} opened in sandbox learning mode.`)} type="button"><Icon name={course.progress > 0 ? 'play' : 'plus'} size={15} /> {course.progress > 0 ? 'Resume' : 'Start'}</button></div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className={styles.learningPath}>
-        <div><span className={styles.eyebrow}>Recommended path</span><h2>Digital Wealth Builder</h2><p>A 12-week path from financial foundations through AI-enabled digital enterprise.</p><div className={styles.pathMeta}><span>6 courses</span><span>4 projects</span><span>1 verified credential</span></div><button className={styles.primaryButtonSmall} onClick={() => onToast('Digital Wealth Builder path saved to your plan.')} type="button">Add path to my plan <Icon name="plus" size={16} /></button></div>
-        <div className={styles.pathSteps}><span className={styles.pathStepDone}><Icon name="check" size={15} /> Money foundations</span><span className={styles.pathStepActive}>02 · AI fluency</span><span>03 · Digital business</span><span>04 · Market launch</span></div>
-      </section>
-    </div>
-  );
-}
-
-interface CommunityViewProps { onToast: (message: string) => void; }
-
-export function CommunityView({ onToast }: CommunityViewProps) {
-  const [joined, setJoined] = useState<Record<string, boolean>>(() => Object.fromEntries(communityChannels.map((channel) => [channel.id, channel.joined])));
-  return (
-    <div className={styles.view}>
-      <ViewHeader description="Trusted groups, channels, announcements and events connected to your universal identity." eyebrow="Core layer 05" title="EGONUX Community" action={<button className={styles.primaryButtonSmall} type="button"><Icon name="plus" size={16} /> Create a group</button>} />
-      <section className={styles.communityBanner}><div><span className={styles.eyebrow}>Founder announcement</span><h2>Execution is the bridge between vision and impact.</h2><p>Register interest in the next EGONUX OS v3.0.1 builder briefing and product walkthrough.</p><button onClick={() => onToast('Interest recorded in sandbox mode.')} type="button">Register interest <Icon name="chevron-right" size={16} /></button></div><div><strong>TBA</strong><span>DATE</span><small>Schedule pending · Live</small></div></section>
-      <section className={styles.twoColumnGrid}>
+      <section className={styles.threeColumnGrid}>
         <article className={styles.panel}>
-          <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Discover</span><h2>Channels for your goals</h2></div></div>
-          <div className={styles.channelList}>
-            {communityChannels.map((channel) => (
-              <div className={styles.channelRow} key={channel.id}><span>{channel.name.split(' ').map((word) => word[0]).join('').slice(0, 2)}</span><div><strong>{channel.name}</strong><small>{channel.topic} · {channel.members} members</small></div><button className={joined[channel.id] ? styles.joinedButton : ''} onClick={() => { setJoined((current) => ({ ...current, [channel.id]: !current[channel.id] })); onToast(joined[channel.id] ? `You left ${channel.name}.` : `You joined ${channel.name}.`); }} type="button">{joined[channel.id] ? <><Icon name="check" size={14} /> Joined</> : 'Join'}</button></div>
-            ))}
-          </div>
+          <span className={styles.eyebrow}>Developer Kit</span>
+          <h3>EGONUX SDK v3.0 License</h3>
+          <p className={styles.mutedText}>Full API keys, WebSocket feeds, and sandbox wallet tools.</p>
+          <strong>UGX 250,000</strong>
+          <button onClick={() => handleAddToCart("EGONUX SDK v3.0")} type="button" className={styles.primaryButton}>Add to Cart</button>
         </article>
         <article className={styles.panel}>
-          <span className={styles.eyebrow}>Community pulse</span><h2>What builders are discussing</h2>
-          <div className={styles.discussionList}>
-            <button type="button"><span>EW</span><div><strong>How should a founder structure the first 90 days?</strong><small>Wealth Builders Uganda · 42 replies</small></div></button>
-            <button type="button"><span>AI</span><div><strong>Five AI workflows saving our team 12 hours a week</strong><small>AI Builders Lab · 31 replies</small></div></button>
-            <button type="button"><span>CC</span><div><strong>Marketplace launch checklist for Ugandan creators</strong><small>Creator Commerce · 18 replies</small></div></button>
-          </div>
+          <span className={styles.eyebrow}>Cloud Resource</span>
+          <h3>High-Performance Compute Node</h3>
+          <p className={styles.mutedText}>Dedicated virtual container node for high-throughput background tasks.</p>
+          <strong>UGX 120,000 / mo</strong>
+          <button onClick={() => handleAddToCart("Compute Node")} type="button" className={styles.primaryButton}>Add to Cart</button>
+        </article>
+        <article className={styles.panel}>
+          <span className={styles.eyebrow}>Analytics Suite</span>
+          <h3>Real-time Ledger Monitor</h3>
+          <p className={styles.mutedText}>Automated transaction monitoring and payout reconciliation tool.</p>
+          <strong>UGX 85,000</strong>
+          <button onClick={() => handleAddToCart("Ledger Monitor")} type="button" className={styles.primaryButton}>Add to Cart</button>
         </article>
       </section>
-      <section className={styles.communitySafety}><Icon name="security" /><div><strong>Trust is designed into the community.</strong><span>Verified identities, reporting, moderation tools and an auditable community code protect every member.</span></div><button className={styles.textButton} type="button">Read community code <Icon name="external" size={14} /></button></section>
     </div>
-  );
-}
+  );}
 
 interface AffiliateViewProps { onToast: (message: string) => void; }
 
@@ -321,6 +258,48 @@ export function AIView() {
           <form className={styles.chatForm} onSubmit={submit}><label className={styles.srOnly} htmlFor="ai-prompt">Ask EGONUX AI</label><textarea id="ai-prompt" onChange={(event) => setPrompt(event.target.value)} placeholder="Ask about your goals, learning or business…" rows={2} value={prompt} /><button aria-label="Send message" disabled={!prompt.trim()} type="submit"><Icon name="send" /></button></form>
           <small className={styles.aiDisclaimer}>AI can make mistakes. Verify financial, legal and business decisions with qualified professionals.</small>
         </div>
+      </section>
+    </div>
+  );
+}
+
+
+export function LearnView({ onToast }: { onToast?: (msg: string) => void }) {
+  return (
+    <div className={styles.view}>
+      <ViewHeader
+        description="Access multi-volume manuscripts, engineering guides, and strategic leadership frameworks."
+        eyebrow="Core Layer 09 • Knowledge Base"
+        title="EGONUX Learn Hub"
+        action={<span className={styles.statusPill}>Library Active</span>}
+      />
+      <section className={styles.panel}>
+        <h2>EGONUX: Learn. Build. Grow. Lead.</h2>
+        <p className={styles.mutedText}>Explore curriculum modules and system documentation.</p>
+        <button onClick={() => onToast && onToast("Loaded curriculum module successfully!")} type="button" className={styles.primaryButton}>Load Curriculum</button>
+      </section>
+    </div>
+  );}
+
+
+export function CommunityView({ onToast }: { onToast?: (msg: string) => void }) {
+  return (
+    <div className={styles.view}>
+      <ViewHeader
+        description="Connect with fellow builders, founders, and community champions."
+        eyebrow="Core Layer 07 • Ecosystem Network"
+        title="EGONUX Community"
+        action={<span className={styles.statusPill}>Active Feed</span>}
+      />
+      <section className={styles.threeColumnGrid}>
+        {communityChannels.map((channel, i) => (
+          <article key={i} className={styles.panel}>
+            <span className={styles.eyebrow}>Channel</span>
+            <h3>{channel.name}</h3>
+            <p className={styles.mutedText}>{channel.topic || 'Active community channel'}</p>
+            <button onClick={() => onToast && onToast("Joined " + channel.name)} type="button" className={styles.primaryButton}>Join Channel</button>
+          </article>
+        ))}
       </section>
     </div>
   );
