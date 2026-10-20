@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 export default function InvestorPortalPage() {
-  const [systemState, setSystemState] = useState(null);
+  const [systemState, setSystemState] = useState<any>(null);
 
   useEffect(() => {
     fetch("/api/os/ecosystem")
@@ -53,19 +53,19 @@ export default function InvestorPortalPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", fontSize: "14px" }}>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>WALLETS & LEDGER</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>UGX {systemState.modules.wallet.balance.toLocaleString()} Balance</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>UGX {systemState.modules?.wallet?.balance?.toLocaleString() || 0} Balance</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>MARKETPLACE</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules.marketplace.activeListings} Active Asset Listings</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.marketplace?.activeListings || 0} Active Asset Listings</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>LEARNING & CERTS</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules.learning.activeModules} Active Academy Modules</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.learning?.activeModules || 0} Active Academy Modules</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>COMMUNITY</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules.community.activeMembers} Verified Ecosystem Members</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.community?.activeMembers || 0} Verified Ecosystem Members</p>
               </div>
             </div>
           ) : (
