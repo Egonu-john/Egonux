@@ -1,6 +1,4 @@
-const fs = require("fs");
-
-const opsDoc = `# SOVEREIGN LAUNCH OPERATIONS PLAYBOOK
+# SOVEREIGN LAUNCH OPERATIONS PLAYBOOK
 
 **Governance Standard**: ANOSA Operations & Compliance Standard (Phase 5 Launch)  
 **Jurisdiction**: Kampala, Uganda  
@@ -22,7 +20,7 @@ const opsDoc = `# SOVEREIGN LAUNCH OPERATIONS PLAYBOOK
 ## ⚖️ 2. Ugandan Data Protection Compliance Procedures
 
 ### Data Subject Requests (DSR):
-* **Access & Rectification**: Participants can request a complete export of stored profile data or request corrections via `/api/profile`.
+* **Access & Rectification**: Participants can request a complete export of stored profile data or request corrections via the profile API endpoint.
 * **Right to Erasure**: Hard-deletion procedures execute within 48 hours of verified request, removing user PII while preserving anonymized transaction hashes for ledger integrity auditing.
 * **Incident Notification**: Any potential data security incident will be reported to the Personal Data Protection Office (PDPO) within statutory timelines.
 
@@ -34,7 +32,3 @@ const opsDoc = `# SOVEREIGN LAUNCH OPERATIONS PLAYBOOK
 * **Recovery Time Objective (RTO)**: < 30 minutes.
 
 *ANOSA Framework — Operations & Compliance Standard.*
-`;
-
-fs.writeFileSync("SOVEREIGN_LAUNCH_OPERATIONS_PLAYBOOK.md", opsDoc);
-console.log("Successfully generated SOVEREIGN_LAUNCH_OPERATIONS_PLAYBOOK.md!");
