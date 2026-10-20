@@ -1,0 +1,32 @@
+name: EGONUX TIRP integrity tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: egonux-tirp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Verify TIRP integrity, release policy and recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Test TIRP controls
+        run: npm run test:tirp

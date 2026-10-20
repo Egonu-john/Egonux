@@ -15,11 +15,12 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 25
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -45,8 +46,59 @@ jobs:
       - name: Test Firestore authorization rules
         run: npm run test:rules
 
+      - name: Test TIRP integrity, release policy and recovery validation
+        run: npm run test:tirp
+
       - name: Build production bundle
         run: npm run build
 
-      - name: Smoke-test production routes
+      - name: Smoke-test public routes and anonymous API denial
         run: npm run test:smoke
+
+      - name: Package source and build-output evidence
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          printf '{"sourceCommit":"%s","workflowRunId":"%s","workflow":"%s"}\n' "$SOURCE_SHA" "$WORKFLOW_RUN_ID" "$GITHUB_WORKFLOW" > tirp-build-info.json
+          git archive --format=tar.gz --output="egonux-source-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          tar --exclude=.next/cache -czf "egonux-build-output-${SOURCE_SHA}.tar.gz" .next public package.json package-lock.json next.config.js tirp-build-info.json
+
+      - name: Upload release evidence for attestation
+        uses: actions/upload-artifact@v4
+        with:
+          name: egonux-release-evidence-${{ github.sha }}
+          path: |
+            egonux-source-${{ github.sha }}.tar.gz
+            egonux-build-output-${{ github.sha }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  attest-release-evidence:
+    name: Attest validated source and build-output archives
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Download evidence from the validated run
+        uses: actions/download-artifact@v4
+        with:
+          name: egonux-release-evidence-${{ github.sha }}
+          path: .tirp-artifacts
+
+      - name: Attest exact source archive
+        uses: actions/attest@v4
+        with:
+          subject-path: .tirp-artifacts/egonux-source-${{ github.sha }}.tar.gz
+
+      - name: Attest validated build-output archive
+        uses: actions/attest@v4
+        with:
+          subject-path: .tirp-artifacts/egonux-build-output-${{ github.sha }}.tar.gz
