@@ -35,7 +35,7 @@ This document describes implemented foundation controls and planned controls sep
 - Verification rejects missing files, changed contents, malformed manifests, duplicate entries, symlinks and unsafe relative paths.
 - Automated tests exercise successful verification and negative/tampering cases.
 - The dedicated TIRP workflow runs integrity, release-policy and recovery validation tests on pull requests and pushes to `main`.
-- The main quality-gate workflow creates a source archive attestation only after lint, type-check, Firestore rules tests, TIRP tests, production build and smoke tests all pass on a push to `main`.
+- The main quality-gate workflow creates attestations for both the source archive and a build-output archive only after lint, type-check, Firestore rules tests, TIRP tests, production build and smoke tests all pass on a push to `main`.
 - `scripts/tirp-release.mjs` verifies an archive's GitHub artifact attestation against the expected repository, signer workflow and source ref.
 - `scripts/tirp-recovery.mjs` validates recovery-bundle file hashes in read-only mode and never restores, overwrites or deletes data.
 

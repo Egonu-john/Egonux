@@ -2,9 +2,9 @@
 
 ## Release provenance and signing
 
-The source snapshot is attested only by the `attest-source` job in `.github/workflows/ci.yml`, after the full quality gate succeeds on a push to `main`. Pull requests cannot mint this attestation. GitHub Actions OIDC and GitHub artifact attestations provide keyless cryptographic provenance; no long-lived private signing key is stored in the repository.
+The source snapshot and the build-output archive are attested only by the `attest-release-evidence` job in `.github/workflows/ci.yml`, after the full quality gate succeeds on a push to `main`. Pull requests cannot mint this attestation. GitHub Actions OIDC and GitHub artifact attestations provide keyless cryptographic provenance; no long-lived private signing key is stored in the repository.
 
-The attested subject is a source archive of the exact validated commit. It is **not** the deployed Vercel build artifact and does not prove the application is vulnerability-free. Production deployment must remain disabled until a deployment integration verifies the actual artifact being deployed.
+The attested subjects are a source archive of the exact validated commit and a build-output archive containing `.next`, `public`, package metadata and build provenance. The build-output archive is not yet proven to be the exact deployed Vercel artifact, and neither attestation proves the application is vulnerability-free. Production deployment must remain disabled until a deployment integration verifies the actual artifact being deployed.
 
 ### Verify a source archive
 

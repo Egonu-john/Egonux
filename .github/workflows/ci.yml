@@ -55,27 +55,52 @@ jobs:
       - name: Smoke-test public routes and anonymous API denial
         run: npm run test:smoke
 
-  attest-source:
-    name: Attest source snapshot after full quality gate
+      - name: Package source and build-output evidence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          printf '{"sourceCommit":"%s","workflowRunId":"%s","workflow":"%s"}\n' "$SOURCE_SHA" "$WORKFLOW_RUN_ID" "$GITHUB_WORKFLOW" > tirp-build-info.json
+          git archive --format=tar.gz --output="egonux-source-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          tar --exclude=.next/cache -czf "egonux-build-output-${SOURCE_SHA}.tar.gz" .next public package.json package-lock.json next.config.js tirp-build-info.json
+
+      - name: Upload release evidence for attestation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: egonux-release-evidence-${{ github.sha }}
+          path: |
+            egonux-source-${{ github.sha }}.tar.gz
+            egonux-build-output-${{ github.sha }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  attest-release-evidence:
+    name: Attest validated source and build-output archives
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
+      actions: read
       id-token: write
       attestations: write
       artifact-metadata: write
     steps:
-      - name: Check out exact validated commit
-        uses: actions/checkout@v4
+      - name: Download evidence from the validated run
+        uses: actions/download-artifact@v4
         with:
-          persist-credentials: false
+          name: egonux-release-evidence-${{ github.sha }}
+          path: .tirp-artifacts
 
-      - name: Create source archive for the validated commit
-        run: git archive --format=tar.gz --output=egonux-source-${GITHUB_SHA}.tar.gz "${GITHUB_SHA}"
-
-      - name: Generate GitHub artifact attestation
+      - name: Attest exact source archive
         uses: actions/attest@v4
         with:
-          subject-path: egonux-source-${{ github.sha }}.tar.gz
+          subject-path: .tirp-artifacts/egonux-source-${{ github.sha }}.tar.gz
+
+      - name: Attest validated build-output archive
+        uses: actions/attest@v4
+        with:
+          subject-path: .tirp-artifacts/egonux-build-output-${{ github.sha }}.tar.gz
