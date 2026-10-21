@@ -53,7 +53,7 @@ export const WalletLedgerView: React.FC = () => {
       // Generate fresh idempotency key for next transaction
       setIdempotencyKey(`key_${Date.now()}`);
     } catch (err: unknown) {
-      setError(err.message || 'An unexpected error occurred.');
+      setError((err as Error)?.message || 'An unexpected error occurred.');
     } finally {
       setLoading(false);
     }

@@ -40,3 +40,5 @@ yarn-error.log*
 /AGENTS.md
 /CLAUDE.md
 firestore-debug.log
+.vercel
+.env*
