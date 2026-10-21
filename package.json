@@ -52,7 +52,8 @@
     "test:ch27": "npx tsx scripts/test-ch27-regulatory.mjs",
     "test:ch28": "npx tsx scripts/test-ch28-payments.mjs",
     "test:ch29": "npx tsx scripts/test-ch29-operations.mjs",
-    "test:ch30": "npx tsx scripts/test-ch30-pilot.mjs"
+    "test:ch30": "npx tsx scripts/test-ch30-pilot.mjs",
+    "test:pilot-dashboard": "npx tsx scripts/test-pilot-dashboard.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
