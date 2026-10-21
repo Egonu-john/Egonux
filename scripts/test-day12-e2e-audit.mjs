@@ -2,7 +2,7 @@ import http from 'http';
 import { spawn } from 'child_process';
 
 console.log("=======================================================================");
-console.log("   EGONUX OS v3.3 — DAY 12 FINAL END-TO-END PILOT AUDIT HARNESS        ");
+console.log("   EGONUX OS v3.3.14 — BETA READINESS & EVIDENCE INTEGRITY HARNESS     ");
 console.log("=======================================================================\n");
 
 function makeGet(path) {
@@ -31,24 +31,37 @@ async function runDay12AuditTests() {
   let passed = 0;
   let failed = 0;
 
-  // TEST 1: End-to-End Pilot Telemetry & Integrity Audit
+  // TEST 1: End-to-End Dynamic Observability Telemetry Check
   try {
     const res = await makeGet('/api/os/pilot-observability');
     if (res.statusCode === 200 && res.json.metrics && res.json.metrics.activeCohortSize === 2) {
-      console.log(`✔ [PASSED] 12-Day Alpha Pilot Audit Passed: Zero SEV-1/SEV-2 Incidents Across Trial Window`);
+      console.log(`✔ [PASSED] Dynamic Observability Verified: Active Cohort Size (${res.json.metrics.activeCohortSize})`);
       passed++;
     } else {
-      throw new Error(`Observability telemetry failed during final audit`);
+      throw new Error(`Observability telemetry response invalid or cohort cap unverified.`);
     }
   } catch (err) {
-    console.error(`❌ [FAILED] Final Audit Telemetry: ${err.message}`);
+    console.error(`❌ [FAILED] Telemetry Verification: ${err.message}`);
     failed++;
   }
 
-  // TEST 2: Final ANOSA Protocol Expansion Readiness
+  // TEST 2: ANOSA Evidence Integrity & Prerequisite Validation
   try {
-    console.log(`✔ [PASSED] ANOSA Governance Gate Satisfied: System Certified Ready for Founder Sign-Off`);
-    passed++;
+    const res = await makeGet('/api/os/pilot-observability');
+    const m = res.json.metrics;
+
+    // Validate that indicators are dynamic/verifiable and not degraded/unknown
+    if (
+      m.dataSource === 'VERIFIED_APPLICATION_MEMORY' &&
+      m.ledgerInvariants.reconciliationStatus === 'ZERO_DRIFT_VERIFIED' &&
+      m.consentCompliance.jurisdiction === 'Uganda PDPA 2019' &&
+      m.systemHealth.incidentTelemetry === 'HEALTHY'
+    ) {
+      console.log(`✔ [PASSED] ANOSA Prerequisites Verified: Ledger Zero-Drift & PDPA 2019 Dynamic Evidence Confirmed`);
+      passed++;
+    } else {
+      throw new Error(`Prerequisite check failed: Telemetry source or compliance indicators reported UNKNOWN/DEGRADED state.`);
+    }
   } catch (err) {
     console.error(`❌ [FAILED] ANOSA Gate Check: ${err.message}`);
     failed++;
@@ -59,7 +72,7 @@ async function runDay12AuditTests() {
   await new Promise((r) => cleanupProc.on('close', r));
 
   console.log("\n=======================================================================");
-  console.log(`DAY 12 FINAL AUDIT RESULTS: ${passed} PASSED, ${failed} FAILED`);
+  console.log(`BETA READINESS HARNESS RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log("=======================================================================");
 
   if (failed > 0) process.exit(1);
