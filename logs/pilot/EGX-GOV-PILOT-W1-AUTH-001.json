@@ -1,0 +1,58 @@
+{
+  "recordId": "EGX-GOV-PILOT-W1-AUTH-001",
+  "program": "EGONUX OS v3.6 Kampala Technical Pilot — Wave 1",
+  "title": "Founder Authorization Record — Wave 1 Invitation Dispatch",
+  "decisionOwner": "John William Egonu (Founder & CEO)",
+  "requestedDecision": "CONDITIONAL_GO",
+  "currentStatus": "PENDING_FOUNDER_DECISION",
+  "operatingMode": "SYNTHETIC_DATA_ONLY",
+  "realMoneyMovementAuthorized": false,
+  "linkedGovernanceEvidence": {
+    "rehearsalEvidence": "EGX-PILOT-W1-INV-001",
+    "cohortExpansionPreparation": "EGX-GOV-PILOT-W1-EXP-001",
+    "participantAndOperationsRegister": "EGX-GOV-PILOT-W1-OPS-001"
+  },
+  "proposedSourceBaseline": "36c2b97",
+  "scopeOfRequestedAuthorization": {
+    "maxApprovedParticipants": 10,
+    "environment": "Approved Staging Environment",
+    "permittedActions": [
+      "Dispatch of invitations to no more than 10 individually approved participants upon GO status",
+      "Use of approved staging environment for non-financial technical pilot",
+      "Testing of identity, redemption, consent, onboarding, support, and telemetry workflows",
+      "Recording pseudonymous participant events in designated governance system",
+      "Staged onboarding with review between batches"
+    ]
+  },
+  "mandatoryConditionsBeforeDispatch": [
+    { "condition": "Staging URL and deployed commit match approved baseline", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Server-side participant cap (10) and invitation authorization enforced", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Invitation expiry, single-use redemption, and replay rejection tested", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Required PDPA 2019 consent enforced prior to processing", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Personal information minimized, access-controlled, and off-chain isolated", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Operational owners and backups accepted assignments", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Support escalation, incident handling, pause authority, and rollback procedures actionable", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Monitoring reflects actual application events and identifies material failures", "status": "PENDING_VERIFICATION", "evidenceReference": null },
+    { "condition": "Real-money movement and live financial integrations remain strictly disabled", "status": "VERIFIED_LOCKED", "evidenceReference": "SYNTHETIC_DATA_ONLY mode active" },
+    { "condition": "Material unresolved security, privacy, operational, or eligibility issues resolved", "status": "PENDING_VERIFICATION", "evidenceReference": null }
+  ],
+  "stopConditions": [
+    "Authentication or authorization failure",
+    "Required consent bypassed",
+    "Invitation replay protection failure",
+    "Sensitive data exposure",
+    "Cohort limit exceeded",
+    "Monitoring materially misrepresents application events",
+    "Synthetic-only financial boundary cannot be demonstrated"
+  ],
+  "financialAndRegulatoryBoundary": "This record does not authorize real-money transactions, live deposits or withdrawals, or any regulated service requiring separate authorization.",
+  "founderDecisionRecord": {
+    "decision": "CONDITIONAL_GO",
+    "approver": "John William Egonu (Founder & CEO)",
+    "decisionTimestamp": "2026-10-22T01:04:00Z",
+    "approvedStagingUrl": "Pending runtime verification",
+    "approvedDeployedCommit": "36c2b97 (Subject to verification)",
+    "approvedParticipantLimit": 10,
+    "conditionsSummary": "Dispatch blocked until every specified precondition is satisfied and evidence reference is recorded."
+  }
+}
