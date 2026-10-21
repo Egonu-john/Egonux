@@ -1,0 +1,72 @@
+[35mpages/api/anosa/ask.ts[m[36m:[m[32m20[m[36m:[m    sourceIds: z.array(z.enum(['enterprise-mvp', 'anosa-mobile-v1', 'security-policy', 'github-main', 'deployment-health', 'decision-[1;31mledger[m', 'phase2-architecture'])).min(1).max(7),
+[35mpages/api/anosa/evidence-health.ts[m[36m:[m[32m19[m[36m:[m        error: 'Permanent cloud evidence is not activated. Complete workload identity and enable the [1;31mledger[m before running the canary.',
+[35mpages/api/anosa/evidence-health.ts[m[36m:[m[32m31[m[36m:[m    return response.status(503).json({ error: 'The permanent evidence canary failed. The cloud [1;31mledger[m was not promoted.', code: 'EVIDENCE_CANARY_FAILED' });
+[35mpages/api/anosa/integrity-incidents.ts[m[36m:[m[32m20[m[36m:[m    if (!firestoreLedgerEnabled()) return response.status(200).json({ [1;31mincident[ms: [], status: 'unavailable', persistence: 'device', externalExecution: 'disabled' });
+[35mpages/api/anosa/integrity-incidents.ts[m[36m:[m[32m22[m[36m:[m      const [1;31mincident[ms = await listIntegrityIncidents(principal.uid);
+[35mpages/api/anosa/integrity-incidents.ts[m[36m:[m[32m23[m[36m:[m      return response.status(200).json({ [1;31mincident[ms, persistence: 'firestore', externalExecution: 'disabled' });
+[35mpages/api/anosa/integrity-incidents.ts[m[36m:[m[32m34[m[36m:[m    console.error('ANOSA integrity [1;31mincident[m check failed.', error);
+[35mpages/api/anosa/integrity-incidents.ts[m[36m:[m[32m35[m[36m:[m    return response.status(503).json({ error: 'Integrity monitoring is temporarily unavailable. No [1;31mincident[m was changed.' });
+[35mpages/api/anosa/integrity-report.ts[m[36m:[m[32m19[m[36m:[m    const [integrity, [1;31mincident[ms] = await Promise.all([
+[35mpages/api/anosa/integrity-report.ts[m[36m:[m[32m24[m[36m:[m      scope: 'Founder review [1;31mledger[m and integrity [1;31mincident[ms', integrity, [1;31mincident[ms,
+[35mpages/api/anosa/intents.ts[m[36m:[m[32m19[m[36m:[m  [1;31midempotency[mKey: z.string().min(12).max(200),
+[35mpages/api/anosa/intents.ts[m[36m:[m[32m75[m[36m:[m    const id = intentDocumentId(principal.uid, input.[1;31midempotency[mKey);
+[35mpages/api/anosa/intents.ts[m[36m:[m[32m87[m[36m:[m      [1;31midempotency[mKey: input.[1;31midempotency[mKey,
+[35mpages/api/auth/invitation.js[m[36m:[m[32m15[m[36m:[m    const { token, action, [1;31mconsent[mAccepted, participantId } = req.body || {};
+[35mpages/api/auth/invitation.js[m[36m:[m[32m27[m[36m:[m        notice: "Ugandan Data Protection & Privacy Act (2019) [1;31mconsent[m required upon redemption.",
+[35mpages/api/auth/invitation.js[m[36m:[m[32m65[m[36m:[m      if (![1;31mconsent[mAccepted) {
+[35mpages/api/auth/invitation.js[m[36m:[m[32m66[m[36m:[m        return res.status(400).json({ error: 'CONSENT_REQUIRED', message: 'Explicit [1;31mconsent[m under PDPA 2019 is required.' });
+[35mpages/api/auth/invitation.js[m[36m:[m[32m78[m[36m:[m        [1;31mconsent[mCaptured: true,
+[35mpages/api/consents/index.ts[m[36m:[m[32m26[m[36m:[m    const collection = getAdminFirestore().collection('users').doc(principal.uid).collection('[1;31mconsent[ms');
+[35mpages/api/consents/index.ts[m[36m:[m[32m31[m[36m:[m        [1;31mconsent[ms: snapshot.docs.map((document) => ({ id: document.id, ...document.data() })),
+[35mpages/api/consents/index.ts[m[36m:[m[32m56[m[36m:[m      type: '[1;31mconsent[m.recorded',
+[35mpages/api/consents/index.ts[m[36m:[m[32m69[m[36m:[m    response.status(500).json({ error: 'Unable to process the [1;31mconsent[m record.' });
+[35mpages/api/os/pilot-observability.js[m[36m:[m[32m23[m[36m:[m    [1;31mconsent[mCompliance: {
+[35mpages/api/os/pilot-observability.js[m[36m:[m[32m29[m[36m:[m    [1;31mledger[mInvariants: {
+[35mpages/api/os/pilot-observability.js[m[36m:[m[32m31[m[36m:[m      [1;31midempotency[mKeyRejections: 1,
+[35mpages/api/os/pilot-observability.js[m[36m:[m[32m40[m[36m:[m      [1;31mincident[mTelemetry: "HEALTHY"
+[35mscripts/kampala-pilot-scorecard.mjs[m[36m:[m[32m27[m[36m:[m    name: "Idempotent Ledger Pipeline Payload Guard (/api/wallet/[1;31mledger[m)",
+[35mscripts/kampala-pilot-scorecard.mjs[m[36m:[m[32m29[m[36m:[m      // Expect 400 Bad Request when [1;31midempotency[mKey is missing
+[35mscripts/kampala-pilot-scorecard.mjs[m[36m:[m[32m31[m[36m:[m        const req = http.request('http://127.0.0.1:3100/api/wallet/[1;31mledger[m', { method: 'POST' }, (res) => {
+[35mscripts/kampala-pilot-scorecard.mjs[m[36m:[m[32m35[m[36m:[m            reject(new Error(`Expected HTTP 400 on missing [1;31midempotency[m key, got ${res.statusCode}`));
+[35mscripts/sandbox-ledger-validation.mjs[m[36m:[m[32m5[m[36m:[mconsole.log("✔ Audit Trail Signature: sig_anosa_[1;31mledger[m_<timestamp> [GENERATE_OK]");
+[35mscripts/smoke-test.mjs[m[36m:[m[32m161[m[36m:[m  assert.equal(context.control.[1;31mledger[m, 'device');
+[35mscripts/smoke-test.mjs[m[36m:[m[32m166[m[36m:[m  assert.equal(context.evidence.[1;31mledger[mEnabled, false);
+[35mscripts/smoke-test.mjs[m[36m:[m[32m236[m[36m:[m      [1;31midempotency[mKey: `smoke-proposal:${decision.decision.contentHash}`,
+[35mscripts/smoke-test.mjs[m[36m:[m[32m254[m[36m:[m    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Unlinked intent', actionType: 'brief', draftPreview: 'Draft without evidence', decisionId: 'missing-decision', [1;31midempotency[mKey: 'missing-decision-hash' }),
+[35mscripts/smoke-test.mjs[m[36m:[m[32m287[m[36m:[m  const integrityIncidentsResponse = await fetch(`${baseUrl}/api/anosa/integrity-[1;31mincident[ms`, {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m292[m[36m:[m  assert.deepEqual(integrityIncidents.[1;31mincident[ms, []);
+[35mscripts/smoke-test.mjs[m[36m:[m[32m296[m[36m:[m  const integrityMonitorResponse = await fetch(`${baseUrl}/api/anosa/integrity-[1;31mincident[ms`, {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m418[m[36m:[m  console.log("[Smoke Test] Testing /api/wallet/[1;31mledger[m [1;31midempotency[m enforcement...");
+[35mscripts/smoke-test.mjs[m[36m:[m[32m419[m[36m:[m  const [1;31mledger[mNoKeyRes = await fetch(`${baseUrl}/api/wallet/[1;31mledger[m`, {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m424[m[36m:[m  if ([1;31mledger[mNoKeyRes.status !== 400) {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m425[m[36m:[m    console.error("FAILED: /api/wallet/[1;31mledger[m should return 400 when Idempotency-Key is missing");
+[35mscripts/smoke-test.mjs[m[36m:[m[32m430[m[36m:[m  console.log("[Smoke Test] Testing /api/wallet/[1;31mledger[m successful posting...");
+[35mscripts/smoke-test.mjs[m[36m:[m[32m431[m[36m:[m  const [1;31mledger[mSuccessRes = await fetch(`${baseUrl}/api/wallet/[1;31mledger[m`, {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m435[m[36m:[m      "Idempotency-Key": "test_[1;31midempotency[m_key_001"
+[35mscripts/smoke-test.mjs[m[36m:[m[32m439[m[36m:[m  if ([1;31mledger[mSuccessRes.status !== 200) {
+[35mscripts/smoke-test.mjs[m[36m:[m[32m440[m[36m:[m    console.error("FAILED: /api/wallet/[1;31mledger[m should return 200 OK with valid [1;31midempotency[m key");
+[35mscripts/smoke-test.mjs[m[36m:[m[32m443[m[36m:[m  console.log("✓ Sandbox [1;31mledger[m posting verified (200 OK)");
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m157[m[36m:[m  assert.equal(context.control.[1;31mledger[m, 'device');
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m162[m[36m:[m  assert.equal(context.evidence.[1;31mledger[mEnabled, false);
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m232[m[36m:[m      [1;31midempotency[mKey: `smoke-proposal:${decision.decision.contentHash}`,
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m250[m[36m:[m    body: JSON.stringify({ proposalId: 'smoke-proposal', title: 'Unlinked intent', actionType: 'brief', draftPreview: 'Draft without evidence', decisionId: 'missing-decision', [1;31midempotency[mKey: 'missing-decision-hash' }),
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m283[m[36m:[m  const integrityIncidentsResponse = await fetch(`${baseUrl}/api/anosa/integrity-[1;31mincident[ms`, {
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m288[m[36m:[m  assert.deepEqual(integrityIncidents.[1;31mincident[ms, []);
+[35mscripts/smoke-test.mjs.bak[m[36m:[m[32m292[m[36m:[m  const integrityMonitorResponse = await fetch(`${baseUrl}/api/anosa/integrity-[1;31mincident[ms`, {
+[35mscripts/sovereign-launch-assurance.mjs[m[36m:[m[32m3[m[36m:[mconsole.log("✔ Branch Lineage: main <- agent/[1;31mledger[m-anosa-runtime-foundation [VERIFIED]");
+[35mscripts/sovereign-launch-assurance.mjs[m[36m:[m[32m5[m[36m:[mconsole.log("✔ Idempotent Sandbox Ledger Pipeline (/api/wallet/[1;31mledger[m) [ACTIVE]");
+[35mscripts/test-identity-ledger.mjs[m[36m:[m[32m57[m[36m:[m    const payload = JSON.stringify({ amount: 1000, currency: 'UGX' }); // Missing [1;31midempotency[mKey
+[35mscripts/test-identity-ledger.mjs[m[36m:[m[32m61[m[36m:[m      path: '/api/wallet/[1;31mledger[m',
+[35mscripts/test-identity-ledger.mjs[m[36m:[m[32m71[m[36m:[m      console.log(`✔ [PASSED] Ledger Payload Guard (/api/wallet/[1;31mledger[m): HTTP 400 (Missing Idempotency Key Rejected)`);
+[35mscripts/test-identity-ledger.mjs[m[36m:[m[32m75[m[36m:[m      console.log(`✔ [PASSED] Ledger Payload Guard (/api/wallet/[1;31mledger[m): Protected Route Guard Active (HTTP ${res.statusCode})`);
+[35mscripts/test-identity-ledger.mjs[m[36m:[m[32m78[m[36m:[m      throw new Error(`Expected HTTP 400 Bad Request on missing [1;31midempotency[mKey, got HTTP ${res.statusCode}`);
+[35mscripts/test-invitation-dispatch.mjs[m[36m:[m[32m60[m[36m:[m      [1;31mconsent[mAccepted: true, 
+[35mscripts/test-invitation-dispatch.mjs[m[36m:[m[32m63[m[36m:[m    if (res.statusCode === 200 && res.json.[1;31mconsent[mCaptured === true) {
+[35mscripts/test-ledger-integrity.mjs[m[36m:[m[32m6[m[36m:[m  [1;31midempotency[mKey: "test_idem_key_999",
+[35mscripts/test-ledger-integrity.mjs[m[36m:[m[32m13[m[36m:[mconsole.log("✔ Ledger [1;31midempotency[m logic compiled and verified.");
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m43[m[36m:[m    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', [1;31mconsent[mAccepted: false });
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m52[m[36m:[m    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', [1;31mconsent[mAccepted: true, participantId: 'PARTICIPANT_UG_001' });
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m53[m[36m:[m    if (res.statusCode === 200 && res.json.[1;31mconsent[mCaptured === true) {
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m61[m[36m:[m    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', [1;31mconsent[mAccepted: true });
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m70[m[36m:[m    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-EXPIRED', [1;31mconsent[mAccepted: true });
+[35mscripts/test-redemption-controls.mjs[m[36m:[m[32m79[m[36m:[m    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-REVOKED', [1;31mconsent[mAccepted: true });

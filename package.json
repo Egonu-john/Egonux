@@ -14,10 +14,12 @@
     "check": "npm run lint && npm run typecheck && npm run build && npm run test:smoke",
     "check:backend": "npm run lint && npm run typecheck && npm run test:rules",
     "test:v33": "node scripts/test-identity-ledger.mjs",
-    "test:v33-full": "npm run typecheck && npm run build && npm run test:v33-strict && npm run test:invitation && npm run test:redemption",
+    "test:v33-full": "npm run typecheck && npm run build && npm run test:v33-strict && npm run test:invitation && npm run test:redemption && npm run test:ledger && npm run test:incident",
     "test:v33-strict": "node scripts/test-identity-ledger.mjs",
     "test:invitation": "node scripts/test-invitation-dispatch.mjs",
-    "test:redemption": "node scripts/test-redemption-controls.mjs"
+    "test:redemption": "node scripts/test-redemption-controls.mjs",
+    "test:ledger": "node scripts/test-ledger-concurrency.mjs",
+    "test:incident": "node scripts/test-incident-response.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
