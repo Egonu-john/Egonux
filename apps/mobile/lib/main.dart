@@ -3,7 +3,9 @@ import 'core/constants/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'core/network/api_service.dart';
 import 'features/auth/screens/onboarding_screen.dart';
+import 'features/commerce/screens/commerce_screen.dart';
 import 'features/ledger/screens/ledger_screen.dart';
+import 'features/rewards/screens/rewards_screen.dart';
 import 'features/settings/screens/settings_screen.dart';
 
 void main() {
@@ -36,7 +38,9 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   final List<Widget> _screens = [
     const DashboardScreen(),
+    const CommerceScreen(),
     const LedgerScreen(),
+    const RewardsScreen(),
     const SettingsScreen(),
   ];
 
@@ -51,6 +55,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             _currentIndex = index;
           });
         },
+        type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.cardBg,
         selectedItemColor: AppColors.primaryGold,
         unselectedItemColor: AppColors.textSecondary,
@@ -58,12 +63,22 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
             activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront_outlined),
+            activeIcon: Icon(Icons.storefront),
+            label: 'Wealth Hub',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_balance_wallet_outlined),
             activeIcon: Icon(Icons.account_balance_wallet),
             label: 'Ledger',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_events_outlined),
+            activeIcon: Icon(Icons.emoji_events),
+            label: 'Rewards',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_outlined),
