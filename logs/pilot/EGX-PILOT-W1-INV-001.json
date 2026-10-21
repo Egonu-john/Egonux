@@ -4,8 +4,8 @@
   "environment": "Staging - Verified CI / Synthetic Mode",
   "operatingMode": "SYNTHETIC_DATA_ONLY",
   "realMoneyMovementAuthorized": false,
-  "rehearsalSize": 3,
-  "status": "REHEARSAL_ACTIVE_P02_PREPARED",
+  "rehearsalSize": 2,
+  "status": "REHEARSAL_P01_P02_COMPLETED",
   "touchpoints": [
     { 
       "eventId": "W1-P01-E01", 
@@ -54,7 +54,37 @@
       "touchpoint": "Invitation prepared", 
       "channel": "Staging Secure Link", 
       "outcome": "SUCCESS", 
-      "evidenceReference": "Commit 71a3148 validated", 
+      "evidenceReference": "Commit 55955bb", 
+      "operator": "Founder/Designated Operator" 
+    },
+    { 
+      "eventId": "W1-P02-E02", 
+      "participant": "P02", 
+      "timestamp": "2026-10-22T00:57:00Z", 
+      "touchpoint": "Invitation sent", 
+      "channel": "Secure Staging Channel", 
+      "outcome": "SUCCESS", 
+      "evidenceReference": "Staging Dispatch Log validated", 
+      "operator": "Founder/Designated Operator" 
+    },
+    { 
+      "eventId": "W1-P02-E03", 
+      "participant": "P02", 
+      "timestamp": "2026-10-22T00:58:00Z", 
+      "touchpoint": "Invitation redeemed", 
+      "channel": "Staging Web Portal", 
+      "outcome": "SUCCESS", 
+      "evidenceReference": "Single-use token guard passed (HTTP 200)", 
+      "operator": "Founder/Designated Operator" 
+    },
+    { 
+      "eventId": "W1-P02-E04", 
+      "participant": "P02", 
+      "timestamp": "2026-10-22T00:58:30Z", 
+      "touchpoint": "Required consent recorded", 
+      "channel": "PDPA 2019 Consent Flow", 
+      "outcome": "SUCCESS", 
+      "evidenceReference": "Day 5 Consent Harness verified", 
       "operator": "Founder/Designated Operator" 
     }
   ],
