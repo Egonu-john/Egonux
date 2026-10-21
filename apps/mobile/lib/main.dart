@@ -3,6 +3,7 @@ import 'core/constants/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'core/network/api_service.dart';
 import 'features/auth/screens/onboarding_screen.dart';
+import 'features/ledger/screens/ledger_screen.dart';
 
 void main() {
   runApp(const EgonuxMobileApp());
@@ -71,62 +72,71 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAlignment: CrossAlignment.start,
               children: [
                 // Synthetic Ledger Card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardBg,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Column(
-                    crossAlignment: CrossAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'SYNTHETIC LEDGER',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.success.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              ledger['reconciliationStatus'] == 'ZERO_DRIFT_VERIFIED' ? 'ZERO DRIFT' : 'ACTIVE',
-                              style: const TextStyle(
-                                color: AppColors.success,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LedgerScreen()),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBg,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Column(
+                      crossAlignment: CrossAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'SYNTHETIC LEDGER (TAP TO VIEW)',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 11,
+                                letterSpacing: 1.5,
                               ),
                             ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.success.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                ledger['reconciliationStatus'] == 'ZERO_DRIFT_VERIFIED' ? 'ZERO DRIFT' : 'ACTIVE',
+                                style: const TextStyle(
+                                  color: AppColors.success,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          ledger['unexplainedBalanceDrift'] ?? '0.00 UGX',
+                          style: const TextStyle(
+                            color: AppColors.primaryGold,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        ledger['unexplainedBalanceDrift'] ?? '0.00 UGX',
-                        style: const TextStyle(
-                          color: AppColors.primaryGold,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Sandbox Environment — Real Money Movement Disabled',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Sandbox Environment — Real Money Movement Disabled',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 11,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
