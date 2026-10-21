@@ -48,7 +48,11 @@
     "test:ch18": "npx tsx scripts/test-ch18-security.mjs",
     "test:ch19": "npx tsx scripts/test-ch19-governance.mjs",
     "test:ch20": "npx tsx scripts/test-ch20-ledger-resilience.mjs",
-    "test:phase2": "npx tsx scripts/test-phase2-master.mjs"
+    "test:phase2": "npx tsx scripts/test-phase2-master.mjs",
+    "test:ch27": "npx tsx scripts/test-ch27-regulatory.mjs",
+    "test:ch28": "npx tsx scripts/test-ch28-payments.mjs",
+    "test:ch29": "npx tsx scripts/test-ch29-operations.mjs",
+    "test:ch30": "npx tsx scripts/test-ch30-pilot.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
