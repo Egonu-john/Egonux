@@ -11,8 +11,8 @@ export type AnosaContextState =
         sources: string[];
         execution: string;
         capabilities: string[];
-        control: any;
-        evidence: any;
+        control: Record<string, unknown>;
+        evidence: Record<string, unknown>;
       };
     };
 
@@ -61,7 +61,7 @@ export function useAnosaContext() {
           status: 'success',
           data,
         });
-      } catch (err: any) {
+      } catch (err: Record<string, unknown>) {
         if (isMounted) {
           setState({
             status: 'error',

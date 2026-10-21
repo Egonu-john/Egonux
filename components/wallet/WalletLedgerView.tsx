@@ -16,7 +16,7 @@ interface LedgerResponse {
 export const WalletLedgerView: React.FC = () => {
   const [accountId, setAccountId] = useState('acc_egonux_sandbox_01');
   const [amountUGX, setAmountUGX] = useState('10000');
-  const [idempotencyKey, setIdempotencyKey] = useState(`key_${Date.now()}`);
+  const [idempotencyKey, setIdempotencyKey] = useState(() => 'key_' + Date.now());
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<LedgerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +52,7 @@ export const WalletLedgerView: React.FC = () => {
       setResult(data);
       // Generate fresh idempotency key for next transaction
       setIdempotencyKey(`key_${Date.now()}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
       setLoading(false);

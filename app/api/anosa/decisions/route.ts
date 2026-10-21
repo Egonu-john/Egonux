@@ -16,7 +16,7 @@ export async function GET() {
         }
       ]
     }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal Decision Registry Error" }, { status: 500 });
   }
 }
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       anosaAuditSignature: `sig_anosa_decision_${Date.now()}`,
       timestamp: new Date().toISOString()
     }, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Invalid JSON Payload" }, { status: 400 });
   }
 }
