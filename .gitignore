@@ -42,3 +42,6 @@ yarn-error.log*
 firestore-debug.log
 .vercel
 .env*
+
+# Ephemeral Runtime Evidence
+data/*.json
