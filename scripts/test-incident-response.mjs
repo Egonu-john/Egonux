@@ -34,7 +34,7 @@ async function runIncidentTests() {
   // TEST 1: Live Observability Endpoint Accessibility & Dynamic Metric Structure
   try {
     const res = await makeGet('/api/os/pilot-observability');
-    if (res.statusCode === 200 && res.json.metrics.observationWindowDay === 3) {
+    if (res.statusCode === 200 && res.json.metrics && res.json.metrics.observationWindowDay === 3) {
       console.log(`✔ [PASSED] Live Telemetry (/api/os/pilot-observability): Day ${res.json.metrics.observationWindowDay} Active (${res.json.metrics.dataSource})`);
       passed++;
     } else {
