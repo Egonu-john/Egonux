@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 // Simulated server-side idempotency cache
-const processedKeys = new Map<string, any>();
+const processedKeys = new Map<string, Record<string, unknown>>();
 
 export async function POST(request: Request) {
   try {

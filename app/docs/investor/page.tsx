@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 export default function InvestorPortalPage() {
-  const [systemState, setSystemState] = useState<any>(null);
+  const [systemState, setSystemState] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     fetch("/api/os/ecosystem")

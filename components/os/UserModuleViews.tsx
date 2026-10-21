@@ -1,3 +1,4 @@
+import Link from "next/link";
 import WalletLedgerView from "@/components/wallet/WalletLedgerView";
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
@@ -39,9 +40,9 @@ export function IdentityView() {
       
       {/* ANOSA Quick Hub Navigation */}
       <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexWrap: "wrap" }}>
-        <a href="/login" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🔑 Identity Portal</a>
-        <a href="/docs/sdk" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🛠️ Developer SDK</a>
-        <a href="/docs/analytics" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>📈 Financial Intelligence</a>
+        <Link href="/login" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🔑 Identity Portal</Link>
+        <Link href="/docs/sdk" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>🛠️ Developer SDK</Link>
+        <Link href="/docs/analytics" style={{ color: "#D4AF37", fontSize: "12px", padding: "6px 12px", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", textDecoration: "none" }}>📈 Financial Intelligence</Link>
       </div>
   
       <ViewHeader
@@ -121,7 +122,7 @@ interface WalletViewProps {
   onAction: (action: ActionRequest['type']) => void;
 }
 
-export function WalletView(_props: WalletViewProps) {
+export function WalletView(__props: WalletViewProps) {
   return (
     <div className="space-y-6">
       <WalletLedgerView />
