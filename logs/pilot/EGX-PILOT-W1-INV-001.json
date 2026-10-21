@@ -5,7 +5,7 @@
   "operatingMode": "SYNTHETIC_DATA_ONLY",
   "realMoneyMovementAuthorized": false,
   "rehearsalSize": 3,
-  "status": "REHEARSAL_ACTIVE_P01_CONSENTED",
+  "status": "REHEARSAL_ACTIVE_P02_PREPARED",
   "touchpoints": [
     { 
       "eventId": "W1-P01-E01", 
@@ -47,7 +47,16 @@
       "evidenceReference": "Day 5 Consent Harness verified", 
       "operator": "Founder/Designated Operator" 
     },
-    { "eventId": "W1-P02-E01", "participant": "P02", "timestamp": null, "touchpoint": "Invitation prepared", "channel": "Pending", "outcome": "Not tested", "evidenceReference": "Pending", "operator": "Founder/Designated Operator" }
+    { 
+      "eventId": "W1-P02-E01", 
+      "participant": "P02", 
+      "timestamp": "2026-10-22T00:56:00Z", 
+      "touchpoint": "Invitation prepared", 
+      "channel": "Staging Secure Link", 
+      "outcome": "SUCCESS", 
+      "evidenceReference": "Commit 71a3148 validated", 
+      "operator": "Founder/Designated Operator" 
+    }
   ],
   "controlChecks": {
     "stagingUrlAndCommitVerified": true,
