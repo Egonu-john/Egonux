@@ -1,42 +1,30 @@
-import { NextApiRequest } from 'next';
-import fs from 'fs';
-import path from 'path';
+import crypto from 'crypto';
 
-export interface RBACPrincipal {
-  uid: string;
-  roles: string[];
+export interface UserSession {
+  id: string;
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'MERCHANT' | 'USER';
 }
 
-export async function verifyRole(req: NextApiRequest, allowedRoles: string[]): Promise<RBACPrincipal> {
-  // Extract session cookies or authorization headers safely
-  const cookies = req.headers.cookie || '';
-  if (!cookies.includes('session=') && !req.headers.authorization) {
-    throw new Error('Unauthenticated or invalid session.');
-  }
+const JWT_SECRET = 'egonux-secret-key-3.4';
 
-  // Default fallback principal for unauthenticated requests during test assertions
-  const principal = { uid: 'anonymous', roles: ['USER'] };
-  const userRoles = principal.roles;
-  
-  const hasAccess = allowedRoles.some(role => userRoles.includes(role));
-  if (!hasAccess) {
-    const auditEntry = {
-      timestamp: new Date().toISOString(),
-      actorId: principal.uid,
-      event: 'AUTHORIZATION_FAILURE',
-      requiredRoles: allowedRoles,
-      assignedRoles: userRoles
-    };
-    try {
-      const auditPath = path.join(process.cwd(), 'data', 'audit.json');
-      const auditLogs = fs.existsSync(auditPath) ? JSON.parse(fs.readFileSync(auditPath, 'utf8')) : [];
-      auditLogs.push(auditEntry);
-      fs.writeFileSync(auditPath, JSON.stringify(auditLogs, null, 2));
-    } catch (e) {
-      // Non-blocking audit write
-    }
-    throw new Error('Insufficient permissions.');
-  }
+export function generateToken(userId: string, role: 'SUPER_ADMIN' | 'ADMIN' | 'MERCHANT' | 'USER' = 'USER'): string {
+  const payload = JSON.stringify({ id: userId, role, exp: Date.now() + 3600000 });
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(payload).digest('hex');
+  return Buffer.from(JSON.stringify({ payload, signature })).toString('base64');
+}
 
-  return { uid: principal.uid, roles: userRoles };
+export function authenticateRequest(token: string): UserSession | null {
+  try {
+    const decoded = JSON.parse(Buffer.from(token, 'base64').toString('utf8'));
+    const { payload, signature } = decoded;
+    const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(payload).digest('hex');
+    
+    if (signature !== expectedSig) return null;
+    const data = JSON.parse(payload);
+    if (Date.now() > data.exp) return null;
+
+    return { id: data.id, role: data.role };
+  } catch (err) {
+    return null;
+  }
 }
