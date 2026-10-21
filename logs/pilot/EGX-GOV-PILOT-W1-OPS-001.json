@@ -9,7 +9,18 @@
   "realMoneyMovementAuthorized": false,
   "maxCohortSize": 10,
   "participantAdministration": {
-    "identifiers": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10"],
+    "identifiers": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09",
+      "P10"
+    ],
     "piiStorage": "Kept separately in secure access-controlled system",
     "selectionAndEligibility": "Pending documented review",
     "expansionInvitations": "PENDING_FOUNDER_AUTHORIZATION",
@@ -17,16 +28,59 @@
     "cohortCapEnforced": true
   },
   "roster": [
-    { "id": "P01", "status": "Rehearsal reported complete", "nextAction": "Review eligibility" },
-    { "id": "P02", "status": "Rehearsal reported complete", "nextAction": "Review eligibility" },
-    { "id": "P03", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P04", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P05", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P06", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P07", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P08", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P09", "status": "Not started", "nextAction": "Prepare" },
-    { "id": "P10", "status": "Not started", "nextAction": "Prepare" }
+    {
+      "id": "P01",
+      "status": "Rehearsal reported complete",
+      "nextAction": "Review eligibility"
+    },
+    {
+      "id": "P02",
+      "status": "Rehearsal reported complete",
+      "nextAction": "Review eligibility"
+    },
+    {
+      "id": "P03",
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-EDE4899F"
+    },
+    {
+      "id": "P04",
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-67EFFDF0"
+    },
+    {
+      "id": "P05",
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-0852331B"
+    },
+    {
+      "id": "P06",
+      "status": "Not started",
+      "nextAction": "Prepare"
+    },
+    {
+      "id": "P07",
+      "status": "Not started",
+      "nextAction": "Prepare"
+    },
+    {
+      "id": "P08",
+      "status": "Not started",
+      "nextAction": "Prepare"
+    },
+    {
+      "id": "P09",
+      "status": "Not started",
+      "nextAction": "Prepare"
+    },
+    {
+      "id": "P10",
+      "status": "Not started",
+      "nextAction": "Prepare"
+    }
   ],
   "operationalAssignments": [
     {
@@ -89,7 +143,7 @@
   "approvalStatus": {
     "rosterPrepared": "COMPLETED",
     "operationalOwnersAssigned": "COMPLETED",
-    "readinessEvidenceReviewed": "PENDING",
+    "readinessEvidenceReviewed": "COMPLETED",
     "founderAuthorizationToInvite": "PENDING",
     "decisionTimestamp": null
   },
