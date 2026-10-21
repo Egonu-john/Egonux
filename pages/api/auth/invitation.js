@@ -74,7 +74,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         redeemedToken: token,
-        participantId: participantId || 'PARTICIPANT_UG_001',
+        participantId: tokenData.participantId || participantId || 'UNKNOWN_PARTICIPANT',
         consentCaptured: true,
         pdpaPrivacyNoticeAccepted: true,
         profileStatus: 'ALPHA_SANDBOX_ACTIVE'
