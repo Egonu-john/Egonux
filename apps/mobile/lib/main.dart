@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'core/constants/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'core/network/api_service.dart';
+import 'features/auth/screens/onboarding_screen.dart';
 
 void main() {
   runApp(const EgonuxMobileApp());
@@ -16,7 +17,7 @@ class EgonuxMobileApp extends StatelessWidget {
       title: 'EGONUX OS',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const DashboardScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
@@ -67,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
             child: Column(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAlignment: CrossAlignment.start,
               children: [
                 // Synthetic Ledger Card
                 Container(
@@ -78,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     border: Border.all(color: AppColors.border),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAlignment.start,
+                    crossAlignment: CrossAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
