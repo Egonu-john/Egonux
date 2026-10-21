@@ -37,7 +37,8 @@
     "test:week7-commercial": "node scripts/test-week7-commercial-ops.mjs",
     "test:week8-partners": "node scripts/test-week8-ecosystem-partners.mjs",
     "test:week9-audit": "node scripts/test-week9-launch-audit.mjs",
-    "test:week10-launch": "node scripts/test-week10-global-launch.mjs"
+    "test:week10-launch": "node scripts/test-week10-global-launch.mjs",
+    "test:ch8": "node scripts/test-ch8-identity-security.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
