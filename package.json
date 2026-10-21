@@ -43,7 +43,8 @@
     "test:ch12": "npx tsx scripts/test-ch12-ledger.mjs",
     "test:ch13": "npx tsx scripts/test-ch13-commerce.mjs",
     "test:ch14": "npx tsx scripts/test-ch14-rewards.mjs",
-    "test:ch15": "npx tsx scripts/test-ch15-api.mjs"
+    "test:ch15": "npx tsx scripts/test-ch15-api.mjs",
+    "test:ch16": "npx tsx scripts/test-ch16-telemetry.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
