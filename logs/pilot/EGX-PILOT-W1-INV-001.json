@@ -5,7 +5,7 @@
   "operatingMode": "SYNTHETIC_DATA_ONLY",
   "realMoneyMovementAuthorized": false,
   "rehearsalSize": 3,
-  "status": "REHEARSAL_ACTIVE_P01_PREPARED",
+  "status": "REHEARSAL_ACTIVE_P01_SENT",
   "touchpoints": [
     { 
       "eventId": "W1-P01-E01", 
@@ -17,7 +17,16 @@
       "evidenceReference": "CI Build verified (commit 0302363)", 
       "operator": "Founder/Designated Operator" 
     },
-    { "eventId": "W1-P01-E02", "participant": "P01", "timestamp": null, "touchpoint": "Invitation sent", "channel": "Pending", "outcome": "Not tested", "evidenceReference": "Pending", "operator": "Founder/Designated Operator" },
+    { 
+      "eventId": "W1-P01-E02", 
+      "participant": "P01", 
+      "timestamp": "2026-10-22T00:53:00Z", 
+      "touchpoint": "Invitation sent", 
+      "channel": "Secure Staging Channel", 
+      "outcome": "SUCCESS", 
+      "evidenceReference": "Commit 9b7dfeb", 
+      "operator": "Founder/Designated Operator" 
+    },
     { "eventId": "W1-P01-E03", "participant": "P01", "timestamp": null, "touchpoint": "Invitation redeemed", "channel": "Pending", "outcome": "Not tested", "evidenceReference": "Pending", "operator": "Founder/Designated Operator" },
     { "eventId": "W1-P01-E04", "participant": "P01", "timestamp": null, "touchpoint": "Required consent recorded", "channel": "Pending", "outcome": "Not tested", "evidenceReference": "Pending", "operator": "Founder/Designated Operator" },
     { "eventId": "W1-P02-E01", "participant": "P02", "timestamp": null, "touchpoint": "Invitation prepared", "channel": "Pending", "outcome": "Not tested", "evidenceReference": "Pending", "operator": "Founder/Designated Operator" }
