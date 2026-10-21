@@ -14,7 +14,7 @@
     "check": "npm run lint && npm run typecheck && npm run build && npm run test:smoke",
     "check:backend": "npm run lint && npm run typecheck && npm run test:rules",
     "test:v33": "node scripts/test-identity-ledger.mjs",
-    "test:v33-full": "npm run typecheck && npm run build && npm run test:v33-strict && npm run test:invitation && npm run test:redemption && npm run test:ledger && npm run test:incident && npm run test:identity && npm run test:consent-day5 && npm run test:ledger-day6 && npm run test:security-day7 && npm run test:recovery-day8 && npm run test:perf-day9 && npm run test:compliance-day10 && npm run test:ops-day11 && npm run test:audit-day12 && npm run test:week2-identity && npm run test:week3-ledger && npm run test:week4-experience && npm run test:week5-security",
+    "test:v33-full": "npm run typecheck && npm run build && npm run test:v33-strict && npm run test:invitation && npm run test:redemption && npm run test:ledger && npm run test:incident && npm run test:identity && npm run test:consent-day5 && npm run test:ledger-day6 && npm run test:security-day7 && npm run test:recovery-day8 && npm run test:perf-day9 && npm run test:compliance-day10 && npm run test:ops-day11 && npm run test:audit-day12 && npm run test:week2-identity && npm run test:week3-ledger && npm run test:week4-experience && npm run test:week5-security && npm run test:week6-kololo",
     "test:v33-strict": "node scripts/test-identity-ledger.mjs",
     "test:invitation": "node scripts/test-invitation-dispatch.mjs",
     "test:redemption": "node scripts/test-redemption-controls.mjs",
@@ -32,7 +32,8 @@
     "test:week2-identity": "node scripts/test-week2-identity-privacy.mjs",
     "test:week3-ledger": "node scripts/test-week3-ledger-sandbox.mjs",
     "test:week4-experience": "node scripts/test-week4-core-experience.mjs",
-    "test:week5-security": "node scripts/test-week5-security-reliability.mjs"
+    "test:week5-security": "node scripts/test-week5-security-reliability.mjs",
+    "test:week6-kololo": "node scripts/test-week6-kololo-flutter.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
