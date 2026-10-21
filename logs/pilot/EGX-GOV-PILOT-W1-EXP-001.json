@@ -1,0 +1,48 @@
+{
+  "recordId": "EGX-GOV-PILOT-W1-EXP-001",
+  "program": "EGONUX OS v3.6 Kampala Controlled Pilot",
+  "title": "Wave 1 Cohort Expansion Preparation Record",
+  "status": "PREPARATION_AUTHORIZED_INVITATION_AUTHORIZATION_PENDING",
+  "baselineCommit": "385273b",
+  "rehearsalReference": "EGX-PILOT-W1-INV-001",
+  "operatingMode": "SYNTHETIC_DATA_ONLY",
+  "realMoneyMovementAuthorized": false,
+  "maxCohortSize": 10,
+  "purpose": "Prepare a controlled expansion of the Kampala technical pilot from the completed two-participant rehearsal toward a maximum 10-participant Wave 1 cohort.",
+  "rehearsalCloseoutSummary": {
+    "participants": ["P01", "P02"],
+    "status": "REHEARSAL_P01_P02_COMPLETED",
+    "evidenceVerified": true,
+    "unresolvedIssues": 0
+  },
+  "authorizedPreparationActivities": [
+    "Prepare pseudonymous participant roster and eligibility criteria",
+    "Assign pilot operator, support owner, and incident escalation contact",
+    "Prepare invitation and participant support materials",
+    "Confirm staging configuration, cohort enforcement, and monitoring",
+    "Document pause, rollback, privacy-request, and incident-handling procedures",
+    "Prepare founder authorization decision for review"
+  ],
+  "prohibitedActions": [
+    "Sending expansion invitations (Pending Founder Authorization)",
+    "Increasing production access",
+    "Enabling real-money transactions",
+    "Representing platform as fully institutionally or regulatorily certified"
+  ],
+  "stopConditions": [
+    "Authentication or authorization failure",
+    "Consent not enforced as required",
+    "Invitation replay protections fail",
+    "Sensitive information exposed",
+    "Telemetry materially disagrees with observed events",
+    "Synthetic-only boundary cannot be demonstrated"
+  ],
+  "approvalHistory": {
+    "preparationDecision": "APPROVED",
+    "technicalReviewer": "Pending assignment/confirmation",
+    "founderAuthorizationToInvite": "PENDING",
+    "authorizedParticipantCount": 0,
+    "decisionTimestamp": "2026-10-22T01:00:00Z"
+  },
+  "financialSafetyDeclaration": "This preparation record does not authorize real-money movement. Any future financial launch requires a separate decision supported by applicable regulatory, provider, security, operational, and legal approvals."
+}
