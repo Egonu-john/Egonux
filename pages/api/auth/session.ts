@@ -12,6 +12,20 @@ const RECENT_SIGN_IN_SECONDS = 5 * 60;
 async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
   response.setHeader('Cache-Control', 'no-store');
 
+  
+  if (request.method === 'GET') {
+    try {
+      const principal = await requirePrincipal(request);
+      return response.status(200).json({
+        authenticated: true,
+        uid: principal.uid,
+        roles: principal.roles || []
+      });
+    } catch (error) {
+      return response.status(401).json({ error: 'Unauthenticated session.' });
+    }
+  }
+
   if (request.method === 'POST') {
     try {
       requireSameOrigin(request);

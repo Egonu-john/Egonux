@@ -61,11 +61,11 @@ export function useAnosaContext() {
           status: 'success',
           data,
         });
-      } catch (err: Record<string, unknown>) {
+      } catch (err: unknown) {
         if (isMounted) {
           setState({
             status: 'error',
-            message: err?.message || 'Failed to connect to ANOSA context engine.',
+            message: (err as Error)?.message || 'Failed to connect to ANOSA context engine.',
           });
         }
       }
