@@ -47,7 +47,8 @@
     "test:ch16": "npx tsx scripts/test-ch16-telemetry.mjs",
     "test:ch18": "npx tsx scripts/test-ch18-security.mjs",
     "test:ch19": "npx tsx scripts/test-ch19-governance.mjs",
-    "test:ch20": "npx tsx scripts/test-ch20-ledger-resilience.mjs"
+    "test:ch20": "npx tsx scripts/test-ch20-ledger-resilience.mjs",
+    "test:phase2": "npx tsx scripts/test-phase2-master.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
