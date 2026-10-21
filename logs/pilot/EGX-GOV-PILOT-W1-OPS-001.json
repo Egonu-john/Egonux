@@ -1,0 +1,97 @@
+{
+  "recordId": "EGX-GOV-PILOT-W1-OPS-001",
+  "parentGovernanceRecord": "EGX-GOV-PILOT-W1-EXP-001",
+  "program": "EGONUX OS v3.6 Kampala Controlled Pilot",
+  "title": "Wave 1 Participant and Operations Assignment Register",
+  "status": "PREPARATION_ONLY",
+  "environment": "Approved Staging Environment",
+  "operatingMode": "SYNTHETIC_DATA_ONLY",
+  "realMoneyMovementAuthorized": false,
+  "maxCohortSize": 10,
+  "participantAdministration": {
+    "identifiers": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10"],
+    "piiStorage": "Kept separately in secure access-controlled system",
+    "selectionAndEligibility": "Pending documented review",
+    "expansionInvitations": "PENDING_FOUNDER_AUTHORIZATION",
+    "consentStorage": "Retained in approved consent system and referenced by event ID",
+    "cohortCapEnforced": true
+  },
+  "roster": [
+    { "id": "P01", "status": "Rehearsal reported complete", "nextAction": "Review eligibility" },
+    { "id": "P02", "status": "Rehearsal reported complete", "nextAction": "Review eligibility" },
+    { "id": "P03", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P04", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P05", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P06", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P07", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P08", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P09", "status": "Not started", "nextAction": "Prepare" },
+    { "id": "P10", "status": "Not started", "nextAction": "Prepare" }
+  ],
+  "operationalAssignments": [
+    {
+      "role": "Founder / Pilot Approver",
+      "assignedPerson": "John William Egonu (Founder & CEO)",
+      "acceptance": "ACCEPTED",
+      "backup": "Not applicable",
+      "responsibility": "Approves cohort expansion and material exceptions",
+      "authority": "Final go/no-go"
+    },
+    {
+      "role": "Pilot Operations Lead",
+      "assignedPerson": "Designated Lead / Founder",
+      "acceptance": "ACCEPTED",
+      "backup": "Pending",
+      "responsibility": "Coordinates schedule, roster, and daily status",
+      "authority": "May pause onboarding"
+    },
+    {
+      "role": "Identity and Security Owner",
+      "assignedPerson": "Designated Lead / Founder",
+      "acceptance": "ACCEPTED",
+      "backup": "Pending",
+      "responsibility": "Verifies access controls, invitations, and replay protection",
+      "authority": "Can block unsafe access"
+    },
+    {
+      "role": "Privacy / Data Owner",
+      "assignedPerson": "Designated Lead / Founder",
+      "acceptance": "ACCEPTED",
+      "backup": "Pending",
+      "responsibility": "Reviews consent, data handling, and privacy requests",
+      "authority": "Can escalate or pause noncompliant processing"
+    },
+    {
+      "role": "Support and Incident Owner",
+      "assignedPerson": "Designated Lead / Founder",
+      "acceptance": "ACCEPTED",
+      "backup": "Pending",
+      "responsibility": "Receives issues, assigns tickets, and coordinates response",
+      "authority": "Can invoke incident procedure"
+    },
+    {
+      "role": "Evidence Reviewer",
+      "assignedPerson": "Independent Review Harness / Designated Operator",
+      "acceptance": "ACCEPTED",
+      "backup": "Pending",
+      "responsibility": "Checks logs against actual events and records findings",
+      "authority": "Independent review of evidence where practicable"
+    }
+  ],
+  "operatingControls": [
+    "Verify staging deployment identity and approved commit before participant access.",
+    "Record actual invitation, redemption, consent, and onboarding events using traceable evidence references.",
+    "Escalate authentication, privacy, consent, replay-protection, telemetry-integrity, or financial-boundary failures.",
+    "Pause onboarding when a safety-critical control fails; document remediation and retest evidence.",
+    "Preserve the synthetic-only boundary. No real-money activity is permitted under this record.",
+    "Require a separate, timestamped founder decision before expansion invitations are sent."
+  ],
+  "approvalStatus": {
+    "rosterPrepared": "COMPLETED",
+    "operationalOwnersAssigned": "COMPLETED",
+    "readinessEvidenceReviewed": "PENDING",
+    "founderAuthorizationToInvite": "PENDING",
+    "decisionTimestamp": null
+  },
+  "governanceRule": "This record establishes preparation responsibilities only. It does not certify institutional readiness or authorize invitations, production access, or financial services."
+}
