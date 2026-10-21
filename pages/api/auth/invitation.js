@@ -2,10 +2,10 @@
 // Jurisdictional Baseline: Ugandan Data Protection and Privacy Act (2019)
 
 const inMemoryTokenStore = new Map([
-  ['INV-UG-001', { id: 'INV-UG-001', emailHash: 'anon_tester_001', status: 'PENDING', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }],
-  ['INV-UG-002', { id: 'INV-UG-002', emailHash: 'anon_tester_002', status: 'PENDING', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }],
-  ['INV-UG-EXPIRED', { id: 'INV-UG-EXPIRED', emailHash: 'anon_tester_exp', status: 'PENDING', expiresAt: Date.now() - 1000, used: false }],
-  ['INV-UG-REVOKED', { id: 'INV-UG-REVOKED', emailHash: 'anon_tester_rev', status: 'REVOKED', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }]
+  ['TEST-INV-UG-001', { id: 'TEST-INV-UG-001', emailHash: 'anon_tester_001', status: 'PENDING', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }],
+  ['TEST-INV-UG-002', { id: 'TEST-INV-UG-002', emailHash: 'anon_tester_002', status: 'PENDING', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }],
+  ['TEST-INV-UG-EXPIRED', { id: 'TEST-INV-UG-EXPIRED', emailHash: 'anon_tester_exp', status: 'PENDING', expiresAt: Date.now() - 1000, used: false }],
+  ['TEST-INV-UG-REVOKED', { id: 'TEST-INV-UG-REVOKED', emailHash: 'anon_tester_rev', status: 'REVOKED', expiresAt: Date.now() + 7 * 86400 * 1000, used: false }]
 ]);
 
 export default async function handler(req, res) {
@@ -16,8 +16,8 @@ export default async function handler(req, res) {
 
     if (action === 'dispatch_initial_test') {
       const initialBatch = [
-        { id: 'INV-UG-001', participantId: 'PARTICIPANT_UG_001', status: 'PENDING', expires: '7d' },
-        { id: 'INV-UG-002', participantId: 'PARTICIPANT_UG_002', status: 'PENDING', expires: '7d' }
+        { id: 'TEST-INV-UG-001', participantId: 'PARTICIPANT_UG_001', status: 'PENDING', expires: '7d' },
+        { id: 'TEST-INV-UG-002', participantId: 'PARTICIPANT_UG_002', status: 'PENDING', expires: '7d' }
       ];
 
       return res.status(200).json({
