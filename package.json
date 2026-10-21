@@ -39,7 +39,8 @@
     "test:week9-audit": "node scripts/test-week9-launch-audit.mjs",
     "test:week10-launch": "node scripts/test-week10-global-launch.mjs",
     "test:ch8": "node scripts/test-ch8-identity-security.mjs",
-    "test:ch9": "node scripts/test-ch9-launch-audit.mjs"
+    "test:ch9": "node scripts/test-ch9-launch-audit.mjs",
+    "test:ch12": "npx tsx scripts/test-ch12-ledger.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
