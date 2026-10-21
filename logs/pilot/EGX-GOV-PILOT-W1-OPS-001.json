@@ -58,28 +58,33 @@
     },
     {
       "id": "P06",
-      "status": "Not started",
-      "nextAction": "Prepare"
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-633B611E"
     },
     {
       "id": "P07",
-      "status": "Not started",
-      "nextAction": "Prepare"
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-47D6829F"
     },
     {
       "id": "P08",
-      "status": "Not started",
-      "nextAction": "Prepare"
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-59CEDFF0"
     },
     {
       "id": "P09",
-      "status": "Not started",
-      "nextAction": "Prepare"
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-878EDC5C"
     },
     {
       "id": "P10",
-      "status": "Not started",
-      "nextAction": "Prepare"
+      "status": "DISPATCH_ISSUED",
+      "nextAction": "Await redemption and consent",
+      "token": "INV-UG-W1-8CC3F7CB"
     }
   ],
   "operationalAssignments": [
@@ -145,7 +150,8 @@
     "operationalOwnersAssigned": "COMPLETED",
     "readinessEvidenceReviewed": "COMPLETED",
     "founderAuthorizationToInvite": "PENDING",
-    "decisionTimestamp": null
+    "decisionTimestamp": null,
+    "overallStatus": "DISPATCH_COMPLETED"
   },
   "governanceRule": "This record establishes preparation responsibilities only. It does not certify institutional readiness or authorize invitations, production access, or financial services."
 }
