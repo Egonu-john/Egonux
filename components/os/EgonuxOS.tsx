@@ -7,6 +7,7 @@ import type { ActionRequest, ModuleId } from '@/types/egonux';
 import ActionModal from './ActionModal';
 import AppShell from './AppShell';
 import DashboardView from './DashboardView';
+import GameHubView from './GameHubView';
 import { AdminView, DeveloperView, SecurityView } from './EnterpriseViews';
 import {
   AffiliateView,
@@ -20,7 +21,7 @@ import {
 
 const moduleIds = new Set<ModuleId>([
   'home', 'identity', 'wallet', 'marketplace', 'learn', 'community',
-  'affiliate', 'ai', 'security', 'developer', 'admin',
+  'affiliate', 'games', 'ai', 'security', 'developer', 'admin',
 ]);
 
 interface EgonuxOSProps {
@@ -98,6 +99,7 @@ export default function EgonuxOS({ principal }: EgonuxOSProps) {
       case 'learn': return <LearnView onToast={showToast} />;
       case 'community': return <CommunityView onToast={showToast} />;
       case 'affiliate': return <AffiliateView onToast={showToast} />;
+      case 'games': return <GameHubView onToast={showToast} />;
       case 'ai': return <AIView />;
       case 'security': return <SecurityView onToast={showToast} />;
       case 'developer': return <DeveloperView onToast={showToast} />;

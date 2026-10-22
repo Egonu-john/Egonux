@@ -7,14 +7,14 @@ export interface AuditRecord {
   timestamp: string;
   actorId: string;
   event: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   previousHash: string;
   hash: string;
 }
 
 let lastKnownHash = '0000000000000000000000000000000000000000000000000000000000000000';
 
-async function logLedgerAudit(entry: { actorId: string; event: string; metadata?: Record<string, any> }) {
+async function logLedgerAudit(entry: { actorId: string; event: string; metadata?: Record<string, unknown> }) {
   const timestamp = new Date().toISOString();
   const id = crypto.randomUUID();
   const recordWithoutHash = { id, timestamp, ...entry, previousHash: lastKnownHash };
@@ -47,7 +47,7 @@ export interface LedgerTransaction {
   timestamp: string;
   description: string;
   entries: LedgerEntry[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 const transactionStore = new Map<string, LedgerTransaction>();
@@ -57,7 +57,7 @@ export async function processTransaction(params: {
   idempotencyKey: string;
   description: string;
   entries: LedgerEntry[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }): Promise<LedgerTransaction> {
   const { idempotencyKey, description, entries, metadata } = params;
 

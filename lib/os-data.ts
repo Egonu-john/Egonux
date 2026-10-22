@@ -11,6 +11,7 @@ export const primaryNavigation: NavigationItem[] = [
   { id: 'identity', label: 'EGONUX Identity', icon: 'identity' },
   { id: 'wallet', label: 'Wallet', icon: 'wallet' },
   { id: 'marketplace', label: 'Marketplace', icon: 'marketplace' },
+  { id: 'games', label: 'Game Hub', icon: 'gamepad', badge: 'New' },
   { id: 'learn', label: 'Learn', icon: 'learn', badge: '3' },
   { id: 'community', label: 'Community', icon: 'community' },
   { id: 'affiliate', label: 'Affiliate', icon: 'affiliate' },

@@ -6,6 +6,7 @@ export type ModuleId =
   | 'learn'
   | 'community'
   | 'affiliate'
+  | 'games'
   | 'ai'
   | 'security'
   | 'developer'
@@ -42,7 +43,17 @@ export type IconName =
   | 'activity'
   | 'lock'
   | 'globe'
-  | 'logout';
+  | 'logout'
+  | 'gamepad'
+  | 'compass'
+  | 'target'
+  | 'trophy'
+  | 'users'
+  | 'zap'
+  | 'arrow-up-right'
+  | 'gauge'
+  | 'shield'
+  | 'info';
 
 export interface NavigationItem {
   id: ModuleId;
