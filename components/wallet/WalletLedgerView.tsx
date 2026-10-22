@@ -1,3 +1,4 @@
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import React, { useState } from 'react';
 
 interface LedgerResponse {
@@ -98,13 +99,9 @@ export const WalletLedgerView: React.FC = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded text-sm transition-colors disabled:opacity-50"
-        >
-          {loading ? 'Posting to Ledger...' : 'Post Sandbox Transaction'}
-        </button>
+        <EgonuxButton fullWidth labelStyle="parenthesized" loading={loading} disabled={loading} type="submit">
+          {loading ? 'POSTING TO LEDGER…' : 'POST SANDBOX TRANSACTION'}
+        </EgonuxButton>
       </form>
 
       {error && (
