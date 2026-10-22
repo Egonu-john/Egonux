@@ -31,6 +31,8 @@ jobs:
           npx eslint
           components/ui/EgonuxButton.tsx
           components/os/ActionModal.tsx
+          components/os/AppShell.tsx
+          components/wallet/WalletLedgerView.tsx
           components/os/DashboardView.tsx
           components/os/UserModuleViews.tsx
           components/os/EnterpriseViews.tsx
