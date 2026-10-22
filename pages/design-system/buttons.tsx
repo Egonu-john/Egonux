@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
+import { EgonuxActionLink } from '@/components/ui/EgonuxActionLink';
 import { EgonuxActionFeedback, EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/ButtonSystem.module.css';
 
@@ -81,6 +82,17 @@ const ButtonSystemPage: NextPage = () => {
             <EgonuxActionFeedback status="success">Example only: server-confirmed action completed.</EgonuxActionFeedback>
             <EgonuxActionFeedback status="error">Example only: action failed. No successful result should be implied.</EgonuxActionFeedback>
             <EgonuxActionFeedback status="info">Sandbox preview only. No real funds or account changes are involved.</EgonuxActionFeedback>
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="links-heading">
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle} id="links-heading">06 / Navigation CTAs</h2>
+            <p className={styles.sectionCopy}>Navigation remains a semantic link while sharing the same pill geometry, gold palette, and optional parenthesized label.</p>
+          </div>
+          <div className={styles.row}>
+            <EgonuxActionLink href="/os" size="lg" labelStyle="parenthesized">OPEN EGONUX OS</EgonuxActionLink>
+            <EgonuxActionLink href="#shape-heading" size="lg" variant="secondary" labelStyle="parenthesized">RETURN TO BUTTONS</EgonuxActionLink>
           </div>
         </section>
 
