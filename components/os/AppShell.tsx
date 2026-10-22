@@ -121,7 +121,7 @@ export default function AppShell({
             </div>
           </div>
           {onSignOut ? (
-            <EgonuxButton labelStyle="parenthesized" variant="secondary" startIcon={<Icon name="logout" size={17} />} onClick={() => void onSignOut()}>
+            <EgonuxButton className={styles.backToSite} labelStyle="parenthesized" variant="secondary" startIcon={<Icon name="logout" size={17} />} onClick={() => void onSignOut()}>
               SIGN OUT SECURELY
             </EgonuxButton>
           ) : (
