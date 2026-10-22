@@ -78,7 +78,7 @@ export default function GameHubView({ onToast }: { onToast: (message: string) =>
       {tab === 'Discover' ? <>
         <section className={styles.featured}>
           <div className={styles.featuredCopy}>
-            <div className={styles.featuredKicker}><span className={styles.dot} /> FEATURED EXPERIENCE <span className={styles.pick}>EDITOR'S PICK</span></div>
+            <div className={styles.featuredKicker}><span className={styles.dot} /> FEATURED EXPERIENCE <span className={styles.pick}>EDITOR&apos;S PICK</span></div>
             <h2>NEXUS<br /><span>RUNNER</span></h2>
             <p>Move fast. Think ahead. Explore the EGONUX digital frontier through a short arcade-style preview.</p>
             <div className={styles.featureMeta}><span><Icon name="users" size={15} /> Solo experience</span><span><Icon name="zap" size={15} /> Quick play</span><span><Icon name="sparkles" size={15} /> 120 demo XP</span></div>
