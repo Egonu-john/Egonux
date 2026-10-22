@@ -2,13 +2,32 @@
 
 import { useState, useEffect } from "react";
 
+interface EcosystemState {
+  status?: string | number | boolean | null;
+  modules?: {
+    wallet?: { balance?: number };
+    marketplace?: { activeListings?: number };
+    learning?: { activeModules?: number };
+    community?: { activeMembers?: number };
+  };
+}
+
+function isEcosystemState(value: unknown): value is EcosystemState {
+  return typeof value === "object" && value !== null;
+}
+
 export default function InvestorPortalPage() {
-  const [systemState, setSystemState] = useState<Record<string, unknown> | null>(null);
+  const [systemState, setSystemState] = useState<EcosystemState | null>(null);
 
   useEffect(() => {
     fetch("/api/os/ecosystem")
-      .then((res) => res.json())
-      .then((d) => setSystemState(d))
+      .then((res) => {
+        if (!res.ok) throw new Error("Unable to load ecosystem metrics");
+        return res.json() as Promise<unknown>;
+      })
+      .then((data) => {
+        if (isEcosystemState(data)) setSystemState(data);
+      })
       .catch(() => {});
   }, []);
 
@@ -41,7 +60,7 @@ export default function InvestorPortalPage() {
           <div style={{ backgroundColor: "#121212", border: "1px solid #222", borderRadius: "12px", padding: "20px" }}>
             <h3 style={{ color: "#D4AF37", fontSize: "14px", margin: 0 }}>ECOSYSTEM STATE</h3>
             <p style={{ fontSize: "20px", fontWeight: "bold", margin: "8px 0 0 0", color: "#10B981" }}>
-              {systemState ? String(systemState.status) : "INITIALIZING"}
+              {systemState ? String(systemState.status ?? "UNKNOWN") : "INITIALIZING"}
             </p>
             <p style={{ color: "#8E8E93", fontSize: "12px", margin: "4px 0 0 0" }}>Connected: Identity, Wallet, Marketplace, Learn, Gaming</p>
           </div>
@@ -53,19 +72,19 @@ export default function InvestorPortalPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", fontSize: "14px" }}>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>WALLETS & LEDGER</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>UGX {(systemState.modules as any)?.wallet?.balance?.toLocaleString() || 0} Balance</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>UGX {(systemState.modules?.wallet?.balance ?? 0).toLocaleString()} Balance</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>MARKETPLACE</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{(systemState.modules as any)?.marketplace?.activeListings || 0} Active Asset Listings</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.marketplace?.activeListings ?? 0} Active Asset Listings</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>LEARNING & CERTS</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{(systemState.modules as any)?.learning?.activeModules || 0} Active Academy Modules</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.learning?.activeModules ?? 0} Active Academy Modules</p>
               </div>
               <div style={{ padding: "12px", border: "1px solid #222", borderRadius: "8px" }}>
                 <span style={{ color: "#8E8E93", fontSize: "12px" }}>COMMUNITY</span>
-                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{(systemState.modules as any)?.community?.activeMembers || 0} Verified Ecosystem Members</p>
+                <p style={{ margin: "4px 0 0 0", fontWeight: "bold" }}>{systemState.modules?.community?.activeMembers ?? 0} Verified Ecosystem Members</p>
               </div>
             </div>
           ) : (
