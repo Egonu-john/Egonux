@@ -1,6 +1,6 @@
 # EGONUX Ecosystem Button Design System v1.0
 
-**Status:** Phase 1 implemented on the feature branch. Automated checks pass on the current head; the final preview refresh is blocked by Vercel's daily deployment quota. Production remains untouched.  
+**Status:** Phase 1 implementation is on the feature branch. The latest runtime-code revision passed automated validation; a fresh preview refresh is blocked by Vercel's daily deployment quota. Production remains untouched.  
 **Brand:** EGONUX WEALTH CENTRAL HUB  
 **Motto:** LEARN. BUILD. GROW. LEAD.
 
@@ -58,27 +58,29 @@ Buttons do not replace server-side authentication, authorization/RBAC, validatio
 
 ### Implemented in Phase 1
 
-- Shared button component, tokens, parenthesized label option, accessible loading/disabled states, and outcome-feedback guidance.
-- Selected actions migrated in the OS shell/dashboard, wallet action modal and sandbox ledger, user module views, enterprise controls, ANOSA mobile and evidence review, and secure sign-in.
-- Button-system contract test and targeted lint gate added to CI.
-- Legacy demo credential literal removed from the Settings view; local demo key controls are explicitly labeled as demo-only and use Web Crypto for local rotation.
+- Shared `EgonuxButton` and semantic `EgonuxActionLink` components with consistent pill geometry, black-and-gold styling, optional parenthesized labels, accessible focus, loading/disabled behavior, and feedback guidance.
+- Public website header and hero CTAs use the shared link styling while preserving link semantics.
+- Selected actions are migrated in the OS shell/dashboard, wallet action modal and sandbox ledger, user module views, enterprise controls, ANOSA mobile/evidence review, and secure sign-in.
+- The showcase at `/design-system/buttons` demonstrates action buttons, states, feedback, and semantic navigation CTAs.
+- A button-system contract test and targeted lint gate cover the shared components and migrated surfaces.
+- A live-looking hard-coded demo API-key literal was removed from Settings; local demo-key controls are explicitly labeled and use Web Crypto for rotation.
 
 ### Intentionally specialized
 
-Navigation tabs, menu toggles, icon-only controls, card-like selectors, and link-based calls to action should preserve their semantics and layout rather than being forced into parenthesized text buttons. Use the shared component where the control is an action button; use a semantic link component for navigation.
+Navigation tabs, menu toggles, icon-only controls, card-like selectors, and footer links should preserve their semantics and layout rather than being forced into parenthesized text buttons. Use the shared component where the control is an action button and the semantic action link where navigation should look like a button.
 
 ### Remaining rollout work
 
 - Complete a repository-wide inventory of remaining native action buttons and migrate them in small, testable groups.
-- Review any separate public-site, Game Hub, and Agent-tool button surfaces when those routes are confirmed to be part of the same deployed application.
-- Keep the PR in draft until the latest head has a fresh preview build and owner review is complete.
+- Audit any separate Game Hub and Agent-tool surfaces when those routes are confirmed to be part of the same deployed application.
+- Keep the PR in draft until the latest code has a fresh preview deployment and owner review is complete.
 
 ### Validation status
 
-- Latest validated runtime-code commit: `ed152837af5982c8b6e420424caffe67c9134768`; the later commit updates documentation only.
-- GitHub CI: build, targeted lint, button contract, Chapter 8 security harness, and Chapter 9 governance harness passed.
-- CodeQL: no new alerts reported on the latest head.
-- The last successful preview returned HTTP 200 for `/design-system/buttons`, `/login`, and `/os`; it is one UI commit behind the current head.
+- Latest validated runtime-code commit: `1da38d2b6b6224bd9fec6862d06c8033a7b7930c`; the next commit updates documentation only.
+- GitHub CI passed build, targeted lint, button contract tests, Chapter 8 security harness, and Chapter 9 governance harness.
+- CodeQL reported no new alerts on the latest validated runtime-code commit.
+- The last successful preview returned HTTP 200 for `/design-system/buttons`, `/login`, and `/os`; it predates the latest public CTA link examples.
 - Vercel reports its deployment API quota has been reached for the day. Refresh the preview after the 24-hour quota window.
 - The public domain is behind a Cloudflare challenge and is not attached to either inspected Vercel project; no production deployment has been made.
 ## Preview route
