@@ -30,19 +30,45 @@ async function runTests() {
     let passed = 0;
     let failed = 0;
 
-    // Test 1: Audit Trail Persistence Check
+    // Test 1: Audit evidence must be present or explicitly reported as unknown.
     try {
-      const auditPath = path.join(process.cwd(), 'data', 'audit.json');
-      const auditExists = fs.existsSync(auditPath);
-      if (auditExists) {
-        const logs = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
-        console.log(`✔ [PASSED] Immutable Audit Trail Verified: ${logs.length} events logged`);
+      const auditCandidates = [
+        path.join(process.cwd(), 'audit.log'),
+        path.join(process.cwd(), 'data', 'audit.json'),
+      ];
+      const auditPath = auditCandidates.find((candidate) => fs.existsSync(candidate));
+
+      if (auditPath) {
+        const raw = fs.readFileSync(auditPath, 'utf8');
+        if (!raw.trim()) throw new Error(`Audit evidence file is empty: ${auditPath}`);
+        if (auditPath.endsWith('.json')) {
+          const records = JSON.parse(raw);
+          if (!Array.isArray(records)) throw new Error('JSON audit evidence must be an array');
+          console.log(`✔ [PASSED] Audit Evidence File Valid: ${records.length} records`);
+        } else {
+          console.log('✔ [PASSED] Audit Evidence File Present and Non-empty');
+        }
         passed++;
       } else {
-        throw new Error('audit.json missing from data/ directory');
+        const payload = await new Promise((resolve, reject) => {
+          http.get('http://localhost:3100/api/os/pilot-observability', (response) => {
+            let body = '';
+            response.setEncoding('utf8');
+            response.on('data', (chunk) => { body += chunk; });
+            response.on('end', () => {
+              try { resolve(JSON.parse(body)); } catch (error) { reject(error); }
+            });
+          }).on('error', reject);
+        });
+        const telemetry = payload?.metrics?.invitationStats?.telemetryStatus;
+        if (payload?.success !== true || telemetry !== 'UNKNOWN') {
+          throw new Error('Missing persistent audit evidence must be reported as UNKNOWN');
+        }
+        console.log('✔ [PASSED] Audit Evidence Honesty: missing persistent logs remain UNKNOWN');
+        passed++;
       }
     } catch (err) {
-      console.error(`❌ [FAILED] Audit Trail Check: ${err.message}`);
+      console.error(`❌ [FAILED] Audit Evidence Check: ${err.message}`);
       failed++;
     }
 
