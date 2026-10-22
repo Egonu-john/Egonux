@@ -75,7 +75,7 @@ Navigation tabs, menu toggles, icon-only controls, card-like selectors, and link
 
 ### Validation status
 
-- Latest head: `ed152837af5982c8b6e420424caffe67c9134768`.
+- Latest validated runtime-code commit: `ed152837af5982c8b6e420424caffe67c9134768`; the later commit updates documentation only.
 - GitHub CI: build, targeted lint, button contract, Chapter 8 security harness, and Chapter 9 governance harness passed.
 - CodeQL: no new alerts reported on the latest head.
 - The last successful preview returned HTTP 200 for `/design-system/buttons`, `/login`, and `/os`; it is one UI commit behind the current head.
