@@ -18,7 +18,7 @@ assert.ok(css.includes('min-height: 44px'));
 assert.ok(css.includes(':focus-visible'));
 assert.ok(css.includes('prefers-reduced-motion'));
 assert.ok(preview.includes('No wallet, identity, account or financial operation was performed'));
-assert.ok(spec.includes('success only after the actual workflow has succeeded'));
+assert.ok(spec.includes('only display success after the operation has actually succeeded'));
 
 const adoptedFiles = [
   'components/os/ActionModal.tsx',
