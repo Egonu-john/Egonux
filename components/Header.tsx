@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useScrollNav } from '@/hooks/useScrollNav';
+import { EgonuxActionLink } from '@/components/ui/EgonuxActionLink';
 import styles from '@/styles/Home.module.css';
 
 export default function Header() {
@@ -42,9 +43,7 @@ export default function Header() {
           <Link href="#contact">Contact</Link>
         </li>
       </ul>
-      <Link href="/os" className={styles.navCta}>
-        Launch MVP
-      </Link>
+      <EgonuxActionLink href="/os" size="sm" labelStyle="parenthesized">LAUNCH MVP</EgonuxActionLink>
     </nav>
   );
 }
