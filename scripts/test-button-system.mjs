@@ -5,12 +5,15 @@ import path from 'node:path';
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const component = read('components/ui/EgonuxButton.tsx');
+const actionLink = read('components/ui/EgonuxActionLink.tsx');
 const css = read('styles/EgonuxButton.module.css');
 const preview = read('pages/design-system/buttons.tsx');
 const spec = read('docs/EGONUX_BUTTON_SYSTEM_V1.md');
 
 assert.ok(component.includes('export function EgonuxButton'));
 assert.ok(component.includes('export function EgonuxActionFeedback'));
+assert.ok(actionLink.includes('export function EgonuxActionLink'));
+assert.ok(actionLink.includes('next/link'), 'Action links must preserve native navigation semantics');
 assert.ok(component.includes("type = 'button'"), 'Buttons must default to non-submit behavior');
 assert.ok(component.includes('disabled={disabled || loading}'), 'Loading must prevent repeat activation');
 assert.ok(css.includes('border-radius: 999px'));
@@ -25,6 +28,8 @@ assert.ok(userModules.includes('COPY DEMO KEY') && userModules.includes('ROTATE 
 assert.ok(!userModules.includes('Math.random'), 'Demo key rotation must not use a weak random number generator');
 
 const adoptedFiles = [
+  'components/Header.tsx',
+  'components/Hero.tsx',
   'components/os/AppShell.tsx',
   'components/wallet/WalletLedgerView.tsx',
   'components/os/ActionModal.tsx',
