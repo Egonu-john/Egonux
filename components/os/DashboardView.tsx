@@ -1,6 +1,7 @@
 import { coreModules, courses, transactions } from '@/lib/os-data';
 import type { ActionRequest, ModuleId } from '@/types/egonux';
 import Icon from './Icon';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/OS.module.css';
 
 interface DashboardViewProps {
@@ -33,10 +34,9 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
           <h1>Good morning, Egonu.</h1>
           <p>One identity. One ecosystem. Everything you need to learn, build, grow and lead.</p>
         </div>
-        <button className={styles.aiPromptButton} onClick={() => onSelect('ai')} type="button">
-          <span><Icon name="sparkles" size={18} /></span>
-          Ask EGONUX AI
-        </button>
+        <EgonuxButton startIcon={<Icon name="sparkles" size={18} />} labelStyle="parenthesized" onClick={() => onSelect('ai')}>
+          ASK EGONUX AI
+        </EgonuxButton>
       </section>
 
       <section className={styles.dashboardHeroGrid}>
@@ -57,14 +57,16 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
           </div>
           <div className={styles.quickActions}>
             {quickActions.map((item) => (
-              <button
+              <EgonuxButton
                 key={item.label}
+                labelStyle="parenthesized"
+                size="sm"
+                variant="secondary"
+                startIcon={<Icon name={item.icon} size={18} />}
                 onClick={() => item.action ? onAction(item.action) : item.module ? onSelect(item.module) : undefined}
-                type="button"
               >
-                <span><Icon name={item.icon} size={18} /></span>
-                {item.label}
-              </button>
+                {item.label.toUpperCase()}
+              </EgonuxButton>
             ))}
           </div>
         </article>
@@ -89,9 +91,9 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
             <div><span>Security</span><strong>92%</strong></div>
             <div><span>Reputation</span><strong>840</strong></div>
           </div>
-          <button className={styles.textButton} onClick={() => onSelect('identity')} type="button">
-            Open identity center <Icon name="chevron-right" size={16} />
-          </button>
+          <EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={16} />} onClick={() => onSelect('identity')}>
+            OPEN IDENTITY CENTER
+          </EgonuxButton>
         </article>
       </section>
 
@@ -129,9 +131,9 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
             <span>{activeCourse.duration}</span>
             <span>{activeCourse.level}</span>
           </div>
-          <button className={styles.primaryButtonSmall} onClick={() => onSelect('learn')} type="button">
-            <Icon name="play" size={16} /> Resume course
-          </button>
+          <EgonuxButton labelStyle="parenthesized" startIcon={<Icon name="play" size={16} />} onClick={() => onSelect('learn')}>
+            RESUME COURSE
+          </EgonuxButton>
         </article>
       </section>
 
@@ -159,7 +161,7 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
         <article className={styles.panel}>
           <div className={styles.sectionTitleRowCompact}>
             <div><span className={styles.eyebrow}>Wallet</span><h2>Recent activity</h2></div>
-            <button className={styles.textButton} onClick={() => onSelect('wallet')} type="button">View all <Icon name="chevron-right" size={15} /></button>
+            <EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={15} />} onClick={() => onSelect('wallet')}>VIEW ALL</EgonuxButton>
           </div>
           <div className={styles.transactionList}>
             {transactions.slice(0, 3).map((transaction) => (
@@ -179,7 +181,7 @@ export default function DashboardView({ onAction, onSelect }: DashboardViewProps
           <span className={styles.eyebrow}>EGONUX AI insight</span>
           <h2>Your savings rate improved by 11%.</h2>
           <p>If you maintain this pattern, your emergency vault reaches its next target three weeks earlier.</p>
-          <button onClick={() => onSelect('ai')} type="button">Explore the insight <Icon name="chevron-right" size={16} /></button>
+          <EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={16} />} onClick={() => onSelect('ai')}>EXPLORE THE INSIGHT</EgonuxButton>
           <small>Educational guidance only · not financial advice</small>
         </article>
       </section>
