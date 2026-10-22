@@ -33,6 +33,7 @@ jobs:
           components/ui/EgonuxActionLink.tsx
           components/Header.tsx
           components/Hero.tsx
+          pages/design-system/buttons.tsx
           components/os/ActionModal.tsx
           components/os/AppShell.tsx
           components/wallet/WalletLedgerView.tsx
