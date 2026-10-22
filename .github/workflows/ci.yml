@@ -26,6 +26,20 @@ jobs:
       - name: Execute Type Safety & Lint Verification
         run: npm run lint || true
 
+      - name: Lint Shared Button System and Migrated Screens
+        run: >-
+          npx eslint
+          components/ui/EgonuxButton.tsx
+          components/os/ActionModal.tsx
+          components/os/DashboardView.tsx
+          components/os/UserModuleViews.tsx
+          components/os/EnterpriseViews.tsx
+          components/anosa/AnosaMobile.tsx
+          components/anosa/EvidenceReviewPanel.tsx
+          pages/login.tsx
+          pages/api/auth/test-rbac.ts
+
+
       - name: Verify Shared EGONUX Button System
         run: npm run test:buttons
 
