@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { communityChannels } from '@/lib/os-data';
 import type { ActionRequest } from '@/types/egonux';
 import Icon from './Icon';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/OS.module.css';
 
 interface ViewHeaderProps {
@@ -168,21 +169,21 @@ export function MarketplaceView({ onToast, onAddToCart }: MarketplaceViewProps) 
           <h3>EGONUX SDK v3.0 License</h3>
           <p className={styles.mutedText}>Full API keys, WebSocket feeds, and sandbox wallet tools.</p>
           <strong>UGX 250,000</strong>
-          <button onClick={() => handleAddToCart("EGONUX SDK v3.0")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("EGONUX SDK v3.0")}>ADD TO CART</EgonuxButton>
         </article>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Cloud Resource</span>
           <h3>High-Performance Compute Node</h3>
           <p className={styles.mutedText}>Dedicated virtual container node for high-throughput background tasks.</p>
           <strong>UGX 120,000 / mo</strong>
-          <button onClick={() => handleAddToCart("Compute Node")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Compute Node")}>ADD TO CART</EgonuxButton>
         </article>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Analytics Suite</span>
           <h3>Real-time Ledger Monitor</h3>
           <p className={styles.mutedText}>Automated transaction monitoring and payout reconciliation tool.</p>
           <strong>UGX 85,000</strong>
-          <button onClick={() => handleAddToCart("Ledger Monitor")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Ledger Monitor")}>ADD TO CART</EgonUXButton>
         </article>
       </section>
     </div>
@@ -200,7 +201,7 @@ export function AffiliateView({ onToast }: AffiliateViewProps) {
       <ViewHeader description="A transparent growth engine for approved single-tier campaigns, verified rewards and reusable marketing assets." eyebrow="Core layer 06 · Compliance pilot" title="EGONUX Affiliate" action={<span className={styles.statusPill}>Account active</span>} />
       <p className={styles.legalBanner}><Icon name="security" size={17} /> MVP rewards are single-tier and campaign-based. Multi-level rewards remain disabled unless specifically approved under applicable law.</p>
       <section className={styles.affiliateStats}>
-        <article className={styles.affiliateEarnings}><span>Available sandbox earnings</span><strong>UGX 178,500</strong><small>Next demo cycle · Schedule pending</small><button onClick={() => onToast('Payout request created in sandbox mode.')} type="button">Request sandbox payout <Icon name="chevron-right" size={16} /></button></article>
+        <article className={styles.affiliateEarnings}><span>Available sandbox earnings</span><strong>UGX 178,500</strong><small>Next demo cycle · Schedule pending</small><EgonuxButton labelStyle="parenthesized" variant="secondary" endIcon={<Icon name="chevron-right" size={16} />} onClick={() => onToast('Payout request created in sandbox mode.')}>REQUEST SANDBOX PAYOUT</EgonuxButton></article>
         <div><span>Verified referrals</span><strong>24</strong><small>+6 this month</small></div><div><span>Conversion rate</span><strong>18.4%</strong><small>Top 12% of pilot</small></div><div><span>Link visits</span><strong>1,482</strong><small>+22.8% this month</small></div>
       </section>
       <section className={styles.twoColumnGrid}>
@@ -216,7 +217,7 @@ export function AffiliateView({ onToast }: AffiliateViewProps) {
         </article>
       </section>
       <section className={styles.panel}>
-        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Marketing studio</span><h2>Approved campaign assets</h2></div><button className={styles.textButton} type="button">View all assets <Icon name="chevron-right" size={14} /></button></div>
+        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Marketing studio</span><h2>Approved campaign assets</h2></div><EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={14} />} type="button">VIEW ALL ASSETS</EgonuxButton></div>
         <div className={styles.assetGrid}><button onClick={() => onToast('Money Mindset campaign downloaded.')} type="button"><span>01</span><div><strong>Money Mindset campaign</strong><small>12 social assets · Approved</small></div><Icon name="arrow-down" /></button><button onClick={() => onToast('Learning campaign downloaded.')} type="button"><span>02</span><div><strong>Learning launch campaign</strong><small>8 social assets · Approved</small></div><Icon name="arrow-down" /></button><button onClick={() => onToast('Marketplace campaign downloaded.')} type="button"><span>03</span><div><strong>Marketplace vendor campaign</strong><small>10 social assets · Approved</small></div><Icon name="arrow-down" /></button></div>
       </section>
     </div>
