@@ -24,7 +24,7 @@ jobs:
         run: npm ci || npm install
 
       - name: Execute Type Safety & Lint Verification
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Lint Shared Button System and Migrated Screens
         run: >-
