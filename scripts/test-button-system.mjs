@@ -21,6 +21,7 @@ assert.ok(css.includes('min-height: 44px'));
 assert.ok(css.includes(':focus-visible'));
 assert.ok(css.includes('prefers-reduced-motion'));
 assert.ok(preview.includes('No wallet, identity, account or financial operation was performed'));
+assert.ok(preview.includes('EgonuxActionLink'), 'Showcase must include semantic navigation CTAs');
 assert.ok(spec.includes('only display success after the operation has actually succeeded'));
 const userModules = read('components/os/UserModuleViews.tsx');
 assert.ok(!userModules.includes('egx_live_'), 'Demo settings must not contain a live-looking hard-coded API key');
