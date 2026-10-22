@@ -1,5 +1,4 @@
 import { authenticateRequest } from '../auth/rbac';
-import { processTransaction } from '../ledger/engine';
 import { processPurchaseOrder } from '../commerce/orders';
 import { awardTransactionXp, getProfile } from '../rewards/engine';
 
