@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ActionRequest } from '@/types/egonux';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import Icon from './Icon';
 import styles from '@/styles/OS.module.css';
 
@@ -110,17 +111,21 @@ export default function ActionModal({ action, onClose, onSubmit }: ActionModalPr
               />
             </>
           ) : null}
-          {error ? <p className={styles.formError}>{error}</p> : null}
+          {error ? <p className={styles.formError} role="alert">{error}</p> : null}
         </div>
 
         <div className={styles.policyNotice}>
           <Icon name="lock" size={17} />
           <span>This Enterprise MVP is a sandbox. No real funds will move.</span>
         </div>
-        <button className={styles.primaryButton} onClick={submit} type="button">
-          {copy.button}
-          <Icon name="chevron-right" size={17} />
-        </button>
+        <EgonuxButton
+          endIcon={<Icon name="chevron-right" size={17} />}
+          fullWidth
+          labelStyle="parenthesized"
+          onClick={submit}
+        >
+          {copy.button.toUpperCase()}
+        </EgonuxButton>
       </div>
     </div>
   );
