@@ -41,7 +41,7 @@ async function runDay5ConsentTests() {
 
   // TEST 1: Missing Consent Rejection
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: false });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: false });
     if (res.statusCode === 400 && res.json.error === 'CONSENT_REQUIRED') {
       console.log(`✔ [PASSED] Missing Consent Guard: HTTP 400 (CONSENT_REQUIRED)`);
       passed++;
@@ -55,7 +55,7 @@ async function runDay5ConsentTests() {
 
   // TEST 2: Valid Token Redemption with PDPA 2019 Timestamp & Notice Capture
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
     if (res.statusCode === 200 && res.json.consentCaptured === true) {
       console.log(`✔ [PASSED] Valid Redemption & PDPA 2019 Consent Timestamp Captured`);
       passed++;
@@ -69,7 +69,7 @@ async function runDay5ConsentTests() {
 
   // TEST 3: Single-Use Token Reuse Guard
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
     if (res.statusCode === 400 && res.json.error === 'TOKEN_ALREADY_USED') {
       console.log(`✔ [PASSED] Single-Use Reuse Guard: HTTP 400 (TOKEN_ALREADY_USED)`);
       passed++;

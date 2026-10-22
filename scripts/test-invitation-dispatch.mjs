@@ -56,7 +56,7 @@ async function runInvitationTests() {
   try {
     const res = await makePost('/api/auth/invitation', { 
       action: 'redeem', 
-      token: 'INV-UG-002', 
+      token: 'TEST-INV-UG-002', 
       consentAccepted: true, 
       participantId: 'PARTICIPANT_UG_002' 
     });

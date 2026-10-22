@@ -40,7 +40,7 @@ async function runRedemptionTests() {
 
   // TEST 1: Missing Consent Rejection
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: false });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: false });
     if (res.statusCode === 400 && res.json.error === 'CONSENT_REQUIRED') {
       console.log(`✔ [PASSED] Missing Consent Rejection: HTTP 400 (${res.json.error})`);
       passed++;
@@ -49,7 +49,7 @@ async function runRedemptionTests() {
 
   // TEST 2: Valid Token Redemption
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: true, participantId: 'PARTICIPANT_UG_001' });
     if (res.statusCode === 200 && res.json.consentCaptured === true) {
       console.log(`✔ [PASSED] Valid Token Redemption: HTTP 200 (Participant: ${res.json.participantId})`);
       passed++;
@@ -58,7 +58,7 @@ async function runRedemptionTests() {
 
   // TEST 3: Duplicate Reuse Rejection
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-001', consentAccepted: true });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-001', consentAccepted: true });
     if (res.statusCode === 400 && res.json.error === 'TOKEN_ALREADY_USED') {
       console.log(`✔ [PASSED] Single-Use Reuse Guard: HTTP 400 (${res.json.error})`);
       passed++;
@@ -67,7 +67,7 @@ async function runRedemptionTests() {
 
   // TEST 4: Expired Token Rejection
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-EXPIRED', consentAccepted: true });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-EXPIRED', consentAccepted: true });
     if (res.statusCode === 400 && res.json.error === 'TOKEN_EXPIRED') {
       console.log(`✔ [PASSED] Expired Token Guard: HTTP 400 (${res.json.error})`);
       passed++;
@@ -76,7 +76,7 @@ async function runRedemptionTests() {
 
   // TEST 5: Revoked Token Rejection
   try {
-    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'INV-UG-REVOKED', consentAccepted: true });
+    const res = await makePost('/api/auth/invitation', { action: 'redeem', token: 'TEST-INV-UG-REVOKED', consentAccepted: true });
     if (res.statusCode === 403 && res.json.error === 'TOKEN_REVOKED') {
       console.log(`✔ [PASSED] Revoked Token Guard: HTTP 403 (${res.json.error})`);
       passed++;
