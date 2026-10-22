@@ -334,7 +334,9 @@ export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
   };
 
   const handleRotateKey = () => {
-    const newKey = "egx_demo_" + Math.random().toString(36).substring(2, 16);
+    const randomBytes = new Uint8Array(8);
+    window.crypto.getRandomValues(randomBytes);
+    const newKey = "egx_demo_" + Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
     setApiKey(newKey);
     if (onToast) onToast("Demo key rotated locally; no server credential was changed.");
   };
