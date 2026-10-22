@@ -78,10 +78,10 @@ const ButtonSystemPage: NextPage = () => {
             <h2 className={styles.sectionTitle} id="feedback-heading">05 / Result language</h2>
             <p className={styles.sectionCopy}>Examples demonstrate the feedback component. Production screens must connect them to observed outcomes.</p>
           </div>
-          <div className={styles.stack}>
-            <EgonuxActionFeedback status="success">Example only: server-confirmed action completed.</EgonuxActionFeedback>
-            <EgonuxActionFeedback status="error">Example only: action failed. No successful result should be implied.</EgonuxActionFeedback>
-            <EgonuxActionFeedback status="info">Sandbox preview only. No real funds or account changes are involved.</EgonuxActionFeedback>
+          <div className={styles.resultNumbers} aria-label="Example resulting language: 0, 9, 10, 11, 12, 13, 14">
+            {['0', '9', '10', '11', '12', '13', '14'].map((number) => (
+              <span className={styles.resultNumber} key={number}>( {number} )</span>
+            ))}
           </div>
         </section>
 
