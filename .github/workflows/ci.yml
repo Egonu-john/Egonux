@@ -17,14 +17,37 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci || npm install
 
       - name: Execute Type Safety & Lint Verification
-        run: npm run lint || true
+        run: npm run lint
+
+      - name: Lint Shared Button System and Migrated Screens
+        run: >-
+          npx eslint
+          components/ui/EgonuxButton.tsx
+          components/ui/EgonuxActionLink.tsx
+          components/Header.tsx
+          components/Hero.tsx
+          pages/design-system/buttons.tsx
+          components/os/ActionModal.tsx
+          components/os/AppShell.tsx
+          components/wallet/WalletLedgerView.tsx
+          components/os/DashboardView.tsx
+          components/os/UserModuleViews.tsx
+          components/os/EnterpriseViews.tsx
+          components/anosa/AnosaMobile.tsx
+          components/anosa/EvidenceReviewPanel.tsx
+          pages/login.tsx
+          pages/api/auth/test-rbac.ts
+
+
+      - name: Verify Shared EGONUX Button System
+        run: npm run test:buttons
 
       - name: Execute Chapter 8 Identity & Security Harness
         run: npm run test:ch8

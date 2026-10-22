@@ -2,6 +2,7 @@ import { founderMetrics, platformServices, securityControls } from '@/lib/os-dat
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Icon from './Icon';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/OS.module.css';
 
 interface EnterpriseViewProps {
@@ -27,7 +28,7 @@ export function SecurityView({ onToast }: EnterpriseViewProps) {
       <section className={styles.securityHero}>
         <div className={styles.securityShield}><Icon name="security" size={58} /><span>92</span></div>
         <div><span className={styles.eyebrow}>Security posture</span><h2>Strong · 92/100</h2><p>All critical MVP controls are active. One identity-hardening recommendation remains.</p><div className={styles.securityTags}><span>Zero Trust</span><span>MFA enforced</span><span>Encryption active</span><span>Audit ready</span></div></div>
-        <button className={styles.primaryButtonSmall} onClick={() => onToast('Security assessment queued in sandbox mode.')} type="button">Run assessment <Icon name="activity" size={16} /></button>
+        <EgonuxButton labelStyle="parenthesized" endIcon={<Icon name="activity" size={16} />} onClick={() => onToast('Security assessment queued in sandbox mode.')}>RUN ASSESSMENT</EgonuxButton>
       </section>
 
       <section className={styles.securityGrid}>
@@ -51,7 +52,7 @@ export function SecurityView({ onToast }: EnterpriseViewProps) {
       </section>
 
       <section className={styles.panel}>
-        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Immutable trail</span><h2>Recent security events</h2></div><button className={styles.outlineButton} type="button">Export audit log <Icon name="arrow-down" size={15} /></button></div>
+        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Immutable trail</span><h2>Recent security events</h2></div><EgonuxButton labelStyle="parenthesized" variant="secondary" endIcon={<Icon name="arrow-down" size={15} />} type="button">EXPORT AUDIT LOG</EgonuxButton></div>
         <div className={styles.auditTable}>
           <div><span>13 Aug · 14:32:18</span><strong>DEVICE_TRUST_GRANTED</strong><span>Chrome · Android</span><em>Success</em></div>
           <div><span>13 Aug · 12:08:43</span><strong>ADMIN_POLICY_READ</strong><span>Founder Command</span><em>Success</em></div>
@@ -72,7 +73,7 @@ export function DeveloperView({ onToast }: EnterpriseViewProps) {
   return (
     <div className={styles.view}>
       <EnterpriseHeader description="Stable APIs, SDKs, webhooks and governed OAuth access for every future EGONUX institution." eyebrow="Core layer 10" title="Developer Platform">
-        <button className={styles.primaryButtonSmall} onClick={() => onToast('New sandbox application created.')} type="button"><Icon name="plus" size={16} /> New application</button>
+        <EgonuxButton labelStyle="parenthesized" startIcon={<Icon name="plus" size={16} />} onClick={() => onToast('New sandbox application created.')}>NEW APPLICATION</EgonuxButton>
       </EnterpriseHeader>
       <section className={styles.developerHero}>
         <div><span className={styles.eyebrow}>Build on one operating system</span><h2>Connect once. Expand everywhere.</h2><p>Identity, wallet, marketplace, learning, community and intelligence services through a consistent enterprise contract.</p><div className={styles.developerHeroActions}><button className={styles.primaryButtonSmall} type="button">Read API documentation <Icon name="external" size={15} /></button><button className={styles.outlineButton} type="button">Explore use cases</button></div></div>
@@ -84,7 +85,7 @@ export function DeveloperView({ onToast }: EnterpriseViewProps) {
           <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Credentials</span><h2>Sandbox application</h2></div><span className={styles.statusPill}>Test mode</span></div>
           <label className={styles.apiKeyLabel} htmlFor="sandbox-key">Publishable API key</label><div className={styles.apiKey}><code id="sandbox-key">egx_test_••••••••••••47</code><button aria-label="Copy sandbox API key" onClick={copyKey} type="button"><Icon name="copy" size={17} /></button></div>
           <div className={styles.credentialMeta}><div><span>Created</span><strong>13 Aug 2026</strong></div><div><span>Last used</span><strong>Never</strong></div><div><span>Permissions</span><strong>Read-only</strong></div></div>
-          <button className={styles.textButton} type="button">Manage credentials <Icon name="chevron-right" size={14} /></button>
+          <EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={14} />} type="button">MANAGE CREDENTIALS</EgonuxButton>
         </article>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Quick start SDKs</span><h2>Use the stack you know</h2>
@@ -112,7 +113,7 @@ export function AdminView({ onToast }: EnterpriseViewProps) {
     <div className={styles.view}>
       <EnterpriseHeader description="A unified founder-level view of users, revenue, risk, operations, intelligence and platform health." eyebrow="Core layer 08 · Restricted" title="Founder Command Center">
         <Link className={styles.outlineButton} href="/anosa"><Icon name="ai" size={16} /> Open ANOSA Mobile</Link>
-        <button className={styles.outlineButton} onClick={() => onToast('Executive report generated in sandbox mode.')} type="button"><Icon name="arrow-down" size={16} /> Export report</button>
+        <EgonuxButton labelStyle="parenthesized" variant="secondary" startIcon={<Icon name="arrow-down" size={16} />} onClick={() => onToast('Executive report generated in sandbox mode.')}>EXPORT REPORT</EgonuxButton>
       </EnterpriseHeader>
       <section className={styles.commandBanner}><div><span className={styles.eyebrow}>Enterprise status</span><h2>EGONUX is operating normally.</h2><p>All critical services are available. Three fraud signals require human review.</p></div><div><span className={styles.liveDot} /> LIVE COMMAND VIEW<small>Updated 14:42 UTC</small></div></section>
       <section className={styles.metricGrid}>

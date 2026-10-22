@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
 import { registerEgonuxMember, signInToEgonux } from '@/lib/auth/client';
 import { firebaseClientConfigurationStatus } from '@/lib/firebase/client';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/Auth.module.css';
 
 type Mode = 'signin' | 'register';
@@ -65,8 +66,8 @@ export default function LoginPage() {
           <p className={styles.intro}>One secure identity for the EGONUX digital-wealth ecosystem.</p>
 
           <div className={styles.tabs} aria-label="Authentication options">
-            <button type="button" data-active={mode === 'signin'} onClick={() => setMode('signin')}>Sign in</button>
-            <button type="button" data-active={mode === 'register'} onClick={() => setMode('register')}>Register</button>
+            <EgonuxButton size="sm" variant={mode === 'signin' ? 'primary' : 'ghost'} aria-pressed={mode === 'signin'} onClick={() => setMode('signin')}>Sign in</EgonuxButton>
+            <EgonuxButton size="sm" variant={mode === 'register' ? 'primary' : 'ghost'} aria-pressed={mode === 'register'} onClick={() => setMode('register')}>Register</EgonuxButton>
           </div>
 
           {!configuration.configured ? (
@@ -91,9 +92,15 @@ export default function LoginPage() {
               <input autoComplete={mode === 'register' ? 'new-password' : 'current-password'} minLength={12} required type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
             </label>
             {error ? <p className={styles.error} role="alert">{error}</p> : null}
-            <button className={styles.submit} disabled={busy || !configuration.configured} type="submit">
-              {busy ? 'Securing session…' : mode === 'signin' ? 'Enter EGONUX OS' : 'Create secure account'}
-            </button>
+            <EgonuxButton
+              fullWidth
+              labelStyle="parenthesized"
+              loading={busy}
+              disabled={!configuration.configured}
+              type="submit"
+            >
+              {busy ? 'SECURING SESSION…' : mode === 'signin' ? 'ENTER EGONUX OS' : 'CREATE SECURE ACCOUNT'}
+            </EgonuxButton>
           </form>
           <p className={styles.boundary}>Sandbox only. Do not submit identity documents or financial information.</p>
         </section>

@@ -1,20 +1,32 @@
 import { authenticateRequest } from '../auth/rbac';
-import { processTransaction } from '../ledger/engine';
-import { processPurchaseOrder } from '../commerce/orders';
+import { processPurchaseOrder, type DigitalItem } from '../commerce/orders';
 import { awardTransactionXp, getProfile } from '../rewards/engine';
 
 export interface ApiRequest {
   path: string;
   method: 'GET' | 'POST';
   headers: Record<string, string>;
-  body?: any;
+  body?: unknown;
 }
 
 export interface ApiResponse {
   status: number;
-  data?: any;
+  data?: unknown;
   error?: string;
   timestamp: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isDigitalItem(value: unknown): value is DigitalItem {
+  if (!isRecord(value)) return false;
+  return typeof value.id === 'string'
+    && typeof value.name === 'string'
+    && typeof value.price === 'number'
+    && Number.isFinite(value.price)
+    && typeof value.merchantAccountId === 'string';
 }
 
 export async function handleApiRequest(req: ApiRequest): Promise<ApiResponse> {
@@ -36,9 +48,16 @@ export async function handleApiRequest(req: ApiRequest): Promise<ApiResponse> {
     if (req.path === '/api/v1/orders' && req.method === 'POST') {
       if (!user) return { status: 401, error: 'Unauthorized: Invalid token', timestamp };
 
-      const { idempotencyKey, item, affiliateAccountId } = req.body || {};
-      if (!idempotencyKey || !item) {
-        return { status: 400, error: 'Bad Request: Missing idempotencyKey or item', timestamp };
+      const body = isRecord(req.body) ? req.body : {};
+      const idempotencyKey = body.idempotencyKey;
+      const item = body.item;
+      const affiliateAccountId = body.affiliateAccountId;
+
+      if (typeof idempotencyKey !== 'string' || idempotencyKey.length === 0 || !isDigitalItem(item)) {
+        return { status: 400, error: 'Bad Request: Missing or invalid idempotencyKey or item', timestamp };
+      }
+      if (affiliateAccountId !== undefined && typeof affiliateAccountId !== 'string') {
+        return { status: 400, error: 'Bad Request: Invalid affiliateAccountId', timestamp };
       }
 
       // Execute order settlement via Chapter 13 Engine
@@ -67,7 +86,8 @@ export async function handleApiRequest(req: ApiRequest): Promise<ApiResponse> {
     }
 
     return { status: 404, error: 'Endpoint not found', timestamp };
-  } catch (err: any) {
-    return { status: 500, error: err.message || 'Internal Server Error', timestamp };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Internal Server Error';
+    return { status: 500, error: message, timestamp };
   }
 }

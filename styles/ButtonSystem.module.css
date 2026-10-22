@@ -1,0 +1,21 @@
+.page { min-height: 100vh; padding: clamp(1.25rem, 4vw, 3.5rem); background: radial-gradient(circle at 90% 0%, rgba(212, 175, 55, 0.1), transparent 28rem), var(--obsidian, #0a0a0a); color: var(--bone, #edeae3); }
+.container { width: min(100%, 1100px); margin: 0 auto; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--hairline, rgba(212, 175, 55, 0.22)); }
+.eyebrow { margin-bottom: 0.75rem; color: var(--gold, #d4af37); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.18em; }
+.title { margin: 0; font-size: clamp(2.2rem, 6vw, 4.25rem); line-height: 0.98; }
+.title span { color: var(--gold, #d4af37); }
+.intro { max-width: 660px; margin-top: 1rem; color: #b9b5ab; font-size: 1rem; line-height: 1.7; }
+.version { flex: 0 0 auto; padding: 0.5rem 0.7rem; border: 1px solid var(--hairline, rgba(212, 175, 55, 0.22)); border-radius: 999px; color: var(--champagne, #e9ce83); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; }
+.section { margin-top: 2rem; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; background: rgba(255, 255, 255, 0.025); }
+.sectionHeader { margin-bottom: 1.35rem; }
+.sectionTitle { margin: 0; font-size: 1.45rem; }
+.sectionCopy { margin-top: 0.5rem; color: #aaa69d; font-size: 0.875rem; line-height: 1.6; }
+.row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
+.stack { display: grid; gap: 0.85rem; }
+.feedbackArea { display: grid; gap: 0.75rem; max-width: 620px; }
+.note { margin-top: 1.25rem; padding: 1rem; border-left: 2px solid var(--gold, #d4af37); background: rgba(212, 175, 55, 0.06); color: #d5d0c5; font-size: 0.85rem; line-height: 1.65; }
+.footer { padding: 2rem 0 0; color: #858177; font-size: 0.75rem; line-height: 1.7; }
+@media (max-width: 620px) { .header { flex-direction: column; } .version { align-self: flex-start; } }
+
+.resultNumbers { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+.resultNumber { display: inline-flex; align-items: center; justify-content: center; min-width: 3rem; min-height: 2.5rem; padding: 0.4rem 0.75rem; border: 1px solid rgba(212, 175, 55, 0.55); border-radius: 999px; color: var(--champagne, #e9ce83); background: rgba(212, 175, 55, 0.06); font-weight: 700; font-variant-numeric: tabular-nums; }

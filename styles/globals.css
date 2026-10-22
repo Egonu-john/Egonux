@@ -8,6 +8,15 @@
   --bone: #edeae3;
   --white: #ffffff;
   --hairline: rgba(212, 175, 55, 0.22);
+
+  /* EGONUX shared action tokens */
+  --egx-button-gold-hover: #e5c65e;
+  --egx-button-gold-glow: rgba(212, 175, 55, 0.2);
+  --egx-button-radius: 999px;
+  --egx-button-target-min: 44px;
+  --egx-feedback-success: #b6f2ca;
+  --egx-feedback-error: #fecaca;
+  --egx-feedback-info: #e9ce83;
 }
 
 * {

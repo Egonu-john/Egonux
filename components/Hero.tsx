@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { useCanvasAnimation } from '@/hooks/useCanvasAnimation';
+import { EgonuxActionLink } from '@/components/ui/EgonuxActionLink';
 import styles from '@/styles/Home.module.css';
 
 export default function Hero() {
@@ -20,12 +20,8 @@ export default function Hero() {
             digital-wealth ecosystem.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/os" className={styles.btnPrimary}>
-              Launch Enterprise MVP
-            </Link>
-            <Link href="#about" className={styles.btnSecondary}>
-              Explore the Vision
-            </Link>
+            <EgonuxActionLink href="/os" size="lg" labelStyle="parenthesized">LAUNCH ENTERPRISE MVP</EgonuxActionLink>
+            <EgonuxActionLink href="#about" size="lg" variant="secondary" labelStyle="parenthesized">EXPLORE THE VISION</EgonuxActionLink>
           </div>
           <div className={styles.heroVerticals}>
             <span>Identity</span>

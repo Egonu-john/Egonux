@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { communityChannels } from '@/lib/os-data';
 import type { ActionRequest } from '@/types/egonux';
 import Icon from './Icon';
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import styles from '@/styles/OS.module.css';
 
 interface ViewHeaderProps {
@@ -159,8 +160,8 @@ export function MarketplaceView({ onToast, onAddToCart }: MarketplaceViewProps) 
         action={<span className={styles.statusPill}>Cart ({cartCount})</span>}
       />
       <div className={styles.tabContainer}>
-        <button onClick={() => setActiveTab("products")} className={activeTab === "products" ? styles.activeTab : ""}>Featured Assets</button>
-        <button onClick={() => setActiveTab("orders")} className={activeTab === "orders" ? styles.activeTab : ""}>Recent Orders</button>
+        <EgonuxButton size="sm" variant={activeTab === "products" ? "primary" : "ghost"} onClick={() => setActiveTab("products")}>Featured Assets</EgonuxButton>
+        <EgonuxButton size="sm" variant={activeTab === "orders" ? "primary" : "ghost"} onClick={() => setActiveTab("orders")}>Recent Orders</EgonuxButton>
       </div>
       <section className={styles.threeColumnGrid}>
         <article className={styles.panel}>
@@ -168,21 +169,21 @@ export function MarketplaceView({ onToast, onAddToCart }: MarketplaceViewProps) 
           <h3>EGONUX SDK v3.0 License</h3>
           <p className={styles.mutedText}>Full API keys, WebSocket feeds, and sandbox wallet tools.</p>
           <strong>UGX 250,000</strong>
-          <button onClick={() => handleAddToCart("EGONUX SDK v3.0")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("EGONUX SDK v3.0")}>ADD TO CART</EgonuxButton>
         </article>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Cloud Resource</span>
           <h3>High-Performance Compute Node</h3>
           <p className={styles.mutedText}>Dedicated virtual container node for high-throughput background tasks.</p>
           <strong>UGX 120,000 / mo</strong>
-          <button onClick={() => handleAddToCart("Compute Node")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Compute Node")}>ADD TO CART</EgonuxButton>
         </article>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Analytics Suite</span>
           <h3>Real-time Ledger Monitor</h3>
           <p className={styles.mutedText}>Automated transaction monitoring and payout reconciliation tool.</p>
           <strong>UGX 85,000</strong>
-          <button onClick={() => handleAddToCart("Ledger Monitor")} type="button" className={styles.primaryButton}>Add to Cart</button>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Ledger Monitor")}>ADD TO CART</EgonuxButton>
         </article>
       </section>
     </div>
@@ -200,14 +201,14 @@ export function AffiliateView({ onToast }: AffiliateViewProps) {
       <ViewHeader description="A transparent growth engine for approved single-tier campaigns, verified rewards and reusable marketing assets." eyebrow="Core layer 06 · Compliance pilot" title="EGONUX Affiliate" action={<span className={styles.statusPill}>Account active</span>} />
       <p className={styles.legalBanner}><Icon name="security" size={17} /> MVP rewards are single-tier and campaign-based. Multi-level rewards remain disabled unless specifically approved under applicable law.</p>
       <section className={styles.affiliateStats}>
-        <article className={styles.affiliateEarnings}><span>Available sandbox earnings</span><strong>UGX 178,500</strong><small>Next demo cycle · Schedule pending</small><button onClick={() => onToast('Payout request created in sandbox mode.')} type="button">Request sandbox payout <Icon name="chevron-right" size={16} /></button></article>
+        <article className={styles.affiliateEarnings}><span>Available sandbox earnings</span><strong>UGX 178,500</strong><small>Next demo cycle · Schedule pending</small><EgonuxButton labelStyle="parenthesized" variant="secondary" endIcon={<Icon name="chevron-right" size={16} />} onClick={() => onToast('Payout request created in sandbox mode.')}>REQUEST SANDBOX PAYOUT</EgonuxButton></article>
         <div><span>Verified referrals</span><strong>24</strong><small>+6 this month</small></div><div><span>Conversion rate</span><strong>18.4%</strong><small>Top 12% of pilot</small></div><div><span>Link visits</span><strong>1,482</strong><small>+22.8% this month</small></div>
       </section>
       <section className={styles.twoColumnGrid}>
         <article className={styles.panel}>
           <span className={styles.eyebrow}>Your verified link</span><h2>Share EGONUX responsibly</h2><p className={styles.mutedText}>Use approved messaging only. Earnings are never guaranteed.</p>
           <div className={styles.referralLink}><span>egonux.com/r/EGX000047</span><button aria-label="Copy referral link" onClick={copyLink} type="button"><Icon name="copy" size={17} /></button></div>
-          <div className={styles.shareButtons}><button onClick={copyLink} type="button">WhatsApp</button><button onClick={copyLink} type="button">Telegram</button><button onClick={copyLink} type="button">Facebook</button></div>
+          <div className={styles.shareButtons}><EgonuxButton size="sm" variant="secondary" labelStyle="parenthesized" onClick={copyLink}>WHATSAPP</EgonuxButton><EgonuxButton size="sm" variant="secondary" labelStyle="parenthesized" onClick={copyLink}>TELEGRAM</EgonuxButton><EgonuxButton size="sm" variant="secondary" labelStyle="parenthesized" onClick={copyLink}>FACEBOOK</EgonuxButton></div>
         </article>
         <article className={styles.panel}>
           <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Performance</span><h2>Monthly conversions</h2></div><strong className={styles.positiveText}>+24%</strong></div>
@@ -216,7 +217,7 @@ export function AffiliateView({ onToast }: AffiliateViewProps) {
         </article>
       </section>
       <section className={styles.panel}>
-        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Marketing studio</span><h2>Approved campaign assets</h2></div><button className={styles.textButton} type="button">View all assets <Icon name="chevron-right" size={14} /></button></div>
+        <div className={styles.sectionTitleRowCompact}><div><span className={styles.eyebrow}>Marketing studio</span><h2>Approved campaign assets</h2></div><EgonuxButton labelStyle="parenthesized" variant="secondary" size="sm" endIcon={<Icon name="chevron-right" size={14} />} type="button">VIEW ALL ASSETS</EgonuxButton></div>
         <div className={styles.assetGrid}><button onClick={() => onToast('Money Mindset campaign downloaded.')} type="button"><span>01</span><div><strong>Money Mindset campaign</strong><small>12 social assets · Approved</small></div><Icon name="arrow-down" /></button><button onClick={() => onToast('Learning campaign downloaded.')} type="button"><span>02</span><div><strong>Learning launch campaign</strong><small>8 social assets · Approved</small></div><Icon name="arrow-down" /></button><button onClick={() => onToast('Marketplace campaign downloaded.')} type="button"><span>03</span><div><strong>Marketplace vendor campaign</strong><small>10 social assets · Approved</small></div><Icon name="arrow-down" /></button></div>
       </section>
     </div>
@@ -259,11 +260,11 @@ export function AIView() {
           <p><Icon name="lock" size={14} /> Every production answer will be logged, traceable and governed by your consent.</p>
         </aside>
         <div className={styles.chatPanel}>
-          <div className={styles.chatTop}><div><span className={styles.aiAvatar}><Icon name="sparkles" /></span><div><strong>ANOSA · EGONUX Assistant</strong><small>Enterprise MVP intelligence</small></div></div><button aria-label="Clear chat" onClick={() => setMessages(initialMessages)} type="button">Clear</button></div>
+          <div className={styles.chatTop}><div><span className={styles.aiAvatar}><Icon name="sparkles" /></span><div><strong>ANOSA · EGONUX Assistant</strong><small>Enterprise MVP intelligence</small></div></div><EgonuxButton aria-label="Clear chat" size="sm" variant="ghost" labelStyle="parenthesized" onClick={() => setMessages(initialMessages)}>CLEAR</EgonuxButton></div>
           <div aria-live="polite" className={styles.chatMessages}>
             {messages.map((message) => <div className={message.role === 'assistant' ? styles.assistantMessage : styles.userMessage} key={message.id}>{message.role === 'assistant' ? <span><Icon name="sparkles" size={17} /></span> : null}<p>{message.text}</p></div>)}
           </div>
-          <div className={styles.suggestionRow}>{suggestions.map((suggestion) => <button key={suggestion} onClick={() => sendPrompt(suggestion)} type="button">{suggestion}</button>)}</div>
+          <div className={styles.suggestionRow}>{suggestions.map((suggestion) => <EgonuxButton key={suggestion} size="sm" variant="secondary" labelStyle="parenthesized" onClick={() => sendPrompt(suggestion)}>{suggestion.toUpperCase()}</EgonuxButton>)}</div>
           <form className={styles.chatForm} onSubmit={submit}><label className={styles.srOnly} htmlFor="ai-prompt">Ask EGONUX AI</label><textarea id="ai-prompt" onChange={(event) => setPrompt(event.target.value)} placeholder="Ask about your goals, learning or business…" rows={2} value={prompt} /><button aria-label="Send message" disabled={!prompt.trim()} type="submit"><Icon name="send" /></button></form>
           <small className={styles.aiDisclaimer}>AI can make mistakes. Verify financial, legal and business decisions with qualified professionals.</small>
         </div>
@@ -285,7 +286,7 @@ export function LearnView({ onToast }: { onToast?: (msg: string) => void }) {
       <section className={styles.panel}>
         <h2>EGONUX: Learn. Build. Grow. Lead.</h2>
         <p className={styles.mutedText}>Explore curriculum modules and system documentation.</p>
-        <button onClick={() => onToast && onToast("Loaded curriculum module successfully!")} type="button" className={styles.primaryButton}>Load Curriculum</button>
+        <EgonuxButton labelStyle="parenthesized" onClick={() => onToast && onToast("Loaded curriculum module successfully!")}>LOAD CURRICULUM</EgonuxButton>
       </section>
     </div>
   );}
@@ -306,7 +307,7 @@ export function CommunityView({ onToast }: { onToast?: (msg: string) => void }) 
             <span className={styles.eyebrow}>Channel</span>
             <h3>{channel.name}</h3>
             <p className={styles.mutedText}>{channel.topic || 'Active community channel'}</p>
-            <button onClick={() => onToast && onToast("Joined " + channel.name)} type="button" className={styles.primaryButton}>Join Channel</button>
+            <EgonuxButton labelStyle="parenthesized" onClick={() => onToast && onToast("Joined " + channel.name)}>JOIN CHANNEL</EgonuxButton>
           </article>
         ))}
       </section>
@@ -316,7 +317,7 @@ export function CommunityView({ onToast }: { onToast?: (msg: string) => void }) 
 
 
 export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
-  const [apiKey, setApiKey] = useState("egx_live_99a84f7b20e14c");
+  const [apiKey, setApiKey] = useState("egx_demo_placeholder");
   const [copiedKey, setCopiedKey] = useState(false);
   const [themeAccent, setThemeAccent] = useState("Royal Gold (#D4AF37)");
   const [autoReconcile, setAutoReconcile] = useState(true);
@@ -325,17 +326,19 @@ export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
     try {
       await navigator.clipboard.writeText(apiKey);
       setCopiedKey(true);
-      if (onToast) onToast("API key copied to clipboard!");
+      if (onToast) onToast("Demo API key copied to clipboard; no server credential was accessed.");
       setTimeout(() => setCopiedKey(false), 2500);
     } catch {
-      if (onToast) onToast("API Key: " + apiKey);
+      if (onToast) onToast("Demo API key: " + apiKey);
     }
   };
 
   const handleRotateKey = () => {
-    const newKey = "egx_live_" + Math.random().toString(36).substring(2, 16);
+    const randomBytes = new Uint8Array(8);
+    window.crypto.getRandomValues(randomBytes);
+    const newKey = "egx_demo_" + Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
     setApiKey(newKey);
-    if (onToast) onToast("Security API Key rotated successfully!");
+    if (onToast) onToast("Demo key rotated locally; no server credential was changed.");
   };
 
   return (
@@ -354,11 +357,9 @@ export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
           <p className={styles.mutedText}>Used for authenticating local SDK calls and WebSocket feeds.</p>
           <div className={styles.referralLink}>
             <span>{apiKey}</span>
-            <button onClick={copyApiKey} type="button">{copiedKey ? "Copied!" : "Copy"}</button>
+            <EgonuxButton size="sm" variant="secondary" labelStyle="parenthesized" onClick={copyApiKey}>{copiedKey ? "COPIED!" : "COPY DEMO KEY"}</EgonuxButton>
           </div>
-          <button onClick={handleRotateKey} type="button" className={styles.outlineButton} style={{ marginTop: "12px" }}>
-            Rotate Secret Key
-          </button>
+          <EgonuxButton variant="secondary" labelStyle="parenthesized" onClick={handleRotateKey} style={{ marginTop: "12px" }}>ROTATE DEMO KEY</EgonuxButton>
         </article>
 
         <article className={styles.panel}>
@@ -366,8 +367,8 @@ export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
           <h3>Visual Identity Standard</h3>
           <p className={styles.mutedText}>Current Active Accent: <strong>{themeAccent}</strong></p>
           <div className={styles.tabContainer} style={{ marginTop: "16px" }}>
-            <button onClick={() => { setThemeAccent("Royal Gold (#D4AF37)"); if(onToast) onToast("Theme set to Royal Gold!"); }} className={styles.activeTab}>Royal Gold</button>
-            <button onClick={() => { setThemeAccent("Cyber Emerald (#10B981)"); if(onToast) onToast("Theme set to Cyber Emerald!"); }}>Cyber Emerald</button>
+            <EgonuxButton size="sm" variant={themeAccent === "Royal Gold (#D4AF37)" ? "primary" : "ghost"} labelStyle="parenthesized" onClick={() => { setThemeAccent("Royal Gold (#D4AF37)"); if(onToast) onToast("Theme set to Royal Gold!"); }}>ROYAL GOLD</EgonuxButton>
+            <EgonuxButton size="sm" variant={themeAccent === "Cyber Emerald (#10B981)" ? "primary" : "ghost"} labelStyle="parenthesized" onClick={() => { setThemeAccent("Cyber Emerald (#10B981)"); if(onToast) onToast("Theme set to Cyber Emerald!"); }}>CYBER EMERALD</EgonuxButton>
           </div>
         </article>
       </section>
@@ -378,9 +379,9 @@ export function SettingsView({ onToast }: { onToast?: (msg: string) => void }) {
             <span className={styles.eyebrow}>Automated Ledger Rules</span>
             <h2>Auto-Reconciliation Engine</h2>
           </div>
-          <button onClick={() => { setAutoReconcile(!autoReconcile); if(onToast) onToast("Auto-reconciliation " + (!autoReconcile ? "enabled" : "disabled")); }} type="button" className={styles.primaryButton}>
-            {autoReconcile ? "Status: Enabled" : "Status: Disabled"}
-          </button>
+          <EgonuxButton aria-pressed={autoReconcile} variant={autoReconcile ? "primary" : "secondary"} labelStyle="parenthesized" onClick={() => { setAutoReconcile(!autoReconcile); if(onToast) onToast("Auto-reconciliation " + (!autoReconcile ? "enabled" : "disabled")); }}>
+            {autoReconcile ? "AUTO-RECONCILIATION: ENABLED" : "AUTO-RECONCILIATION: DISABLED"}
+          </EgonuxButton>
         </div>
       </section>
     </div>
