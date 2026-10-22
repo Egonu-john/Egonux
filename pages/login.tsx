@@ -66,8 +66,8 @@ export default function LoginPage() {
           <p className={styles.intro}>One secure identity for the EGONUX digital-wealth ecosystem.</p>
 
           <div className={styles.tabs} aria-label="Authentication options">
-            <button type="button" data-active={mode === 'signin'} onClick={() => setMode('signin')}>Sign in</button>
-            <button type="button" data-active={mode === 'register'} onClick={() => setMode('register')}>Register</button>
+            <EgonuxButton size="sm" variant={mode === 'signin' ? 'primary' : 'ghost'} aria-pressed={mode === 'signin'} onClick={() => setMode('signin')}>Sign in</EgonuxButton>
+            <EgonuxButton size="sm" variant={mode === 'register' ? 'primary' : 'ghost'} aria-pressed={mode === 'register'} onClick={() => setMode('register')}>Register</EgonuxButton>
           </div>
 
           {!configuration.configured ? (
