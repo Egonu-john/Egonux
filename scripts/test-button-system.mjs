@@ -21,6 +21,8 @@ assert.ok(preview.includes('No wallet, identity, account or financial operation 
 assert.ok(spec.includes('only display success after the operation has actually succeeded'));
 
 const adoptedFiles = [
+  'components/os/AppShell.tsx',
+  'components/wallet/WalletLedgerView.tsx',
   'components/os/ActionModal.tsx',
   'components/os/DashboardView.tsx',
   'components/os/UserModuleViews.tsx',
