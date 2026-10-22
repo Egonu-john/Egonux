@@ -110,6 +110,16 @@ const paths: Record<IconName, ReactNode> = {
   lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" /></>,
   globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.7 5.5 3.7 9S14.5 18.5 12 21c-2.5-2.5-3.7-5.5-3.7-9S9.5 5.5 12 3Z" /></>,
   logout: <><path d="M10 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h10" /></>,
+  gamepad: <><path d="M6 9h12a4 4 0 0 1 3.8 5.2l-.7 2.4a2.5 2.5 0 0 1-4.2 1.1L14.5 15h-5l-2.4 2.7a2.5 2.5 0 0 1-4.2-1.1l-.7-2.4A4 4 0 0 1 6 9Z"/><path d="M7 11v4M5 13h4M16.5 12.5h.01M18.5 14.5h.01"/></>,
+  compass: <><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></>,
+  target: <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></>,
+  trophy: <><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></>,
+  users: <><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-2a5.5 5.5 0 0 1 11 0v2M16 5.5a3 3 0 0 1 0 5.8M17 14a4.5 4.5 0 0 1 3.5 4.4V20"/></>,
+  zap: <path d="m13 2-9 12h7l-1 8 10-13h-7l0-7Z"/>,
+  'arrow-up-right': <><path d="M7 17 17 7M8 7h9v9"/></>,
+  gauge: <><path d="M4 19a9 9 0 1 1 16 0"/><path d="m12 13 4-4M7 19h10"/></>,
+  shield: <><path d="M12 2.8 20 6v5.8c0 4.6-3 8-8 9.4-5-1.4-8-4.8-8-9.4V6l8-3.2Z"/></>,
+  info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></>,
 };
 
 export default function Icon({ name, size = 20, title, className }: IconProps) {
