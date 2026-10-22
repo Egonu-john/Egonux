@@ -13,8 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
     return res.status(200).json({ authorized: true, principal });
-  } catch (error: any) {
-    const msg = error?.message || 'Unauthorized';
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Unauthorized';
     return res.status(401).json({ error: msg });
   }
 }
