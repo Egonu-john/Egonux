@@ -16,3 +16,6 @@
 .note { margin-top: 1.25rem; padding: 1rem; border-left: 2px solid var(--gold, #d4af37); background: rgba(212, 175, 55, 0.06); color: #d5d0c5; font-size: 0.85rem; line-height: 1.65; }
 .footer { padding: 2rem 0 0; color: #858177; font-size: 0.75rem; line-height: 1.7; }
 @media (max-width: 620px) { .header { flex-direction: column; } .version { align-self: flex-start; } }
+
+.resultNumbers { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+.resultNumber { display: inline-flex; align-items: center; justify-content: center; min-width: 3rem; min-height: 2.5rem; padding: 0.4rem 0.75rem; border: 1px solid rgba(212, 175, 55, 0.55); border-radius: 999px; color: var(--champagne, #e9ce83); background: rgba(212, 175, 55, 0.06); font-weight: 700; font-variant-numeric: tabular-nums; }
