@@ -82,7 +82,7 @@ export default function GameHubView({ onToast }: { onToast: (message: string) =>
             <h2>NEXUS<br /><span>RUNNER</span></h2>
             <p>Move fast. Think ahead. Explore the EGONUX digital frontier through a short arcade-style preview.</p>
             <div className={styles.featureMeta}><span><Icon name="users" size={15} /> Solo experience</span><span><Icon name="zap" size={15} /> Quick play</span><span><Icon name="sparkles" size={15} /> 120 demo XP</span></div>
-            <button className={styles.primaryButton} onClick={() => launchGame(games[0])} type="button}><Icon name="play" size={17} /> Open game preview <Icon name="arrow-up-right" size={16} /></button>
+            <button className={styles.primaryButton} onClick={() => launchGame(games[0])} type="button"><Icon name="play" size={17} /> Open game preview <Icon name="arrow-up-right" size={16} /></button>
           </div>
           <div aria-hidden="true" className={styles.featuredArt}><div className={styles.orbit} /><div className={styles.ring} /><div className={styles.core}>N</div><span className={styles.artLabel}>NEXUS / 01</span></div>
           <span className={styles.featuredIndex}>01 <small>/ 06</small></span>
