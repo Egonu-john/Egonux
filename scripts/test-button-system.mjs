@@ -22,7 +22,7 @@ assert.ok(spec.includes('only display success after the operation has actually s
 const userModules = read('components/os/UserModuleViews.tsx');
 assert.ok(!userModules.includes('egx_live_'), 'Demo settings must not contain a live-looking hard-coded API key');
 assert.ok(userModules.includes('COPY DEMO KEY') && userModules.includes('ROTATE DEMO KEY'), 'Local-only credential controls must be labeled as demo actions');
-assert.ok(!/const newKey = .*Math\\.random/.test(userModules), 'Demo key rotation must not use a weak random number generator');
+assert.ok(!userModules.includes('Math.random'), 'Demo key rotation must not use a weak random number generator');
 
 const adoptedFiles = [
   'components/os/AppShell.tsx',
