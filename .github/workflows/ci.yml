@@ -30,6 +30,9 @@ jobs:
         run: >-
           npx eslint
           components/ui/EgonuxButton.tsx
+          components/ui/EgonuxActionLink.tsx
+          components/Header.tsx
+          components/Hero.tsx
           components/os/ActionModal.tsx
           components/os/AppShell.tsx
           components/wallet/WalletLedgerView.tsx
