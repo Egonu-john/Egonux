@@ -1,3 +1,4 @@
+import { EgonuxButton } from '@/components/ui/EgonuxButton';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -120,10 +121,9 @@ export default function AppShell({
             </div>
           </div>
           {onSignOut ? (
-            <button className={styles.backToSite} onClick={() => void onSignOut()} type="button">
-              <Icon name="logout" size={17} />
-              Sign out securely
-            </button>
+            <EgonuxButton labelStyle="parenthesized" variant="secondary" startIcon={<Icon name="logout" size={17} />} onClick={() => void onSignOut()}>
+              SIGN OUT SECURELY
+            </EgonuxButton>
           ) : (
             <Link className={styles.backToSite} href="/">
               <Icon name="logout" size={17} />
