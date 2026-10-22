@@ -27,9 +27,14 @@ assert.ok(!userModules.includes('egx_live_'), 'Demo settings must not contain a 
 assert.ok(userModules.includes('COPY DEMO KEY') && userModules.includes('ROTATE DEMO KEY'), 'Local-only credential controls must be labeled as demo actions');
 assert.ok(!userModules.includes('Math.random'), 'Demo key rotation must not use a weak random number generator');
 
+const actionLinkFiles = ['components/Header.tsx', 'components/Hero.tsx'];
+for (const file of actionLinkFiles) {
+  const source = read(file);
+  assert.ok(source.includes('@/components/ui/EgonuxActionLink'), `${file} must use the semantic action link`);
+  assert.ok(source.includes('<EgonuxActionLink'), `${file} must render the shared action link`);
+}
+
 const adoptedFiles = [
-  'components/Header.tsx',
-  'components/Hero.tsx',
   'components/os/AppShell.tsx',
   'components/wallet/WalletLedgerView.tsx',
   'components/os/ActionModal.tsx',
