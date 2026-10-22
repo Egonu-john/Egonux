@@ -183,7 +183,7 @@ export function MarketplaceView({ onToast, onAddToCart }: MarketplaceViewProps) 
           <h3>Real-time Ledger Monitor</h3>
           <p className={styles.mutedText}>Automated transaction monitoring and payout reconciliation tool.</p>
           <strong>UGX 85,000</strong>
-          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Ledger Monitor")}>ADD TO CART</EgonUXButton>
+          <EgonuxButton labelStyle="parenthesized" onClick={() => handleAddToCart("Ledger Monitor")}>ADD TO CART</EgonuxButton>
         </article>
       </section>
     </div>
