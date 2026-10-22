@@ -9,16 +9,16 @@ const css = read('styles/EgonuxButton.module.css');
 const preview = read('pages/design-system/buttons.tsx');
 const spec = read('docs/EGONUX_BUTTON_SYSTEM_V1.md');
 
-assert.match(component, /export function EgonuxButton/);
-assert.match(component, /export function EgonuxActionFeedback/);
-assert.match(component, /type = 'button'/, 'Buttons must default to non-submit behavior');
-assert.match(component, /disabled=\{disabled \|\| loading\}/, 'Loading must prevent repeat activation');
-assert.match(css, /border-radius:\\s*999px/);
-assert.match(css, /min-height:\\s*44px/);
-assert.match(css, /:focus-visible/);
-assert.match(css, /prefers-reduced-motion/);
-assert.match(preview, /No wallet, identity, account or financial operation was performed/);
-assert.match(spec, /success only after the actual workflow has succeeded/i);
+assert.ok(component.includes('export function EgonuxButton'));
+assert.ok(component.includes('export function EgonuxActionFeedback'));
+assert.ok(component.includes("type = 'button'"), 'Buttons must default to non-submit behavior');
+assert.ok(component.includes('disabled={disabled || loading}'), 'Loading must prevent repeat activation');
+assert.ok(css.includes('border-radius: 999px'));
+assert.ok(css.includes('min-height: 44px'));
+assert.ok(css.includes(':focus-visible'));
+assert.ok(css.includes('prefers-reduced-motion'));
+assert.ok(preview.includes('No wallet, identity, account or financial operation was performed'));
+assert.ok(spec.includes('success only after the actual workflow has succeeded'));
 
 const adoptedFiles = [
   'components/os/ActionModal.tsx',
@@ -31,9 +31,9 @@ const adoptedFiles = [
 ];
 for (const file of adoptedFiles) {
   const source = read(file);
-  assert.match(source, /@\\/components\\/ui\\/EgonuxButton/, `${file} must import the shared button`);
-  assert.match(source, /<EgonuxButton/, `${file} must use the shared button`);
-  assert.doesNotMatch(source, /EgonUXButton/, `${file} contains an invalid component name`);
+  assert.ok(source.includes('@/components/ui/EgonuxButton'), `${file} must import the shared button`);
+  assert.ok(source.includes('<EgonuxButton'), `${file} must use the shared button`);
+  assert.ok(!source.includes('EgonUXButton'), `${file} contains an invalid component name`);
 }
 
 console.log(`EGONUX button-system contract passed: component, accessibility, safety, preview, and ${adoptedFiles.length} integrated screens.`);
