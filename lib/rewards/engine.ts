@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import _crypto from 'crypto';
 
 export type UserTier = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM';
 

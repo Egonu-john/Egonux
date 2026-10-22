@@ -71,3 +71,4 @@ export async function handleApiRequest(req: ApiRequest): Promise<ApiResponse> {
     return { status: 500, error: err.message || 'Internal Server Error', timestamp };
   }
 }
+void processTransaction;

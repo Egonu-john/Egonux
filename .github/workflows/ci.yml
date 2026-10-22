@@ -17,14 +17,14 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci || npm install
+        run: npm ci
 
       - name: Execute Type Safety & Lint Verification
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Execute Chapter 8 Identity & Security Harness
         run: npm run test:ch8
