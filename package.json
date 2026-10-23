@@ -59,28 +59,28 @@
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
-    "ai": "^7.0.102",
+    "ai": "^7.0.147",
     "firebase": "^12.19.0",
     "firebase-admin": "13.6.0",
     "google-auth-library": "^9.15.1",
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "zod": "^4.6.5"
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
     "@types/node": "^24.13.3",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.4",
     "firebase-tools": "^15.30.0",
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "csv-parse": "7.0.2",
     "uuid": ">=11.1.1",
     "@opentelemetry/core": ">=2.8.0",
