@@ -1,10 +1,26 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
+import { createServer } from 'node:net';
 
 const require = createRequire(import.meta.url);
 const nextBinary = require.resolve('next/dist/bin/next');
-const port = process.env.SMOKE_TEST_PORT ?? '3100';
+async function findAvailablePort() {
+  const probe = createServer();
+  await new Promise((resolve, reject) => {
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', resolve);
+  });
+  const address = probe.address();
+  if (!address || typeof address === 'string') {
+    await new Promise((resolve) => probe.close(resolve));
+    throw new Error('Unable to allocate a local smoke-test port.');
+  }
+  await new Promise((resolve, reject) => probe.close((error) => error ? reject(error) : resolve()));
+  return String(address.port);
+}
+
+const port = process.env.SMOKE_TEST_PORT ?? await findAvailablePort();
 const baseUrl = `http://127.0.0.1:${port}`;
 const output = [];
 

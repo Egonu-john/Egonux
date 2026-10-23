@@ -3994,37 +3994,76 @@
   .mobileNav {
     position: fixed;
     right: 10px;
-    bottom: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
     left: 10px;
     z-index: 70;
-    min-height: 62px;
+    min-height: 82px;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 2px;
     overflow: hidden;
-    padding: 5px;
-    border: 1px solid var(--os-line-strong);
-    border-radius: 13px;
-    background: rgba(16, 18, 16, 0.94);
-    box-shadow: 0 16px 55px rgba(0, 0, 0, 0.45);
+    padding: 8px 7px;
+    border: 1px solid rgba(212, 175, 55, 0.9);
+    border-radius: 30px;
+    background:
+      radial-gradient(ellipse at 50% -30%, rgba(255, 215, 0, 0.13), transparent 68%),
+      linear-gradient(180deg, rgba(17, 17, 14, 0.98), rgba(5, 6, 5, 0.98));
+    box-shadow:
+      0 0 0 1px rgba(212, 175, 55, 0.16),
+      0 0 18px rgba(212, 175, 55, 0.2),
+      0 0 42px rgba(212, 175, 55, 0.11),
+      0 18px 50px rgba(0, 0, 0, 0.68),
+      inset 0 1px 0 rgba(255, 230, 145, 0.22);
     backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
   }
 
   .mobileNav button {
+    position: relative;
+    min-width: 0;
+    min-height: 66px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    border: 0;
-    border-radius: 8px;
-    color: #6f746e;
+    gap: 5px;
+    padding: 5px 2px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: #a79a72;
     background: transparent;
-    font-size: 0.43rem;
+    font-size: clamp(0.43rem, 1.9vw, 0.57rem);
+    font-weight: 700;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    transition: color 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .mobileNav button svg {
+    width: 21px;
+    height: 21px;
+    filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.24));
+  }
+
+  .mobileNav button:active {
+    transform: scale(0.96);
   }
 
   .mobileNav .mobileNavActive {
-    color: var(--os-gold-bright);
-    background: rgba(224, 182, 78, 0.07);
+    color: #ffe18a;
+    border-color: rgba(255, 215, 0, 0.82);
+    background:
+      radial-gradient(circle at 50% 25%, rgba(255, 215, 0, 0.19), transparent 72%),
+      linear-gradient(180deg, rgba(212, 175, 55, 0.13), rgba(212, 175, 55, 0.035));
+    box-shadow:
+      0 0 0 2px rgba(212, 175, 55, 0.08),
+      0 0 13px rgba(255, 215, 0, 0.2),
+      inset 0 0 12px rgba(212, 175, 55, 0.08);
+  }
+
+  .mobileNav .mobileNavActive svg {
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.68));
   }
 
   .toast {

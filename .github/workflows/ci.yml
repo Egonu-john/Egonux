@@ -2,13 +2,17 @@ name: EGONUX ANOSA Continuous Integration & Release Gates
 
 on:
   push:
-    branches: [ main, feature/* ]
+    branches: [main, "feature/*"]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   verify-build-and-security:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Source Code
@@ -17,14 +21,17 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: "24"
+          cache: npm
 
-      - name: Install Dependencies
-        run: npm ci || npm install
+      - name: Install Locked Dependencies
+        run: npm ci
 
-      - name: Execute Type Safety & Lint Verification
+      - name: Execute Lint Verification
         run: npm run lint
+
+      - name: Execute TypeScript Verification
+        run: npm run typecheck
 
       - name: Lint Shared Button System and Migrated Screens
         run: >-
@@ -45,7 +52,6 @@ jobs:
           pages/login.tsx
           pages/api/auth/test-rbac.ts
 
-
       - name: Verify Shared EGONUX Button System
         run: npm run test:buttons
 
@@ -55,5 +61,8 @@ jobs:
       - name: Execute Chapter 9 Launch & Governance Harness
         run: npm run test:ch9
 
-      - name: Verify Build Output
+      - name: Verify Production Build
         run: npm run build
+
+      - name: Verify Route Smoke Tests
+        run: npm run test:smoke
