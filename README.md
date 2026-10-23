@@ -1,87 +1,59 @@
-# EGONUX OS v3.0.1 — Enterprise MVP
+# EGONUX OS v3.4.0 — Enterprise MVP
 
-The first interactive operating-system MVP for the EGONUX digital-wealth ecosystem. It combines a universal identity, sandbox wallet, marketplace, learning, community, affiliate, AI, security, developer and founder-command experiences on one shared platform foundation.
+The interactive operating-system MVP for the EGONUX digital-wealth ecosystem. It brings together universal identity, a sandbox wallet, marketplace, learning, community, affiliate, AI, security, developer and founder-command experiences on one shared platform foundation.
 
 > One Identity. One Wallet. One Marketplace. One Learning Platform. One Community. One Intelligence.
 
-Open `/os` to launch the Enterprise MVP. The existing public website remains available at `/`.
+Open `/os` to launch the Enterprise MVP. The public website remains available at `/`.
 
 Open `/anosa` to launch ANOSA Personal Mobile v1, the founder-only Read, Prepare, and Approve workspace. Execution remains locked.
 
 Phase 3.1 adds a gated, keyless Firestore evidence ledger for permanent founder decisions and controlled-simulation receipts. See `docs/ANOSA_PHASE_3_1.md`; cloud activation requires a successful Founder canary and never enables external execution.
 
-Open `/login` for the configuration-aware Firebase sandbox sign-up and sign-in experience.
+Open `/login` for the configuration-aware Firebase sign-up and sign-in experience.
 
 ## Release status
 
-Version 3.0.1 is the post-logo foundation-maintenance release. It upgrades the web runtime to Next.js 16 and React 19, completes official logo use across the public website, adds security headers and branded metadata, and introduces a production-route smoke test. Product data and interactions remain intentionally sandboxed.
+The package metadata currently identifies version **3.4.0**. The repository includes Next.js 16 / React 19, shared UI action components, security headers and metadata, a production-route smoke test, and CI/CodeQL workflows. Product data and external financial interactions remain sandboxed unless an individual integration is implemented, tested, approved and explicitly enabled.
 
 ## Features
 
 - **Universal identity** — EGONUX ID, KYC journey, trust, devices and recovery
 - **Sandbox wallet** — Multi-currency presentation, deposits, transfers, withdrawals, QR and savings vaults
-- **Digital marketplace** — Verified listings, filters, vendor entrypoint and cart actions
+- **Digital marketplace** — Listings, filters, vendor entrypoint and cart actions
 - **EGONUX Learn** — Courses, progress, paths and credential concepts
 - **Community and affiliate** — Groups, events, transparent single-tier pilot rewards and campaign assets
 - **Permission-aware AI** — Demonstration assistant with consent context and safety disclosures
 - **Founder Command Center** — Users, revenue, activity, fraud signals, AI insights and service health
 - **Enterprise foundation** — Security center, API catalog, webhooks, SDKs and health endpoint
 - **Responsive design** — Desktop workspace, tablet navigation and mobile command bar
-- **ANOSA Personal Mobile** — Installable founder workspace with explicit Read, Prepare, Approve, and Execute-locked boundaries
-- **Quality gate** — GitHub Actions runs lint, TypeScript, production build and route smoke checks
+- **ANOSA Personal Mobile** — Founder workspace with explicit Read, Prepare, Approve and Execute-locked boundaries
+- **Quality gates** — GitHub Actions CI, CodeQL, button-system tests and production build checks
 
-This release intentionally uses demonstration data. It does not move, hold or exchange real money and does not process real identity documents.
+**Important:** This repository is not, by itself, proof that all 20 global architecture domains are production-ready. Demo balances and simulated interactions are not real funds or settlement. Real identity verification, provider integrations, tax filing, tokenization, staking/yield, and regulated financial services require individual technical, operational and legal approval.
 
-## Project Structure
+## Project structure
 
-```
-egonux/
-├── components/          # Reusable React components
-│   ├── os/              # EGONUX OS shell, modules and interactions
-│   ├── Header.tsx       # Navigation
-│   ├── Hero.tsx         # Hero section with canvas
-│   ├── About.tsx        # About section
-│   ├── Academy.tsx      # Academy tracks
-│   ├── Services.tsx     # Services list
-│   ├── Community.tsx    # Community section
-│   ├── Resources.tsx    # Resources grid
-│   └── Footer.tsx       # Footer
-├── hooks/               # Custom React hooks
-│   ├── useCanvasAnimation.ts  # Canvas animation logic
-│   └── useScrollNav.ts        # Scroll navigation state
-├── pages/               # Next.js pages
-│   ├── _app.tsx         # App wrapper
-│   ├── _document.tsx    # HTML document
-│   ├── api/health.ts    # MVP health contract
-│   ├── index.tsx        # Public website
-│   └── os.tsx           # Enterprise MVP
-├── lib/                 # Typed demonstration data
-├── types/               # Shared product types
-├── docs/                # Architecture and production boundaries
-├── scripts/             # Production smoke-test runner
-├── styles/              # CSS modules
-│   ├── globals.css      # Global styles
-│   └── Home.module.css  # Component styles
-├── public/              # Brand, manifest, robots and sitemap assets
-├── SECURITY.md          # Private vulnerability-reporting policy
-└── .github/             # CI, CodeQL, ownership and dependency automation
-```
+- `app/`, `pages/` — Next.js routes and APIs
+- `components/` — Shared UI and product experiences
+- `lib/`, `types/` — Shared logic, data and types
+- `apps/mobile/` — Flutter mobile application
+- `docs/` — Architecture, security boundaries and release evidence
+- `scripts/`, `tests/` — Smoke, domain and rules tests
+- `.github/` — CI, CodeQL, ownership and dependency automation
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
-- Node.js 24.x (aligned across local development, CI, and Vercel)
-- npm or yarn
+- Node.js 24.x
+- npm
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/egonu-john/egonux.git
-cd egonux
-
-# Install the locked dependencies
+git clone https://github.com/Egonu-john/Egonux.git
+cd Egonux
 npm ci
 ```
 
@@ -89,93 +61,49 @@ npm ci
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the site.
+Open [http://localhost:3000](http://localhost:3000), then use `/os` for EGONUX OS and `/anosa` for ANOSA.
 
-Open [http://localhost:3000/os](http://localhost:3000/os) to use EGONUX OS.
-
-Open [http://localhost:3000/anosa](http://localhost:3000/anosa) to review ANOSA Personal Mobile.
-
-### Build
+### Build and checks
 
 ```bash
-npm run build
-npm start
+npm run lint
 npm run typecheck
+npm run test:buttons
+npm run build
+npm run test:smoke
 ```
 
-Run the complete local quality gate after installing dependencies:
+Run Firestore rules tests with the required Firebase emulator prerequisites:
 
 ```bash
-npm run check
+npm run test:rules
 ```
 
-## Architecture and scope
+## Architecture and release governance
 
-Read [`docs/ENTERPRISE_MVP.md`](docs/ENTERPRISE_MVP.md) for the target Google Cloud architecture, production implementation phases, security and regulatory guardrails, and acceptance criteria.
+- [EGONUX OS v3 Global Architecture](docs/EGONUX_OS_V3_GLOBAL_ARCHITECTURE.md) — 20-domain target architecture, design system, security boundaries and delivery stages.
+- [Global Release Checklist](docs/EGONUX_GLOBAL_RELEASE_CHECKLIST.md) — Evidence-based acceptance gates for the 23 November 2026 readiness review and 4 January 2027 release horizon.
+- [Enterprise MVP architecture](docs/ENTERPRISE_MVP.md) — Existing platform architecture and phased implementation details.
+- [ANOSA Phase 3.1](docs/ANOSA_PHASE_3_1.md) — Founder evidence ledger and controlled-simulation boundaries.
 
-Copy `.env.example` to `.env.local` only when connecting approved Firebase and Google Cloud environments. Never commit credentials.
-
-## Customization
-
-### Colors
-
-Edit the CSS variables in `styles/globals.css`:
-
-```css
-:root {
-  --obsidian: #0a0a0a;
-  --gold: #d4af37;
-  --champagne: #e9ce83;
-  /* ... */
-}
-```
-
-### Content
-
-Update component content in their respective files:
-- Academy tracks → `components/Academy.tsx`
-- Services → `components/Services.tsx`
-- Resources → `components/Resources.tsx`
-
-### Canvas Animation
-
-Adjust animation parameters in `hooks/useCanvasAnimation.ts`:
-- `NODE_COUNT` — Number of animated nodes
-- `MAX_DIST` — Connection distance threshold
-- Node velocity and size
-
-## Performance
-
-- Canvas animation respects `prefers-reduced-motion`
-- Optimized image delivery via Next.js Image component
-- CSS modules for scoped styling
-- Automatic code splitting
-- Turbopack-based development and production builds
+Copy the sanitized `.env.example` to `.env.local` for local development. Do not commit environment files or credentials. Removing a secret from the latest tree does not remove it from Git history; rotate any credential that was exposed.
 
 ## Security and maintenance
 
-- Security headers are applied to every route, including a restrictive baseline Content Security Policy.
-- `/api/health` accepts `GET` only, is never cached, and identifies the product as a sandbox.
-- CodeQL and the EGONUX quality gate run on pull requests and pushes to `main`.
-- Dependabot groups monthly npm and GitHub Actions patch/minor updates for review.
-- Vulnerabilities should be reported privately through [`SECURITY.md`](SECURITY.md).
+- Security headers and a restrictive baseline Content Security Policy are configured in the application.
+- `/api/health` is a non-cached health contract and should not disclose secrets or personal data.
+- CI and CodeQL run through GitHub Actions; inspect the exact commit's checks before release.
+- Dependabot updates require review and compatibility checks.
+- Report vulnerabilities privately through `SECURITY.md`.
 
-## Browser Support
+## Brand and design
 
-- Chrome 111+
-- Edge 111+
-- Firefox 111+
-- Safari 16.4+
-- Mobile browsers
+Use the official EGONUX brand assets and shared design tokens. The global edition's baseline uses obsidian `#0A0A0A`, royal gold `#D4AF37`, and institutional emerald `#10B981` for confirmed success states. User-facing interactive action labels follow the parenthetical convention, for example `( VIEW LEDGER )`.
 
 ## License
 
 © 2026 EGONUX. All rights reserved.
 
-## Built by
-
-Egonu John William
+Built by Egonu John William.
