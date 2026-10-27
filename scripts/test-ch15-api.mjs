@@ -10,7 +10,7 @@ async function runApiTests() {
   let failed = 0;
 
   // Setup mock user token
-  const validToken = generateToken('USER_SDK_888', 'SUPER_ADMIN');
+  const validToken = generateToken('USER_SDK_888', 'ADMIN');
 
   // Test 1: Authenticated Order Execution via Unified API Endpoint
   try {
