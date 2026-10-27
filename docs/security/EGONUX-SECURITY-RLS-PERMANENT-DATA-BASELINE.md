@@ -45,9 +45,9 @@ At baseline, five tests covered:
 - Founder versus member access to audit events.
 - Founder readability and client immutability for selected ANOSA evidence.
 
-**Additional tests added on the audit branch (not yet executed):** cross-user profile read/update denial, post-creation role escalation and protected email mutation denial, and unknown-collection read/write denial. These extend the suite from five to eight test cases.
+**Additional tests added on the audit branch and executed locally:** cross-user profile read/update denial, post-creation role escalation and protected email mutation denial, and unknown-collection read/write denial. The expanded suite has eight test cases. On commit `bb490e277cf80371a51fe82fa2c2a74a4540a2bc`, the Firestore emulator test command exited successfully with `fail 0`, `cancelled 0`, `skipped 0`, and `todo 0` (duration approximately 6.8 seconds). This is local emulator evidence only; it does not establish GitHub Actions success or deployed production-rule parity.
 
-**Still outstanding:** role-claim spoofing boundaries, tenant/organization isolation, query-level access patterns, operator least privilege, broader delete and field mutation cases, and all actual collections discovered in server code. The tests do not exercise Admin SDK bypass paths. The new tests must run in the Firestore emulator before their behavior is considered verified.
+**Still outstanding:** role-claim spoofing boundaries, tenant/organization isolation, query-level access patterns, operator least privilege, broader delete and field mutation cases, and all actual collections discovered in server code. The tests do not exercise Admin SDK bypass paths. GitHub Actions validation for this PR is still unconfirmed.
 
 ### F-03 — Authentication hardening is in a separate PR
 
@@ -123,7 +123,7 @@ The harness checks a balanced double-entry transaction, rejects an imbalanced tr
 | Workstream | Status | Next evidence required |
 |---|---|---|
 | 1. Authentication and authorization | Partial | Complete PR #41 release gate; inventory every protected API and role mapping |
-| 2. RLS/document isolation | Partial; 3 additional tests authored, execution pending | Run emulator suite; map collections and client/server access paths; test tenant boundaries |
+| 2. RLS/document isolation | Expanded local emulator suite passed; CI and deployment parity unconfirmed | Obtain PR CI result; map collections and client/server access paths; test tenant boundaries |
 | 3. Secrets and credential history | Partial | Complete repository/history secret scan and validate rotation/remediation without printing secrets |
 | 4. API trust boundaries | High-risk findings identified | Inventory remaining routes; enforce verified auth, authorization and schema validation |
 | 5. Permanent data inventory | High-risk findings identified; inventory incomplete | Trace all critical data paths and select an approved durable source of truth |
