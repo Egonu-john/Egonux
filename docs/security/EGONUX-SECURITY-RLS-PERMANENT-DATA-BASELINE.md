@@ -84,6 +84,38 @@ Five tests cover:
 
 The harness checks a balanced double-entry transaction, rejects an imbalanced transaction, and rejects a duplicate idempotency key. This does not, by itself, establish that ledger entries are durably stored, append-only in production, transactionally consistent under concurrency, recoverable from backups, or reconciled against provider statements.
 
+### F-07 — Core ledger engine uses process-local state and a local JSON audit file
+
+**Evidence:** `lib/ledger/engine.ts` on the inspected authentication-hardening branch.
+
+- `transactionStore` is a process-local `Map`; `idempotencyStore` is a process-local `Set`. Both reset when the process restarts and are not shared across server instances.
+- Ledger audit records are appended to `data/audit.json` under `process.cwd()`. That path may be ephemeral or unavailable in a deployed/serverless runtime and must not be treated as durable storage without environment-specific proof.
+- The audit hash chain's `lastKnownHash` is held in memory and starts from a fixed zero hash after process restart. It is not reconstructed from the file before new records are written.
+- Audit write errors are logged and swallowed; the transaction can still return successfully even if audit persistence fails.
+- The in-memory idempotency check and write sequence is not a cross-instance atomic operation.
+
+**Risk:** this implementation is not suitable as the authoritative permanent ledger for production funds. Keep real-money processing disabled until an approved durable transactional store, atomic idempotency enforcement, audit-write failure policy, reconciliation, and recovery tests are implemented and verified.
+
+### F-08 — Wallet ledger API returns simulated settlement data without a demonstrated trust boundary
+
+**Evidence:** `app/api/wallet/ledger/route.ts` on the inspected branch.
+
+- The route keeps idempotency records in a process-local `Map`.
+- The POST handler does not demonstrate authentication or authorization before accepting a state-changing request.
+- Missing amounts default to 50,000 UGX, missing account IDs default to a primary account, and the response reports `SETTLED` / `reconciled: true` with a fabricated transaction identifier and audit signature.
+- The GET response reports hard-coded health/invariant claims rather than querying authoritative ledger state.
+
+**Risk:** if this route is reachable in a deployed environment, its behavior could misrepresent a simulated action as a settled transaction. Confirm route exposure and callers; then explicitly label it sandbox-only or replace it with authenticated, authorized, durable transaction processing. Do not connect it to real-money providers in its current form.
+
+### F-09 — Ecosystem endpoint uses marker-string checks and static module data
+
+**Evidence:** `app/api/os/ecosystem/route.ts` on the inspected branch.
+
+- Authentication is inferred from whether the Authorization header contains `Bearer egx_` or the cookie contains `egx_session=`; the endpoint does not verify a token or session through the shown logic.
+- The response includes a hard-coded ADMIN role, wallet balance, marketplace counts, learning progress, tournament prize pool and community metrics.
+
+**Risk:** these values must be treated as demonstration data, not authoritative user or financial state. Any sensitive action or personalized disclosure must use verified authentication and server-side authorization; production financial values must come from the authoritative ledger.
+
 ## Workstream status
 
 | Workstream | Status | Next evidence required |
@@ -91,9 +123,9 @@ The harness checks a balanced double-entry transaction, rejects an imbalanced tr
 | 1. Authentication and authorization | Partial | Complete PR #41 release gate; inventory every protected API and role mapping |
 | 2. RLS/document isolation | Partial | Map every collection and every client/server access path; expand emulator tests |
 | 3. Secrets and credential history | Partial | Complete repository/history secret scan and validate rotation/remediation without printing secrets |
-| 4. API trust boundaries | Not yet inspected comprehensively | Inventory route handlers and Admin SDK usage |
-| 5. Permanent data inventory | Not yet complete | Identify canonical stores, temporary/mock/in-memory state, schemas and write paths |
-| 6. Ledger integrity | Partial | Inspect ledger engine/storage adapter and persistence/concurrency behavior |
+| 4. API trust boundaries | High-risk findings identified | Inventory remaining routes; enforce verified auth, authorization and schema validation |
+| 5. Permanent data inventory | High-risk findings identified; inventory incomplete | Trace all critical data paths and select an approved durable source of truth |
+| 6. Ledger integrity | High-risk findings identified | Replace process-local authority with durable transactional persistence and atomic idempotency |
 | 7. Backup and restore | Not verified | Inspect backup/export policy and execute isolated restore drill |
 | 8. Data governance/audit | Partial | Map consent, audit, retention, export and deletion flows |
 | 9–15. Integrations and operations | Not yet inspected comprehensively | Begin after foundational inventory and risk triage |
@@ -102,7 +134,7 @@ The harness checks a balanced double-entry transaction, rejects an imbalanced tr
 
 1. Inventory repository files and route handlers that initialize Firebase Admin or access Firestore.
 2. Trace data flows for user identity, consent, wallet, ledger, marketplace orders, payment callbacks and ANOSA evidence.
-3. Classify each data path as persistent, ephemeral, derived/cache, mock/test-only, or unknown.
+3. Classify each data path as persistent, ephemeral, derived/cache, mock/test-only, or unknown; ledger Map/Set state and the local audit JSON file are not yet acceptable proof of durable ledger persistence.
 4. Map each operation to its authorization check and tenant/owner boundary.
 5. Inspect deployed backup/retention settings and design an isolated restore drill.
 6. Add focused tests for the highest-risk gaps before broad implementation.
