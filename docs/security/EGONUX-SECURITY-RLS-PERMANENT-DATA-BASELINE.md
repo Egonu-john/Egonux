@@ -38,14 +38,16 @@ This baseline records only findings verified from the repository files inspected
 
 **Evidence:** `tests/firestore.rules.test.mjs`
 
-Five tests cover:
+At baseline, five tests covered:
 - A member creating and reading an allowed profile.
 - Rejection of a profile that attempts to assign a role.
 - Rejection of client writes to audit and consent records.
 - Founder versus member access to audit events.
 - Founder readability and client immutability for selected ANOSA evidence.
 
-**Outstanding tests:** cross-user reads/updates, role-claim spoofing boundaries, tenant/organization isolation, query-level access patterns, operator least privilege, delete and field mutation cases, and all actual collections discovered in server code. The current tests do not exercise Admin SDK bypass paths.
+**Additional tests added on the audit branch (not yet executed):** cross-user profile read/update denial, post-creation role escalation and protected email mutation denial, and unknown-collection read/write denial. These extend the suite from five to eight test cases.
+
+**Still outstanding:** role-claim spoofing boundaries, tenant/organization isolation, query-level access patterns, operator least privilege, broader delete and field mutation cases, and all actual collections discovered in server code. The tests do not exercise Admin SDK bypass paths. The new tests must run in the Firestore emulator before their behavior is considered verified.
 
 ### F-03 — Authentication hardening is in a separate PR
 
@@ -121,7 +123,7 @@ The harness checks a balanced double-entry transaction, rejects an imbalanced tr
 | Workstream | Status | Next evidence required |
 |---|---|---|
 | 1. Authentication and authorization | Partial | Complete PR #41 release gate; inventory every protected API and role mapping |
-| 2. RLS/document isolation | Partial | Map every collection and every client/server access path; expand emulator tests |
+| 2. RLS/document isolation | Partial; 3 additional tests authored, execution pending | Run emulator suite; map collections and client/server access paths; test tenant boundaries |
 | 3. Secrets and credential history | Partial | Complete repository/history secret scan and validate rotation/remediation without printing secrets |
 | 4. API trust boundaries | High-risk findings identified | Inventory remaining routes; enforce verified auth, authorization and schema validation |
 | 5. Permanent data inventory | High-risk findings identified; inventory incomplete | Trace all critical data paths and select an approved durable source of truth |
@@ -137,7 +139,7 @@ The harness checks a balanced double-entry transaction, rejects an imbalanced tr
 3. Classify each data path as persistent, ephemeral, derived/cache, mock/test-only, or unknown; ledger Map/Set state and the local audit JSON file are not yet acceptable proof of durable ledger persistence.
 4. Map each operation to its authorization check and tenant/owner boundary.
 5. Inspect deployed backup/retention settings and design an isolated restore drill.
-6. Add focused tests for the highest-risk gaps before broad implementation.
+6. Run the expanded Firestore emulator suite; do not count the three newly authored tests as passed until an actual test run confirms the exit code.
 
 ## Acceptance criteria for closing the baseline phase
 
