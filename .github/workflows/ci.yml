@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, "feature/*"]
   pull_request:
-    branches: [main]
+    branches: [main, "feature/*"]
 
 permissions:
   contents: read
@@ -57,6 +57,9 @@ jobs:
 
       - name: Execute Chapter 8 Identity & Security Harness
         run: npm run test:ch8
+
+      - name: Verify Legacy RBAC Token Hardening
+        run: npm run test:rbac-hardening
 
       - name: Execute Chapter 9 Launch & Governance Harness
         run: npm run test:ch9

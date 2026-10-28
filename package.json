@@ -55,7 +55,8 @@
     "test:ch30": "npx tsx scripts/test-ch30-pilot.mjs",
     "test:pilot-dashboard": "npx tsx scripts/test-pilot-dashboard.mjs",
     "test:wave1": "npx tsx scripts/test-pilot-wave1.mjs",
-    "test:buttons": "node scripts/test-button-system.mjs"
+    "test:buttons": "node scripts/test-button-system.mjs",
+    "test:rbac-hardening": "npx tsx --test scripts/test-rbac-token-hardening.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
