@@ -13,9 +13,9 @@ const AUDIT_EVENTS = 'auditEvents';
 const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const NOTICE_VERSION = 'EGONUX-PDPA-2019-v1';
 const MAX_DISPATCH_BATCH = 2;
-const PRIVILEGED_ROLES = ['founder', 'admin'] as const;
+const PRIVILEGED_ROLES = ['founder', 'admin'];
 
-function hashToken(token: string) {
+function hashToken(token) {
   return createHash('sha256').update(token, 'utf8').digest('hex');
 }
 
@@ -139,7 +139,7 @@ async function redeem(request, response) {
   const outcome = await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(invitationRef);
     if (!snapshot.exists) return { error: 'TOKEN_NOT_FOUND' };
-    const invitation = snapshot.data()!;
+    const invitation = snapshot.data();
     if (invitation.status === 'REVOKED') return { error: 'TOKEN_REVOKED' };
     if (invitation.status === 'REDEEMED') return { error: 'TOKEN_ALREADY_USED' };
 
