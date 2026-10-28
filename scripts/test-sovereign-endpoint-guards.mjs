@@ -1,67 +1,51 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { POST as postLedger, GET as getLedger } from "../app/api/wallet/ledger/route.ts";
+import { POST as postDecision, GET as getDecisions } from "../app/api/anosa/decisions/route.ts";
 
-const port = 3101;
-const baseUrl = `http://127.0.0.1:${port}`;
-const server = spawn("npx", ["next", "dev", "-p", String(port)], {
-  stdio: "ignore",
-  env: {
-    ...process.env,
-    PORT: String(port),
-    EGONUX_AUTH_REQUIRED: "true",
-    EGONUX_SANDBOX_MODE: "true",
-  },
-});
+process.env.EGONUX_AUTH_REQUIRED = "true";
+process.env.EGONUX_SANDBOX_MODE = "true";
 
-async function waitForServer() {
-  for (let attempt = 0; attempt < 60; attempt++) {
-    try {
-      await fetch(`${baseUrl}/api/os/pilot-observability`);
-      return;
-    } catch {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-  throw new Error("Next.js test server did not start in time.");
-}
+const jsonHeaders = {
+  "content-type": "application/json",
+  origin: "http://localhost:3000",
+};
 
-async function post(path, body) {
-  return fetch(`${baseUrl}${path}`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      origin: baseUrl,
-    },
-    body: JSON.stringify(body),
-  });
-}
-
-try {
-  await waitForServer();
-
-  const ledger = await post("/api/wallet/ledger", {
+const ledgerWrite = await postLedger(new Request("http://localhost:3000/api/wallet/ledger", {
+  method: "POST",
+  headers: jsonHeaders,
+  body: JSON.stringify({
     idempotencyKey: "security-test-0001",
     amount: 1000,
     currency: "UGX",
-  });
-  assert.equal(ledger.status, 401, "ledger writes must reject unauthenticated callers");
+  }),
+}));
+assert.equal(ledgerWrite.status, 401, "ledger writes must reject unauthenticated callers");
 
-  const decisions = await post("/api/anosa/decisions", {
+const decisionWrite = await postDecision(new Request("http://localhost:3000/api/anosa/decisions", {
+  method: "POST",
+  headers: jsonHeaders,
+  body: JSON.stringify({
     title: "Test proposal",
     rationale: "A synthetic test proposal with enough rationale.",
-  });
-  assert.equal(decisions.status, 401, "ANOSA proposals must reject unauthenticated callers");
+  }),
+}));
+assert.equal(decisionWrite.status, 401, "ANOSA proposals must reject unauthenticated callers");
 
-  const ledgerStatus = await fetch(`${baseUrl}/api/wallet/ledger`);
-  assert.equal(ledgerStatus.status, 200);
-  const ledgerBody = await ledgerStatus.json();
-  assert.equal(ledgerBody.invariants.duplicateEventsPrevented, 0, "rejected requests must not mutate ledger state");
-  assert.equal(ledgerBody.externalExecution, "disabled");
+const ledgerStatus = await getLedger();
+assert.equal(ledgerStatus.status, 200);
+const ledgerBody = await ledgerStatus.json();
+assert.equal(ledgerBody.invariants.duplicateEventsPrevented, 0, "rejected requests must not mutate ledger state");
+assert.equal(ledgerBody.externalExecution, "disabled");
+assert.equal(ledgerBody.status, "SANDBOX_ONLY");
 
-  console.log("PASS: unauthenticated wallet-ledger write rejected (401)");
-  console.log("PASS: unauthenticated ANOSA decision proposal rejected (401)");
-  console.log("PASS: rejected wallet request did not mutate sandbox state");
-  console.log("PASS: ledger route explicitly reports sandbox-only / external execution disabled");
-} finally {
-  server.kill("SIGTERM");
-}
+const decisionRead = await getDecisions();
+assert.equal(decisionRead.status, 200);
+const decisionBody = await decisionRead.json();
+assert.equal(decisionBody.decisions[0].status, "DEMO_ONLY_NOT_APPROVED");
+assert.equal(decisionBody.decisions[0].approver, null);
+
+console.log("PASS: unauthenticated wallet-ledger write rejected (401)");
+console.log("PASS: unauthenticated ANOSA proposal rejected (401)");
+console.log("PASS: rejected wallet request did not mutate sandbox state");
+console.log("PASS: ledger reports sandbox-only and external execution disabled");
+console.log("PASS: demo ANOSA decision is explicitly not approved");
