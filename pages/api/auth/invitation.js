@@ -3,7 +3,6 @@
 // only once, from the authenticated dispatch action.
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { AuthenticationError, AuthorizationError, requirePrincipal } from '@/lib/auth/session';
 import { getAdminFirestore, withVercelOidcToken } from '@/lib/firebase/admin';
 import { InvalidOriginError, requireSameOrigin } from '@/lib/server/origin';
@@ -24,11 +23,11 @@ function newToken() {
   return randomBytes(32).toString('base64url');
 }
 
-function sendError(response: NextApiResponse, status: number, error: string, message: string) {
+function sendError(response, status, error, message) {
   return response.status(status).json({ error, message });
 }
 
-async function dispatch(request: NextApiRequest, response: NextApiResponse) {
+async function dispatch(request, response) {
   const principal = await requirePrincipal(request, PRIVILEGED_ROLES);
   const requestedCount = request.body?.count === undefined ? MAX_DISPATCH_BATCH : request.body.count;
   if (!Number.isInteger(requestedCount) || requestedCount < 1 || requestedCount > MAX_DISPATCH_BATCH) {
@@ -80,7 +79,7 @@ async function dispatch(request: NextApiRequest, response: NextApiResponse) {
   });
 }
 
-async function revoke(request: NextApiRequest, response: NextApiResponse) {
+async function revoke(request, response) {
   const principal = await requirePrincipal(request, PRIVILEGED_ROLES);
   const token = typeof request.body?.token === 'string' ? request.body.token.trim() : '';
   if (!token || token.length > 512) {
@@ -95,7 +94,7 @@ async function revoke(request: NextApiRequest, response: NextApiResponse) {
   const outcome = await firestore.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(invitationRef);
     if (!snapshot.exists) return 'NOT_FOUND';
-    const invitation = snapshot.data()!;
+    const invitation = snapshot.data();
     if (invitation.status === 'REDEEMED') return 'ALREADY_REDEEMED';
     if (invitation.status === 'REVOKED') return 'REVOKED';
 
@@ -119,7 +118,7 @@ async function revoke(request: NextApiRequest, response: NextApiResponse) {
   return response.status(200).json({ success: true, status: 'REVOKED' });
 }
 
-async function redeem(request: NextApiRequest, response: NextApiResponse) {
+async function redeem(request, response) {
   const token = typeof request.body?.token === 'string' ? request.body.token.trim() : '';
   const consentAccepted = request.body?.consentAccepted;
   const noticeVersion = typeof request.body?.noticeVersion === 'string' ? request.body.noticeVersion.trim() : '';
@@ -198,7 +197,7 @@ async function redeem(request: NextApiRequest, response: NextApiResponse) {
   });
 }
 
-async function handleRequest(request: NextApiRequest, response: NextApiResponse) {
+async function handleRequest(request, response) {
   response.setHeader('Cache-Control', 'no-store');
   response.setHeader('Pragma', 'no-cache');
 
@@ -222,6 +221,6 @@ async function handleRequest(request: NextApiRequest, response: NextApiResponse)
   }
 }
 
-export default function handler(request: NextApiRequest, response: NextApiResponse) {
+export default function handler(request, response) {
   return withVercelOidcToken(request.headers['x-vercel-oidc-token'], () => handleRequest(request, response));
 }
