@@ -62,7 +62,8 @@ function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
       ? process.env.EGONUX_FOUNDER_TITLE?.trim() || 'Founder & Chief Executive Officer'
       : null,
     roles,
-    sessionIssuedAt: token.iat,
+    // Firebase auth_time records the actual authentication event; iat can be refreshed without re-authentication.
+    sessionIssuedAt: token.auth_time,
   };
 }
 
