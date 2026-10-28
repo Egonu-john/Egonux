@@ -1,0 +1,19 @@
+ID,Priority,Requirement,Acceptance evidence,Status
+GOV-01,P0,Record exact repository baseline,"Commit SHA; branch; staged/unstaged/untracked status; permissions",Not assessed
+SEC-01,P0,Remove source-coded secrets from active production paths,"Code review plus current-file secret scan tied to SHA",Finding observed; remediation pending
+SEC-02,P0,Assess historical credential exposure,"Redacted finding register; revocation/rotation decisions and evidence",Not assessed
+IAM-01,P0,Enforce server-side authorization on protected operations,"Negative API and service tests for unauthenticated and unauthorized actors",Not assessed
+IAM-02,P0,Prevent self-assigned roles and privilege escalation,"Tests prove user cannot alter trusted claims or invoke privileged operations",Not assessed
+IAM-03,P1,Protect privileged accounts,"Phishing-resistant MFA where supported; access review evidence",Not assessed
+IAM-04,P1,Control emergency access,"Time-limited break-glass test; audit and post-use review",Not assessed
+APP-01,P1,Validate API inputs and abuse controls,"Tests for malformed input, rate limits, replay and object-level authorization",Not assessed
+DATA-01,P0,Enforce data isolation and least privilege,"Cross-user/tenant read-write-deny tests; server IAM review",Not assessed
+DATA-02,P1,Protect audit and consent records,"Client forgery/update/delete tests and independent retention evidence",Not assessed
+CRY-01,P1,Inventory cryptographic keys and secret consumers,"Owner, purpose, storage, access, rotation, revocation and recovery fields complete",Not assessed
+CI-01,P0,Require reviewed changes and mandatory CI,"Verified branch rules and required checks on main",Branch protection needs verification
+SUP-01,P1,Scan dependencies and produce software inventory,"CI report, triage record and SBOM where applicable",Not assessed
+LOG-01,P1,Record privileged security events safely,"Tested event fields and log review; no tokens or secrets logged",Not assessed
+REC-01,P1,Prove independent backup restoration,"Isolated restore report with integrity checks and measured RTO/RPO",Not assessed
+PORT-01,P2,Demonstrate alternate deployment and data export,"Non-production deployment and export/import validation report",Not assessed
+FIN-01,P0,Preserve ledger invariants and sandbox boundaries,"Balanced postings, idempotency, concurrency, reconciliation and failure tests",Not assessed
+REG-01,P1,Assess requirements per regulated activity,"Activity-specific legal review, responsible owner and release gate",Not assessed
