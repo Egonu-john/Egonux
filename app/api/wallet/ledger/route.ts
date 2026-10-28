@@ -28,7 +28,7 @@ function sameOrigin(request: Request) {
 
 export async function POST(request: Request) {
   // Authenticate before parsing or disclosing validation details.
-  let principal;
+  let principal: Awaited<ReturnType<typeof requirePrincipal>>;
   try {
     principal = await requirePrincipal({ headers: requestHeaders(request) });
   } catch {
