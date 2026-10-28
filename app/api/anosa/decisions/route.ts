@@ -24,10 +24,10 @@ export async function GET() {
     framework: "ANOSA_v3.2",
     decisions: [
       {
-        id: "DEC-2026-001",
+        id: "DEMO-DEC-2026-001",
         title: "Project Sovereign Foundation Execution",
-        status: "APPROVED",
-        approver: "Founder & CEO",
+        status: "DEMO_ONLY_NOT_APPROVED",
+        approver: null,
         timestamp: "2026-01-01T00:00:00.000Z",
         governanceDoctrine: "Trust before scale. Security before convenience.",
         demoRecord: true,
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
     body: input,
   } as unknown as NextApiRequest;
 
-  let principal;
+  let principal: Awaited<ReturnType<typeof requireAnosaStepUp>>;
   try {
     principal = await requireAnosaStepUp(apiRequest);
   } catch (error) {
