@@ -8,6 +8,7 @@ async function post(body, { authenticated = false } = {}) {
   const headers = {
     'content-type': 'application/json',
     origin: baseUrl,
+    'x-forwarded-proto': new URL(baseUrl).protocol.slice(0, -1),
   };
   if (authenticated && founderCookie) headers.cookie = founderCookie;
   const response = await fetch(`${baseUrl}/api/auth/invitation`, {
