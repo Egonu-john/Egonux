@@ -1,54 +1,109 @@
 import { NextResponse } from "next/server";
+import type { IncomingHttpHeaders } from "node:http";
+import {
+  AuthenticationError,
+  AuthorizationError,
+  requirePrincipal,
+} from "@/lib/auth/session";
 
-// Simulated server-side idempotency cache
+// Process-local storage is intentional for this demo only; it is not a durable ledger.
 const processedKeys = new Map<string, Record<string, unknown>>();
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { idempotencyKey, amount, currency, accountId } = body;
+function requestHeaders(request: Request) {
+  return Object.fromEntries(request.headers.entries()) as IncomingHttpHeaders;
+}
 
-    if (!idempotencyKey) {
-      return NextResponse.json({ error: "idempotencyKey is required for ledger state change." }, { status: 400 });
+async function authenticationFailure(request: Request) {
+  try {
+    await requirePrincipal({ headers: requestHeaders(request) });
+    return null;
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    }
+    if (error instanceof AuthorizationError) {
+      return NextResponse.json({ error: "Insufficient permissions." }, { status: 403 });
+    }
+    return NextResponse.json({ error: "Authentication service unavailable." }, { status: 503 });
+  }
+}
+
+export async function POST(request: Request) {
+  const authFailure = await authenticationFailure(request);
+  if (authFailure) return authFailure;
+
+  // This route is a sandbox simulator, never a real-money payment rail.
+  if (request.headers.get("x-egonux-sandbox") !== "true") {
+    return NextResponse.json(
+      { error: "Sandbox header required.", externalExecution: "disabled" },
+      { status: 403 },
+    );
+  }
+
+  try {
+    const body: unknown = await request.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "A JSON object is required." }, { status: 400 });
+    }
+    const { idempotencyKey, amount, currency, accountId } = body as Record<string, unknown>;
+
+    if (
+      typeof idempotencyKey !== "string" ||
+      idempotencyKey.length < 8 ||
+      idempotencyKey.length > 160 ||
+      typeof accountId !== "string" ||
+      accountId.trim().length < 3 ||
+      accountId.length > 120 ||
+      typeof amount !== "number" ||
+      !Number.isSafeInteger(amount) ||
+      amount <= 0 ||
+      typeof currency !== "string" ||
+      !/^[A-Z]{3}$/.test(currency)
+    ) {
+      return NextResponse.json(
+        { error: "Valid idempotencyKey, accountId, positive integer amount, and ISO currency code are required." },
+        { status: 400 },
+      );
     }
 
-    // Duplicate event protection check
-    if (processedKeys.has(idempotencyKey)) {
-      const cached = processedKeys.get(idempotencyKey);
+    const existing = processedKeys.get(idempotencyKey);
+    if (existing) {
       return NextResponse.json({
-        ...cached,
+        ...existing,
         replayed: true,
-        notice: "DUPLICATE_EVENT_PREVENTED: Returning cached reconciliation payload."
+        notice: "Duplicate sandbox request; returning the cached simulation result.",
+        externalExecution: "disabled",
       });
     }
 
     const transactionRecord = {
-      transactionId: "tx_reconciled_" + Math.random().toString(36).substring(2, 10),
+      transactionId: `sim_${crypto.randomUUID()}`,
       idempotencyKey,
-      accountId: accountId || "acc_egonux_primary",
-      amount: amount || 50000,
-      currency: currency || "UGX",
-      status: "SETTLED",
-      reconciled: true,
-      anosaAuditSignature: "sig_anosa_ledger_" + Date.now(),
-      timestamp: new Date().toISOString()
+      accountId: accountId.trim(),
+      amount,
+      currency,
+      status: "SIMULATED",
+      reconciled: false,
+      auditReference: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      externalExecution: "disabled",
     };
 
     processedKeys.set(idempotencyKey, transactionRecord);
-
-    return NextResponse.json(transactionRecord);
+    return NextResponse.json(transactionRecord, { status: 201 });
   } catch {
-    return NextResponse.json({ error: "Invalid ledger payload format." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 }
 
 export async function GET() {
   return NextResponse.json({
-    status: "LEDGER_HEALTHY",
+    status: "SANDBOX_ONLY",
+    externalExecution: "disabled",
+    persistence: "process-local-demo-only",
     invariants: {
-      doubleEntryBalanced: true,
       duplicateEventsPrevented: processedKeys.size,
-      reconciliationExceptions: 0
-    }
+      reconciliationExceptions: "unknown",
+    },
   });
 }
