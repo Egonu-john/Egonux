@@ -40,6 +40,7 @@
     "test:week10-launch": "node scripts/test-week10-global-launch.mjs",
     "test:ch8": "node scripts/test-ch8-identity-security.mjs",
     "test:ch9": "node scripts/test-ch9-launch-audit.mjs",
+    "test:sovereign-endpoint-guards": "node scripts/test-sovereign-endpoint-guards.mjs",
     "test:ch12": "npx tsx scripts/test-ch12-ledger.mjs",
     "test:ch13": "npx tsx scripts/test-ch13-commerce.mjs",
     "test:ch14": "npx tsx scripts/test-ch14-rewards.mjs",
