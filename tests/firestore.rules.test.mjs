@@ -6,7 +6,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 
 let environment;
 
@@ -85,4 +85,52 @@ test('permanent evidence is founder-readable and client-immutable', async () => 
     await assertFails(getDoc(doc(member, path)));
     await assertFails(setDoc(doc(founder, path), { forged: true }));
   }
+});
+
+
+test('a member cannot read or update another member profile', async () => {
+  await environment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), 'users/owner-uid'), {
+      displayName: 'Owner',
+      email: 'owner@example.invalid',
+      onboardingStatus: 'started',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  });
+
+  const otherMember = environment.authenticatedContext('different-uid', { roles: ['member'] }).firestore();
+  await assertFails(getDoc(doc(otherMember, 'users/owner-uid')));
+  await assertFails(updateDoc(doc(otherMember, 'users/owner-uid'), {
+    displayName: 'Unauthorized change',
+    updatedAt: serverTimestamp(),
+  }));
+});
+
+test('a member cannot escalate roles or change protected profile fields after creation', async () => {
+  const db = environment.authenticatedContext('member-role-test', { roles: ['member'] }).firestore();
+  const profile = doc(db, 'users/member-role-test');
+  await assertSucceeds(setDoc(profile, {
+    displayName: 'Member',
+    email: 'member@example.invalid',
+    onboardingStatus: 'started',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }));
+  await assertFails(updateDoc(profile, {
+    roles: ['founder'],
+    updatedAt: serverTimestamp(),
+  }));
+  await assertFails(updateDoc(profile, {
+    email: 'attacker@example.invalid',
+    updatedAt: serverTimestamp(),
+  }));
+});
+
+test('unknown collections remain denied by the catch-all rule', async () => {
+  const db = environment.authenticatedContext('member-unknown-path', { roles: ['member'] }).firestore();
+  await assertFails(getDoc(doc(db, 'unregisteredSensitiveCollection/record-1')));
+  await assertFails(setDoc(doc(db, 'unregisteredSensitiveCollection/record-1'), {
+    secret: 'must-not-be-written',
+  }));
 });
