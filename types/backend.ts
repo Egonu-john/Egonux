@@ -19,6 +19,7 @@ export interface AuthenticatedPrincipal {
   title: string | null;
   roles: EgonuxRole[];
   sessionIssuedAt: number;
+  authTime: number;
 }
 
 export type ConsentPurpose =

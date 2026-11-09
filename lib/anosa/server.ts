@@ -31,6 +31,7 @@ export async function requireAnosaFounder(
       title: 'Founder Preview',
       roles: ['founder'],
       sessionIssuedAt: Math.floor(Date.now() / 1000),
+      authTime: Math.floor(Date.now() / 1000),
     };
   }
 
@@ -47,9 +48,12 @@ export async function requireAnosaStepUp(
   const principal = await requireAnosaFounder(request);
   if (process.env.EGONUX_AUTH_REQUIRED !== 'true') return principal;
 
-  const ageSeconds = Math.floor(Date.now() / 1000) - principal.sessionIssuedAt;
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const authTime = principal.authTime;
+  const ageSeconds = nowSeconds - authTime;
   if (
     !principal.emailVerified ||
+    !Number.isSafeInteger(authTime) ||
     ageSeconds < 0 ||
     ageSeconds > stepUpWindowSeconds()
   ) {

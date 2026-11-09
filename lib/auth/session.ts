@@ -48,13 +48,17 @@ export function setSessionCookie(
 }
 
 function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
-  const roles = resolveRoles(token.roles, token.email);
+  const roles = resolveRoles(
+    token.roles,
+    token.email,
+    token.email_verified === true,
+  );
   const isFounder = roles.includes('founder');
 
   return {
     uid: token.uid,
     email: token.email ?? null,
-    emailVerified: token.email_verified ?? false,
+    emailVerified: token.email_verified === true,
     displayName: isFounder
       ? process.env.EGONUX_FOUNDER_DISPLAY_NAME?.trim() || token.name || null
       : token.name || null,
@@ -63,6 +67,7 @@ function toPrincipal(token: DecodedIdToken): AuthenticatedPrincipal {
       : null,
     roles,
     sessionIssuedAt: token.iat,
+    authTime: token.auth_time,
   };
 }
 
@@ -79,7 +84,7 @@ export async function requirePrincipal(
     const { getAdminAuth, withVercelOidcToken } = await import('@/lib/firebase/admin');
     const token = await withVercelOidcToken(
       request.headers['x-vercel-oidc-token'],
-      () => getAdminAuth().verifyIdToken(cookie),
+      () => getAdminAuth().verifyIdToken(cookie, true),
     );
     const principal = toPrincipal(token);
     if (requiredRoles.length && !requiredRoles.some((role) => principal.roles.includes(role))) {
